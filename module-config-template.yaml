@@ -1,0 +1,8 @@
+name: {{.Name}}
+channel: {{.Channel}}
+version: {{.Version}}
+defaultCR: config/samples/default-dockerregistry-cr.yaml
+manifest: dockerregistry-operator.yaml
+annotations:
+  "operator.kyma-project.io/doc-url": "https://kyma-project.io/#/docker-registry/user/README"
+moduleRepo: https://github.com/kyma-project/docker-registry.git

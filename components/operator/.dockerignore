@@ -1,0 +1,10 @@
+# Ignore all
+**
+# Allow
+!components/operator/main.go
+!components/operator/api
+!components/operator/controllers
+!components/operator/internal
+!go.sum
+!go.mod
+!config/docker-registry

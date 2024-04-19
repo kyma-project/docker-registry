@@ -1,0 +1,15 @@
+run:
+  timeout: 15m
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+issues:
+  exclude:
+    # function for future usage
+    - "^func `stopWithErrorOrRequeue` is unused$"
