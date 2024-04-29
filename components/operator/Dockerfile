@@ -6,7 +6,7 @@
 # Build the operator binary
 FROM golang:1.22.1 as builder
 
-WORKDIR /workspace
+WORKDIR /workdir
 
 # Copy the Go Modules manifests
 COPY go.mod go.sum ./
@@ -27,7 +27,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o operator ./components/o
 FROM gcr.io/distroless/static:nonroot
 
 WORKDIR /
-COPY --chown=65532:65532 --from=builder /workspace/operator .
+COPY --chown=65532:65532 --from=builder /workdir/operator .
 COPY --chown=65532:65532  config/docker-registry /module-chart
 USER 65532:65532
 
