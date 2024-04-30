@@ -42,9 +42,9 @@ func main() {
 		Client:    client,
 		Logger:    log,
 
-		Name:           "default-test",
-		CtrlDeployName: "serverless-ctrl-mngr",
-		RegistryName:   "dockerregistry-docker-registry",
+		Name:                     "default-test",
+		DockerregistryDeployName: "internal-docker-registry",
+		RegistryName:             "dockerregistry-docker-registry",
 		UpdateSpec: v1alpha1.DockerRegistrySpec{
 			HealthzLivenessTimeout: "20",
 		},

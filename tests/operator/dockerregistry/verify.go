@@ -34,33 +34,8 @@ func Verify(utils *utils.TestUtils) error {
 		return err
 	}
 
-	if err := verifyStatus(&dockerRegistry); err != nil {
+	if err := deployment.VerifyDockerregistryDeployment(utils); err != nil {
 		return err
-	}
-
-	return deployment.VerifyCtrlMngrEnvs(utils, &dockerRegistry)
-}
-
-// check if all data from the spec is reflected in the status
-func verifyStatus(dockerRegistry *v1alpha1.DockerRegistry) error {
-	status := dockerRegistry.Status
-	spec := dockerRegistry.Spec
-
-	if err := isSpecValueReflectedInStatus(spec.HealthzLivenessTimeout, status.HealthzLivenessTimeout); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func isSpecValueReflectedInStatus(specValue string, statusValue string) error {
-	if specValue == "" {
-		// value is not set in the spec, so value in the status may be empty or defauled
-		return nil
-	}
-
-	if specValue != statusValue {
-		return fmt.Errorf("value '%s' not found in status", specValue)
 	}
 
 	return nil

@@ -13,9 +13,9 @@ type TestUtils struct {
 	Logger *zap.SugaredLogger
 	Client client.Client
 
-	Namespace      string
-	Name           string
-	CtrlDeployName string
-	RegistryName   string
-	UpdateSpec     v1alpha1.DockerRegistrySpec
+	Namespace                string
+	Name                     string
+	DockerregistryDeployName string
+	RegistryName             string
+	UpdateSpec               v1alpha1.DockerRegistrySpec
 }
