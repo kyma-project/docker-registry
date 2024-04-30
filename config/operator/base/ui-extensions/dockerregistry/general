@@ -1,0 +1,15 @@
+resource:
+  kind: DockerRegistry
+  group: operator.kyma-project.io
+  version: v1alpha1
+urlPath: dockerregistries
+category: Kyma
+name: DockerRegistry
+scope: namespace
+features:
+  actions:
+    disableCreate: true
+    disableDelete: true
+description: >-
+  {{[DockerRegistry CR](https://github.com/kyma-project/docker-registry/blob/main/config/samples/default-dockerregistry-cr.yaml)}}
+  specifies dockerregistry module.
