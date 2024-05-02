@@ -13,7 +13,7 @@ const (
 	LabelConfigKey = "dockerregistry.kyma-project.io/config"
 	LabelConfigVal = "credentials"
 	IsInternalKey  = "isInternal"
-	DeploymentName = "internal-docker-registry"
+	DeploymentName = "dockerregistry"
 	HttpEnvKey     = "REGISTRY_HTTP_SECRET"
 )
 

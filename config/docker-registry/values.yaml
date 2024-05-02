@@ -202,8 +202,7 @@ extraVolumes:
   - name: htpasswd-data
     emptyDir: {}
 nameOverride:
-# fullnameOverride: "dockerregistry"
-fullnameOverride: "internal-docker-registry"
+fullnameOverride: "dockerregistry"
 
 destinationRule:
   enabled: true
