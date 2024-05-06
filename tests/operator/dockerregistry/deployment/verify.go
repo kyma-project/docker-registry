@@ -27,5 +27,5 @@ func verifyDeployReadiness(deploy *appsv1.Deployment) error {
 		return nil
 	}
 
-	return fmt.Errorf("dockerregistry replicas ready '%s' in total '%s'", deploy.Status.ReadyReplicas, deploy.Status.Replicas)
+	return fmt.Errorf("dockerregistry replicas ready '%d' in total '%d'", deploy.Status.ReadyReplicas, deploy.Status.Replicas)
 }
