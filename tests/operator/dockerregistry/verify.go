@@ -25,13 +25,9 @@ func Verify(utils *utils.TestUtils) error {
 		Namespace: utils.Namespace,
 	}
 
-	utils.Logger.Infof("Getting docker registry '%s'", utils.Name)
-
 	if err := utils.Client.Get(utils.Ctx, objectKey, &dockerRegistry); err != nil {
 		return err
 	}
-
-	utils.Logger.Infof("Waiting for state ready of '%s'", utils.Name)
 
 	if err := verifyState(utils, &dockerRegistry); err != nil {
 		return err
@@ -45,9 +41,6 @@ func Verify(utils *utils.TestUtils) error {
 }
 
 func verifyState(utils *utils.TestUtils, dockerRegistry *v1alpha1.DockerRegistry) error {
-
-	utils.Logger.Infof("Actual state: '%s'", dockerRegistry.Status.State)
-
 	if dockerRegistry.Status.State != v1alpha1.StateReady {
 		return fmt.Errorf("dockerregistry '%s' in '%s' state", utils.Name, dockerRegistry.Status.State)
 	}

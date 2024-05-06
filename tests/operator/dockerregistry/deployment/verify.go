@@ -14,20 +14,15 @@ func VerifyDockerregistryDeployment(testutils *utils.TestUtils) error {
 		Namespace: testutils.Namespace,
 	}
 
-	testutils.Logger.Infof("Verifying dockerregistry deployment '%s'", testutils.DockerregistryDeployName)
-
 	err := testutils.Client.Get(testutils.Ctx, objectKey, &deploy)
 	if err != nil {
 		return err
 	}
 
-	return verifyDeployReadiness(testutils, &deploy)
+	return verifyDeployReadiness(&deploy)
 }
 
-func verifyDeployReadiness(testutils *utils.TestUtils, deploy *appsv1.Deployment) error {
-
-	testutils.Logger.Infof("dockerregistry replicas ready '%s' in total '%s'", deploy.Status.ReadyReplicas, deploy.Status.Replicas)
-
+func verifyDeployReadiness(deploy *appsv1.Deployment) error {
 	if deploy.Status.Replicas != 0 && deploy.Status.Replicas == deploy.Status.ReadyReplicas {
 		return nil
 	}
