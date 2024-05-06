@@ -10,8 +10,12 @@ global:
     path: europe-docker.pkg.dev/kyma-project
   images:
     registry:
-      name: "tpi/registry"
-      version: "2.8.1-1ae4c190"
+      name: "registry"
+      version: "2.8.3"
+      directory: "prod/external"
+    registry-init:
+      name: "registry-init"
+      version: "v20240506-57d31b1d"
       directory: "prod"
   dockerregistryPriorityClassValue: 2000000
   dockerregistryPriorityClassName: "dockerregistry-priority"
