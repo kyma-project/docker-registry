@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	SecretName     = "internal-dockerregistry-config"
+	SecretName     = "dockerregistry-config"
 	LabelConfigKey = "dockerregistry.kyma-project.io/config"
 	LabelConfigVal = "credentials"
 	IsInternalKey  = "isInternal"

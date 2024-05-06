@@ -193,7 +193,7 @@ extraVolumeMounts:
 extraVolumes: 
   - name: registry-credentials
     secret:
-      secretName: internal-dockerregistry-config
+      secretName: dockerregistry-config
       items:
         - key: username
           path: username.txt
