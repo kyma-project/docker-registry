@@ -55,10 +55,9 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           make -C components/operator deploy
-          make -C components/operator install-operator-k3d
           make -C tests/operator test
         env:
-          IMG: europe-docker.pkg.dev/kyma-project/dev/dockerregisty-operator:PR-${{ github.event.number }}
+          IMG: europe-docker.pkg.dev/kyma-project/dev/dockerregistry-operator:PR-${{ github.event.number }}
       - name: run integration test (post)
         if: github.event_name == 'push'
         run: |
