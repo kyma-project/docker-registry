@@ -23,17 +23,13 @@ func Test_flagsBuilder_Build(t *testing.T) {
 					},
 				},
 			},
-			"docker-registry": map[string]interface{}{
-				"registryHTTPSecret": "testHttpSecret",
-				"rollme":             "dontrollplease",
-			},
+			"registryHTTPSecret": "testHttpSecret",
+			"rollme":             "dontrollplease",
 			"dockerRegistry": map[string]interface{}{
 				"password": "testPassword",
 				"username": "testUsername",
 			},
-			"global": map[string]interface{}{
-				"registryNodePort": int64(1234),
-			},
+			"registryNodePort": int64(1234),
 		}
 
 		flags := NewFlagsBuilder().

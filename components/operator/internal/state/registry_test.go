@@ -23,9 +23,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 		}
 		expectedFlags := map[string]interface{}{
-			"global": map[string]interface{}{
-				"registryNodePort": int64(32_137),
-			},
+			"registryNodePort": int64(32_137),
 		}
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
