@@ -83,12 +83,12 @@ func (fb *flagsBuilder) WithRegistryCredentials(username, password string) *flag
 }
 
 func (fb *flagsBuilder) WithRegistryHttpSecret(httpSecret string) *flagsBuilder {
-	fb.flags["docker-registry.rollme"] = "dontrollplease"
-	fb.flags["docker-registry.registryHTTPSecret"] = httpSecret
+	fb.flags["rollme"] = "dontrollplease"
+	fb.flags["registryHTTPSecret"] = httpSecret
 	return fb
 }
 
 func (fb *flagsBuilder) WithNodePort(nodePort int64) *flagsBuilder {
-	fb.flags["global.registryNodePort"] = nodePort
+	fb.flags["registryNodePort"] = nodePort
 	return fb
 }
