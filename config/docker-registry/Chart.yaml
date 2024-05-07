@@ -5,5 +5,3 @@ version: 1.9.1
 appVersion: 2.7.1
 home: https://kyma-project.io
 icon: https://github.com/kyma-project/kyma/blob/main/logo.png?raw=true
-dependencies:
-  - name: docker-registry
