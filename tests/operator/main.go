@@ -43,7 +43,7 @@ func main() {
 		Logger:    log,
 
 		Name:                     "default-test",
-		DockerregistryDeployName: "internal-docker-registry",
+		DockerregistryDeployName: "dockerregistry",
 		RegistryName:             "dockerregistry-docker-registry",
 		UpdateSpec: v1alpha1.DockerRegistrySpec{
 			HealthzLivenessTimeout: "20",
