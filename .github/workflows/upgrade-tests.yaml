@@ -1,0 +1,23 @@
+name: upgrade tests
+
+on:
+  push:
+    branches: [ "main", "release-*" ]
+
+jobs:
+#TODO: after the first release bring this test back with deploy-release target
+#  operator-upgrade-test:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: ./.github/actions/setup-go
+#      - uses: ./.github/actions/create-single-cluster
+#      - name: upgrade test
+#        run: |
+#          make -C components/operator deploy-release
+#          make -C tests/operator test
+#          make -C components/operator deploy
+#          make -C tests/operator test
+#        env:
+#          IMG: europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:${{ github.sha }}
+#      - uses: ./.github/actions/collect-cluster-info
