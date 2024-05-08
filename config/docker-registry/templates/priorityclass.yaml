@@ -1,0 +1,7 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: {{ .Values.dockerregistryPriorityClassName }}
+value: {{ .Values.dockerregistryPriorityClassValue }}
+globalDefault: false
+description: "Scheduling priority of dockerregistry components. By default, dockerregistry components should not be blocked by unschedulable user workloads."

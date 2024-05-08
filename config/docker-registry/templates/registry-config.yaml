@@ -1,14 +1,14 @@
 {{- $username := include "tplValue" ( dict "value" .Values.dockerRegistry.username "context" . ) -}}
 {{- $password := include "tplValue" ( dict "value" .Values.dockerRegistry.password "context" . ) -}}
 {{- $encodedUsernamePassword := printf "%s:%s" $username $password | b64enc }}
-{{- $internalRegPullAddr := printf "localhost:%d" (int .Values.global.registryNodePort) }}
-{{- $internalRegPushAddr := printf "%s.%s.svc.cluster.local:%d" (include  "registry-fullname" . ) .Release.Namespace ( int .Values.global.registryServicePort) }}
+{{- $internalRegPullAddr := printf "localhost:%d" (int .Values.registryNodePort) }}
+{{- $internalRegPushAddr := printf "%s.%s.svc.cluster.local:%d" (include  "registry-fullname" . ) .Release.Namespace ( int .Values.service.port) }}
 
 apiVersion: v1
 kind: Secret
 type: kubernetes.io/dockerconfigjson
 metadata:
-  name: internal-dockerregistry-config
+  name: dockerregistry-config
   namespace: {{ .Release.Namespace }}
   labels:
     dockerregistry.kyma-project.io/config: credentials

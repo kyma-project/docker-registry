@@ -2,8 +2,9 @@ package controllers
 
 import (
 	"context"
-	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"time"
+
+	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	. "github.com/onsi/ginkgo/v2"
@@ -17,7 +18,7 @@ var _ = Describe("DockerRegistry controller", func() {
 		const (
 			namespaceName  = "kyma-system"
 			crName         = "cr-test"
-			deploymentName = "internal-docker-registry"
+			deploymentName = "dockerregistry"
 			registrySecret = registry.SecretName
 		)
 
