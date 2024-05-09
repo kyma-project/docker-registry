@@ -5,7 +5,7 @@ IMG_VERSION=${IMG_VERSION?"Define IMG_VERSION env"}
 yq eval-all --inplace '
     select(fileIndex == 0).protecode=[
         select(fileIndex == 1)
-        | .global.containerRegistry.path as $registryPath
+        | .containerRegistry.path as $registryPath
         | (
             {
                 "dockerregistry_operator" : {
@@ -14,7 +14,7 @@ yq eval-all --inplace '
                     "version" : env(IMG_VERSION)
                 }
             }
-            + .global.images
+            + .images
           )[]
         | $registryPath + "/" + .directory + "/" + .name + ":" + .version
     ]
