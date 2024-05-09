@@ -9,10 +9,8 @@ import (
 )
 
 const (
-	ConfigLabel              = "dockerregistry.kyma-project.io/config"
-	CredentialsLabelValue    = "credentials"
-	ServiceAccountLabelValue = "service-account"
-	RuntimeLabelValue        = "runtime"
+	ConfigLabel           = "dockerregistry.kyma-project.io/config"
+	CredentialsLabelValue = "credentials"
 )
 
 type Config struct {
