@@ -14,23 +14,19 @@ import (
 )
 
 type NamespaceReconciler struct {
-	Log               *zap.SugaredLogger
-	client            client.Client
-	config            Config
-	configMapSvc      ConfigMapService
-	secretSvc         SecretService
-	serviceAccountSvc ServiceAccountService
+	Log       *zap.SugaredLogger
+	client    client.Client
+	config    Config
+	secretSvc SecretService
 }
 
 func NewNamespace(client client.Client, log *zap.SugaredLogger, config Config,
-	configMapSvc ConfigMapService, secretSvc SecretService, serviceAccountSvc ServiceAccountService) *NamespaceReconciler {
+	secretSvc SecretService) *NamespaceReconciler {
 	return &NamespaceReconciler{
-		client:            client,
-		Log:               log,
-		config:            config,
-		configMapSvc:      configMapSvc,
-		secretSvc:         secretSvc,
-		serviceAccountSvc: serviceAccountSvc,
+		client:    client,
+		Log:       log,
+		config:    config,
+		secretSvc: secretSvc,
 	}
 }
 
@@ -75,41 +71,19 @@ func (r *NamespaceReconciler) Reconcile(ctx context.Context, request ctrl.Reques
 
 	logger := r.Log.With("name", instance.GetName())
 
-	logger.Debug(fmt.Sprintf("Updating ConfigMaps in namespace '%s'", instance.GetName()))
-	configMaps, err := r.configMapSvc.ListBase(ctx)
-	if err != nil {
-		logger.Error(err, "Listing base ConfigMaps failed")
-		return ctrl.Result{}, err
-	}
-	for _, configMap := range configMaps {
-		c := configMap
-		if err := r.configMapSvc.UpdateNamespace(ctx, logger, instance.GetName(), &c); err != nil {
-			return ctrl.Result{}, err
-		}
-	}
-
 	logger.Debug(fmt.Sprintf("Updating Secret in namespace '%s'", instance.GetName()))
 	secret, err := r.secretSvc.GetBase(ctx)
-	if err != nil {
-		logger.Error(err, "Listing base Secrets failed")
+	if client.IgnoreNotFound(err) != nil {
+		logger.Error(err, "Getting base Secret failed")
 		return ctrl.Result{}, err
+	}
+	if err != nil {
+		logger.Debug(err, "Base Secret not found")
+		return ctrl.Result{}, nil
 	}
 
 	if err := r.secretSvc.UpdateNamespace(ctx, logger, instance.GetName(), secret); err != nil {
 		return ctrl.Result{}, err
-	}
-
-	logger.Debug(fmt.Sprintf("Updating ServiceAccounts in namespace '%s'", instance.GetName()))
-	serviceAccounts, err := r.serviceAccountSvc.ListBase(ctx)
-	if err != nil {
-		logger.Error(err, "Listing base ServiceAccounts failed")
-		return ctrl.Result{}, err
-	}
-	for _, serviceAccount := range serviceAccounts {
-		sa := serviceAccount
-		if err := r.serviceAccountSvc.UpdateNamespace(ctx, logger, instance.GetName(), &sa); err != nil {
-			return ctrl.Result{}, err
-		}
 	}
 
 	return ctrl.Result{}, nil

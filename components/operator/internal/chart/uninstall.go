@@ -100,10 +100,6 @@ func uninstallSecrets(config *Config, objs []unstructured.Unstructured, filterFu
 	return nil, done
 }
 
-func WithoutCRDFilter(u unstructured.Unstructured) bool {
-	return !isCRD(u)
-}
-
 func fitToFilters(u unstructured.Unstructured, filterFunc ...FilterFunc) bool {
 	for _, fn := range filterFunc {
 		if !fn(u) {
