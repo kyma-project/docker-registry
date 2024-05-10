@@ -1,0 +1,20 @@
+name: lint
+
+on:
+  pull_request:
+    paths:
+      - 'components/operator/**'
+      - '.github/**'
+    types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
+
+jobs:
+  lint:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/rebase
+      - uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          working-directory: 'components/operator'
