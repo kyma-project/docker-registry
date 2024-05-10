@@ -13,12 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/rebase
       - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-single-cluster
+      - uses: ./.github/actions/create-k3d-cluster
       - name: run test
         run: |
           make -C components/operator deploy
           make -C tests/operator test
         env:
           IMG: europe-docker.pkg.dev/kyma-project/dev/dockerregistry-operator:PR-${{ github.event.number }}
-      - uses: ./.github/actions/collect-cluster-info
+      - if: ${{ always() }}
+        uses: ./.github/actions/collect-cluster-info
