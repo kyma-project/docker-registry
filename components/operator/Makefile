@@ -94,7 +94,7 @@ generate-kustomization-dev:
 .PHONY: deploy-release
 deploy-release: ## Deploy operator to the k8s cluster specified in ~/.kube/config with image from latest release.
 	kubectl create namespace kyma-system || true
-	kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest/download/docker-registry.yaml
+	kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest/download/dockerregistry-operator.yaml
 
 .PHONY: deploy
 deploy: manifests kustomize generate-kustomization-dev ## Deploy controller to the K8s cluster specified in ~/.kube/config with image from IMG env.
