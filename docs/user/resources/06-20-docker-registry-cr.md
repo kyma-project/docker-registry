@@ -1,0 +1,93 @@
+# Docker Registry
+
+The `dockerregistries.operator.kyma-project.io` CustomResourceDefinition (CRD) is a detailed description of the Docker Registry configuration that you want to install on your cluster. To get the up-to-date CRD and show the output in the YAML format, run this command:
+
+   ```bash
+   kubectl get crd dockerregistries.operator.kyma-project.io -o yaml
+   ```
+
+## Sample Custom Resource
+
+The following Docker Registry custom resource (CR) shows configuration of Docker Registry.
+
+   ```yaml
+   apiVersion: operator.kyma-project.io/v1alpha1
+   kind: DockerRegistry
+   metadata:
+     annotations:
+       kubectl.kubernetes.io/last-applied-configuration: |
+         {"apiVersion":"operator.kyma-project.io/v1alpha1","kind":"DockerRegistry","metadata":{"annotations":{},"name":"default","namespace":"kyma-system"},"spec":{}}
+     creationTimestamp: "2024-05-16T10:18:25Z"
+     finalizers:
+     - dockerregistry-operator.kyma-project.io/deletion-hook
+     generation: 1
+     name: default
+     namespace: kyma-system
+     resourceVersion: "31542"
+     uid: 30dbb8a0-2193-47b6-bdf7-358f78319eb8
+   spec: {}
+   status:
+     conditions:
+     - lastTransitionTime: "2024-05-16T10:18:25Z"
+       message: Configuration ready
+       reason: Configured
+       status: "True"
+       type: Configured
+     - lastTransitionTime: "2024-05-16T10:18:45Z"
+       message: DockerRegistry installed
+       reason: Installed
+       status: "True"
+       type: Installed
+     secretName: dockerregistry-config
+     served: "True"
+     state: Ready
+   ```
+
+## Custom Resource Parameters
+
+For details, see the [Docker Registry specification file](https://github.com/kyma-project/docker-registry/blob/main/components/operator/api/v1alpha1/dockerregistry_types.go).
+<!-- TABLE-START -->
+### dockerregistries.operator.kyma-project.io/v1alpha1
+
+**Spec:**
+
+| Parameter                                 | Type    | Description |
+|-------------------------------------------|---------|-------------|
+
+**Status:**
+
+| Parameter                                            | Type       | Description                                                                                                                                                                                                                                                                                                                                                    |
+|------------------------------------------------------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **conditions**                                       | \[\]object | Conditions associated with CustomStatus.                                                                                                                                                                                                                                                                                                                       |
+| **conditions.&#x200b;lastTransitionTime** (required) | string     | Specifies the last time the condition transitioned from one status to another. This should be when the underlying condition changes.  If that is not known, then using the time when the API field changed is acceptable.                                                                                                                                      |
+| **conditions.&#x200b;message** (required)            | string     | Provides a human-readable message indicating details about the transition. This may be an empty string.                                                                                                                                                                                                                                                        |
+| **conditions.&#x200b;observedGeneration**            | integer    | Represents **.metadata.generation** that the condition was set based upon. For instance, if **.metadata.generation** is currently `12`, but the **.status.conditions[x].observedGeneration** is `9`, the condition is out of date with respect to the current state of the instance.                                                                       |
+| **conditions.&#x200b;reason** (required)             | string     | Contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field and whether the values are considered a guaranteed API. The value should be a camelCase string. This field may not be empty.                                        |
+| **conditions.&#x200b;status** (required)             | string     | Specifies the status of the condition. The value is either `True`, `False`, or `Unknown`.                                                                                                                                                                                                                                                                      |
+| **conditions.&#x200b;type** (required)               | string     | Specifies the condition type in camelCase or in `foo.example.com/CamelCase`. Many **.conditions.type** values are consistent across resources like `Available`, but because arbitrary conditions can be useful (see **.node.status.conditions**), the ability to deconflict is important. The regex it matches is `(dns1123SubdomainFmt/)?(qualifiedNameFmt)`. |
+| **secretName**                                       | string     | Name of Secret with data needed to connect to docker registry.                                                                                                                                                                                                                                                                                                 |
+| **served** (required)                                | string     | Signifies if the current Serverless is managed. Value can be one of `True`, or `False`.                                                                                                                                                                                                                                                                   |
+| **state**                                            | string     | Signifies the current state of Serverless. Value can be one of `Ready`, `Processing`, `Error`, or `Deleting`.                                                                                                                                                                                                                                                  |
+
+<!-- TABLE-END -->
+
+### Status Reasons
+
+Processing of a Docker Registry CR can succeed, continue, or fail for one of these reasons:
+
+## Docker Registry CR Conditions
+
+This section describes the possible states of the Docker Registry CR. Three condition types, `Installed`, `Configured` and `Deleted`, are used.
+
+| No  | CR State   | Condition type | Condition status | Condition reason | Remark                                             |
+|-----|------------|----------------|------------------|------------------|----------------------------------------------------|
+| 1   | Processing | Configured     | true             | Configured       | Docker Registry configuration verified             |
+| 2   | Processing | Configured     | unknown          | Configuration    | Docker Registry configuration verification ongoing |
+| 3   | Error      | Configured     | false            | ConfigurationErr | Docker Registry configuration verification error   |
+| 4   | Error      | Configured     | false            | Duplicated       | Only one Docker Registry CR is allowed             |
+| 5   | Ready      | Installed      | true             | Installed        | Docker Registry workloads deployed                 |
+| 6   | Processing | Installed      | unknown          | Installation     | Deploying Docker Registry workloads                |
+| 7   | Error      | Installed      | false            | InstallationErr  | Deployment error                                   |
+| 8   | Deleting   | Deleted        | unknown          | Deletion         | Deletion in progress                               |
+| 9   | Deleting   | Deleted        | true             | Deleted          | Docker Registry module deleted                     |
+| 10  | Error      | Deleted        | false            | DeletionErr      | Deletion failed                                    |
