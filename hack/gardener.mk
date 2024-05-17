@@ -16,14 +16,13 @@ GARDENER_K8S_VERSION=1.29.3
 endif
 
 .PHONY: provision-gardener
-provision-gardener: kyma ## Provision gardener cluster with latest k8s version
+provision-gardener: ## Provision gardener cluster with latest k8s version
 	PROJECT_ROOT=${PROJECT_ROOT} \
 		GARDENER_SA_PATH=${GARDENER_SA_PATH} \
 		SHOOT=${SHOOT} PROJECT=${GARDENER_PROJECT} \
 		GARDENER_K8S_VERSION=${GARDENER_K8S_VERSION} \
 		GIT_COMMIT_SHA=${GIT_COMMIT_SHA} \
 		SECRET=${GARDENER_SECRET_NAME} \
-		TARGET_KUBECONFIG=test-${GIT_COMMIT_SHA} \
 		${PROJECT_ROOT}/hack/save_kubeconfig.sh
 
 .PHONY: deprovision-gardener
