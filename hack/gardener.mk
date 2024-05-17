@@ -9,6 +9,7 @@ GARDENER_INFRASTRUCTURE = az
 HIBERNATION_HOUR=$(shell echo $$(( ( $(shell date +%H | sed s/^0//g) + 5 ) % 24 )))
 GIT_COMMIT_SHA=$(shell git rev-parse --short=8 HEAD)
 SHOOT=test-${GIT_COMMIT_SHA}
+
 ifneq (,$(GARDENER_SA_PATH))
 GARDENER_K8S_VERSION=$(shell kubectl --kubeconfig=${GARDENER_SA_PATH} get cloudprofiles.core.gardener.cloud ${GARDENER_INFRASTRUCTURE} -o=jsonpath='{.spec.kubernetes.versions[0].version}')
 else
