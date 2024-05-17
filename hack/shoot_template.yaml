@@ -17,23 +17,23 @@ spec:
           cidr: 10.250.0.0/16
         workers: 10.250.0.0/19
     workers:
-    - name: cpu-worker
-      minimum: 1
-      maximum: 2
-      machine:
-        type: Standard_A4_v2
-      volume:
-        type: Standard_LRS
-        size: 50Gi
+      - name: cpu-worker
+        minimum: 1
+        maximum: 2
+        machine:
+          type: Standard_A4_v2
+        volume:
+          type: Standard_LRS
+          size: 50Gi
   networking:
     type: calico
     pods: 100.96.0.0/11
     nodes: 10.250.0.0/16
     services: 100.64.0.0/13
   kubernetes:
-    version: ${GARDENER_K8S_VERSION}
+    version: "${GARDENER_K8S_VERSION}"
   hibernation:
     enabled: true
     schedules:
-    - start: "00 14 * * ?"
-      location: "Europe/Berlin"
+      - start: "00 14 * * ?"
+        location: "Europe/Berlin"
