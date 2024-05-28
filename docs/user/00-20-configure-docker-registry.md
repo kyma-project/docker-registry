@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Docker Registry module has its own operator (Docker Registry operator). It watches the Docker Registry custom resource (CR) and reconfigures (reconciles) the Docker Registry workloads.
+The Docker Registry module has its own operator (Docker Registry Operator). It watches the Docker Registry custom resource (CR) and reconfigures (reconciles) the Docker Registry workloads.
 
 The Docker Registry CR becomes an API to configure the Docker Registry module. You can't configure anything right now, but you will be able to do so soon.
 

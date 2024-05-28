@@ -65,7 +65,7 @@ This tutorial shows how you can push an image to the Docker Registry and use it.
    simple-pod   1/1     Running   0          60s
    ```
 
-6. Use the following command to print current time every 10 seconds:
+6. Use the following command to print the current time every 10 seconds:
 
    ```bash
    kubectl logs simple-pod
