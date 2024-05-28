@@ -41,7 +41,6 @@ This tutorial shows how you can push an image to the Docker Registry and use it.
 
 4. Import the image to Docker Registry:
 
-    <!-- TODO: presiquites: kyma cli (new version) -->
    ```bash
    kyma image-import simple-image:latest
    ```

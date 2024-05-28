@@ -17,5 +17,3 @@ The default configuration of the Docker Registry module is the following:
    spec: {}
 
    ```
-
-<!-- TODO: add more information -->
