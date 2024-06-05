@@ -35,10 +35,10 @@ updateStrategy:
 image:
   pullPolicy: IfNotPresent
 # imagePullSecrets:
-    # - name: docker
+# - name: docker
 service:
   name: registry
-  port: "5000"    # same as configData.http.addr
+  port: "5000" # same as configData.http.addr
   annotations: {}
 ingress:
   enabled: false
@@ -46,7 +46,8 @@ ingress:
   # Used to create an Ingress record.
   hosts:
     - chart-example.local
-  annotations: {}
+  annotations:
+    {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   labels: {}
@@ -61,18 +62,18 @@ resources:
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
-   cpu: 400m
-   memory: 800Mi
+    cpu: 400m
+    memory: 800Mi
   requests:
-   cpu: 10m
-   memory: 300Mi
+    cpu: 10m
+    memory: 300Mi
 
 podAnnotations:
   sidecar.istio.io/inject: "false"
 podLabels: {}
 
 persistence:
-  accessMode: 'ReadWriteOnce'
+  accessMode: "ReadWriteOnce"
   enabled: true
   size: 20Gi
   # storageClass: '-'
@@ -115,7 +116,7 @@ storage: filesystem
 configData: # example: https://github.com/docker/distribution/blob/master/cmd/registry/config-dev.yml
   version: 0.1
   log:
-    formatter: json 
+    formatter: json
     fields:
       service: registry
   storage:
@@ -126,10 +127,10 @@ configData: # example: https://github.com/docker/distribution/blob/master/cmd/re
     headers:
       X-Content-Type-Options: [nosniff]
     debug:
-        addr: :5001
-        prometheus:
-            enabled: true
-            path: /metrics      
+      addr: :5001
+      prometheus:
+        enabled: true
+        path: /metrics
   health:
     storagedriver:
       enabled: true
@@ -149,7 +150,7 @@ containers:
 initContainers:
   # the following guidelines should be followed for this https://github.com/kyma-project/community/tree/main/concepts/psp-replacement
   securityContext:
-  # this is required to allow the initContainer to chmod the volumemount for the registry storage volume. This is incompatible with the security requirements above and should be fixed in the future.
+    # this is required to allow the initContainer to chmod the volumemount for the registry storage volume. This is incompatible with the security requirements above and should be fixed in the future.
     runAsUser: 0
     runAsGroup: 0
     privileged: false
@@ -169,8 +170,8 @@ pod:
     seccompProfile: # Optional. This option can also be set on container level but it is recommended to set it on Pod level and leave it undefined on container level.
       type: RuntimeDefault
 
-
-podDisruptionBudget: {}
+podDisruptionBudget:
+  {}
   # maxUnavailable: 1
   # minAvailable: 2
 
@@ -186,7 +187,7 @@ extraVolumeMounts:
   - name: htpasswd-data
     mountPath: /data
 
-extraVolumes: 
+extraVolumes:
   - name: registry-credentials
     secret:
       secretName: dockerregistry-config

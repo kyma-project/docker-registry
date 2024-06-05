@@ -5,11 +5,11 @@ metadata:
   namespace: kyma-system
 spec:
   s3:
-    bucket: "when I was"
-    region: "a young boy"
-    regionEndpoint: "my father" # optional
-    encrypt: false # optional
-    secure: true # optional
-    secrets: # optional
-      accessKey: "took me into the city"
-      secretKey: "to see a marching band"
+    bucket: "bucketName"
+    region: "eu-west-2"
+    regionEndpoint: "s3.eu-west-2.amazonaws.com"
+    encrypt: false
+    secure: true
+    secrets:
+      accessKey: "accessKeyValue"
+      secretKey: "secretKeyValue"
