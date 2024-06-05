@@ -114,8 +114,6 @@ func (fb *flagsBuilder) WithFilesystem() *flagsBuilder {
 
 func (fb *flagsBuilder) WithS3() *flagsBuilder {
 	fb.flags["storage"] = "s3"
-	// TODO: can we remove this line from values.yaml?
-	fb.flags["configData.storage.filesystem"] = nil
 
 	fb.flags["s3.bucket"] = config.Bucket
 	fb.flags["s3.region"] = config.Region
@@ -137,5 +135,11 @@ func (fb *flagsBuilder) WithS3() *flagsBuilder {
 		fb.flags["secrets.s3.secretKey"] = config.Secrets.SecretKey
 	}
 
+	return fb
+}
+
+func (fb *flagsBuilder) WithFilesystem() *flagsBuilder {
+	fb.flags["storage"] = "filesystem"
+	fb.flags["configData.storage.filesystem.rootdirectory"] = "/var/lib/registry"
 	return fb
 }
