@@ -12,7 +12,7 @@ import (
 )
 
 func Test_sFnRegistryConfiguration(t *testing.T) {
-	t.Run("internal registry and update", func(t *testing.T) {
+	t.Run("internal registry using default storage", func(t *testing.T) {
 		s := &systemState{
 			instance:       v1alpha1.DockerRegistry{},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
@@ -23,6 +23,57 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 		}
 		expectedFlags := map[string]interface{}{
+			"configData": map[string]interface{}{
+				"storage": map[string]interface{}{
+					"filesystem": map[string]interface{}{
+						"rootdirectory": "/var/lib/registry",
+					},
+				},
+			},
+			"storage":          "filesystem",
+			"registryNodePort": int64(32_137),
+		}
+
+		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
+		require.NoError(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnControllerConfiguration, next)
+
+		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
+	})
+
+	t.Run("internal registry using azure storage", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{
+					Storage: &v1alpha1.Storage{
+						Azure: &v1alpha1.StorageAzure{
+							Secrets: &v1alpha1.StorageAzureSecrets{
+								AccountName: "accountName",
+								AccountKey:  "accountKey",
+								Container:   "container",
+							},
+						},
+					},
+				},
+			},
+			statusSnapshot: v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:   chart.NewFlagsBuilder(),
+		}
+		r := &reconciler{
+			k8s: k8s{client: fake.NewClientBuilder().Build()},
+			log: zap.NewNop().Sugar(),
+		}
+		expectedFlags := map[string]interface{}{
+			"storage": "azure",
+			"secrets": map[string]interface{}{
+				"azure": map[string]interface{}{
+					"accountName": "accountName",
+					"accountKey":  "accountKey",
+					"container":   "container",
+				},
+			},
 			"registryNodePort": int64(32_137),
 		}
 

@@ -3,6 +3,8 @@ package chart
 import (
 	"fmt"
 	"strings"
+
+	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 )
 
 type FlagsBuilder interface {
@@ -11,6 +13,8 @@ type FlagsBuilder interface {
 	WithRegistryCredentials(username string, password string) *flagsBuilder
 	WithRegistryHttpSecret(httpSecret string) *flagsBuilder
 	WithNodePort(nodePort int64) *flagsBuilder
+	WithAzure(config *v1alpha1.StorageAzure) *flagsBuilder
+	WithFilesystem() *flagsBuilder
 }
 
 type flagsBuilder struct {
@@ -90,5 +94,19 @@ func (fb *flagsBuilder) WithRegistryHttpSecret(httpSecret string) *flagsBuilder 
 
 func (fb *flagsBuilder) WithNodePort(nodePort int64) *flagsBuilder {
 	fb.flags["registryNodePort"] = nodePort
+	return fb
+}
+
+func (fb *flagsBuilder) WithAzure(config *v1alpha1.StorageAzure) *flagsBuilder {
+	fb.flags["storage"] = "azure"
+	fb.flags["secrets.azure.accountName"] = config.Secrets.AccountName
+	fb.flags["secrets.azure.accountKey"] = config.Secrets.AccountKey
+	fb.flags["secrets.azure.container"] = config.Secrets.Container
+	return fb
+}
+
+func (fb *flagsBuilder) WithFilesystem() *flagsBuilder {
+	fb.flags["storage"] = "filesystem"
+	fb.flags["configData.storage.filesystem.rootdirectory"] = "/var/lib/registry"
 	return fb
 }

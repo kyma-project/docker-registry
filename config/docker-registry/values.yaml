@@ -121,8 +121,8 @@ configData: # example: https://github.com/docker/distribution/blob/master/cmd/re
   storage:
     cache:
       blobdescriptor: inmemory
-    filesystem:
-      rootdirectory: /var/lib/registry
+    # filesystem:
+    #   rootdirectory: /var/lib/registry
   http:
     addr: :5000 # same as .Values.service.port
     headers:

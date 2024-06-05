@@ -34,7 +34,9 @@ func requeueAfter(duration time.Duration) (stateFn, *ctrl.Result, error) {
 	}, nil
 }
 
-type fieldsToUpdate []struct {
+type fieldsToUpdate []fieldToUpdate
+
+type fieldToUpdate struct {
 	specField    string
 	statusField  *string
 	fieldName    string

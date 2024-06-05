@@ -28,7 +28,22 @@ type Endpoint struct {
 // DockerRegistrySpec defines the desired state of DockerRegistry
 type DockerRegistrySpec struct {
 	// Sets the timeout for the Function health check. The default value in seconds is `10`
-	HealthzLivenessTimeout string `json:"healthzLivenessTimeout,omitempty"` //TODO: probably it was only used by serverless so it could be removed
+	HealthzLivenessTimeout string   `json:"healthzLivenessTimeout,omitempty"` //TODO: probably it was only used by serverless so it could be removed
+	Storage                *Storage `json:"storage,omitempty"`
+}
+
+type Storage struct {
+	Azure *StorageAzure `json:"azure,omitempty"`
+}
+
+type StorageAzure struct {
+	Secrets *StorageAzureSecrets `json:"secrets"`
+}
+
+type StorageAzureSecrets struct {
+	AccountName string `json:"accountName"`
+	AccountKey  string `json:"accountKey"`
+	Container   string `json:"container"`
 }
 
 type State string
@@ -74,6 +89,8 @@ const (
 
 type DockerRegistryStatus struct {
 	SecretName string `json:"secretName,omitempty"`
+
+	Storage string `json:"storage,omitempty"`
 
 	HealthzLivenessTimeout string `json:"healthzLivenessTimeout,omitempty"`
 

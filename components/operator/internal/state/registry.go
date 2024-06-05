@@ -2,6 +2,8 @@ package state
 
 import (
 	"context"
+	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
+
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"github.com/pkg/errors"
@@ -55,6 +57,8 @@ func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 			)
 	}
 
+	prepareStorage(s.instance.Spec.Storage, s.flagsBuilder)
+
 	resolver := registry.NewNodePortResolver(registry.RandomNodePort)
 	nodePort, err := resolver.ResolveDockerRegistryNodePortFn(ctx, r.client, s.instance.Namespace)
 	if err != nil {
@@ -63,4 +67,14 @@ func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 	r.log.Debugf("docker registry node port: %d", nodePort)
 	s.flagsBuilder.WithNodePort(int64(nodePort))
 	return nil
+}
+
+func prepareStorage(storage *v1alpha1.Storage, flagsBuilder chart.FlagsBuilder) {
+	if storage != nil {
+		if storage.Azure != nil {
+			flagsBuilder.WithAzure(storage.Azure)
+			return
+		}
+	}
+	flagsBuilder.WithFilesystem()
 }
