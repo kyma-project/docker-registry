@@ -37,8 +37,6 @@ func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error
 }
 
 func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemState) error {
-	// TODO: move to proper location
-	s.flagsBuilder.WithS3()
 	existingIntRegSecret, err := registry.GetDockerRegistryInternalRegistrySecret(ctx, r.client, s.instance.Namespace)
 	if err != nil {
 		return errors.Wrap(err, "while fetching existing internal docker registry secret")

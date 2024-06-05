@@ -114,13 +114,28 @@ func (fb *flagsBuilder) WithFilesystem() *flagsBuilder {
 
 func (fb *flagsBuilder) WithS3() *flagsBuilder {
 	fb.flags["storage"] = "s3"
-	fb.flags["secrets.s3.accessKey"] = "TODO"
-	fb.flags["secrets.s3.secretKey"] = "TODO"
-	fb.flags["s3.bucket"] = "TODO"
-	fb.flags["s3.region"] = "TODO"
-	fb.flags["s3.regionEndpoint"] = "TODO"
-	fb.flags["s3.encrypt"] = false
-	fb.flags["s3.secure"] = true
+	// TODO: can we remove this line from values.yaml?
 	fb.flags["configData.storage.filesystem"] = nil
+
+	fb.flags["s3.bucket"] = config.Bucket
+	fb.flags["s3.region"] = config.Region
+
+	if config.RegionEndpoint != "" {
+		fb.flags["s3.regionEndpoint"] = config.RegionEndpoint
+	}
+
+	if config.Encrypt {
+		fb.flags["s3.encrypt"] = config.Encrypt
+	}
+
+	if config.Secure {
+		fb.flags["s3.secure"] = config.Secure
+	}
+
+	if config.Secrets != nil {
+		fb.flags["secrets.s3.accessKey"] = config.Secrets.AccessKey
+		fb.flags["secrets.s3.secretKey"] = config.Secrets.SecretKey
+	}
+
 	return fb
 }

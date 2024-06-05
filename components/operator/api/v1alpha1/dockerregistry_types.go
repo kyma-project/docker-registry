@@ -34,6 +34,7 @@ type DockerRegistrySpec struct {
 
 type Storage struct {
 	Azure *StorageAzure `json:"azure,omitempty"`
+	S3    *StorageS3    `json:"s3,omitempty"`
 }
 
 type StorageAzure struct {
@@ -44,6 +45,20 @@ type StorageAzureSecrets struct {
 	AccountName string
 	AccountKey  string
 	Container   string
+}
+
+type StorageS3 struct {
+	Bucket         string `json:"bucket"`
+	Region         string `json:"region"`
+	RegionEndpoint string `json:"regionEndpoint,omitempty"`
+	Encrypt        bool   `json:"encrypt,omitempty"`
+	Secure         bool   `json:"secure,omitempty"`
+	SecretName     string `json:"secretName,omitempty"`
+}
+
+type StorageS3Secrets struct {
+	AccessKey string `json:"accessKey"`
+	SecretKey string `json:"secretKey"`
 }
 
 type State string
