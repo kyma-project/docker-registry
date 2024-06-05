@@ -15,6 +15,7 @@ type FlagsBuilder interface {
 	WithNodePort(nodePort int64) *flagsBuilder
 	WithAzure(secret *v1alpha1.StorageAzureSecrets) *flagsBuilder
 	WithFilesystem() *flagsBuilder
+	WithS3() *flagsBuilder
 }
 
 type flagsBuilder struct {
@@ -108,5 +109,18 @@ func (fb *flagsBuilder) WithAzure(secret *v1alpha1.StorageAzureSecrets) *flagsBu
 func (fb *flagsBuilder) WithFilesystem() *flagsBuilder {
 	fb.flags["storage"] = "filesystem"
 	fb.flags["configData.storage.filesystem.rootdirectory"] = "/var/lib/registry"
+	return fb
+}
+
+func (fb *flagsBuilder) WithS3() *flagsBuilder {
+	fb.flags["storage"] = "s3"
+	fb.flags["secrets.s3.accessKey"] = "TODO"
+	fb.flags["secrets.s3.secretKey"] = "TODO"
+	fb.flags["s3.bucket"] = "TODO"
+	fb.flags["s3.region"] = "TODO"
+	fb.flags["s3.regionEndpoint"] = "TODO"
+	fb.flags["s3.encrypt"] = false
+	fb.flags["s3.secure"] = true
+	fb.flags["configData.storage.filesystem"] = nil
 	return fb
 }
