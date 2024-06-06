@@ -138,6 +138,14 @@ func (fb *flagsBuilder) WithS3() *flagsBuilder {
 	return fb
 }
 
+func (fb *flagsBuilder) WithAzure(config *v1alpha1.StorageAzure) *flagsBuilder {
+	fb.flags["storage"] = "azure"
+	fb.flags["secrets.azure.accountName"] = config.Secrets.AccountName
+	fb.flags["secrets.azure.accountKey"] = config.Secrets.AccountKey
+	fb.flags["secrets.azure.container"] = config.Secrets.Container
+	return fb
+}
+
 func (fb *flagsBuilder) WithFilesystem() *flagsBuilder {
 	fb.flags["storage"] = "filesystem"
 	fb.flags["configData.storage.filesystem.rootdirectory"] = "/var/lib/registry"

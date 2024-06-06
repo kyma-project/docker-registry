@@ -61,6 +61,16 @@ type StorageS3Secrets struct {
 	SecretKey string `json:"secretKey"`
 }
 
+type StorageAzure struct {
+	Secrets *StorageAzureSecrets `json:"secrets"`
+}
+
+type StorageAzureSecrets struct {
+	AccountName string `json:"accountName"`
+	AccountKey  string `json:"accountKey"`
+	Container   string `json:"container"`
+}
+
 type State string
 
 type Served string

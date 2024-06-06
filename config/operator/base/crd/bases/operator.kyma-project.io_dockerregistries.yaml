@@ -55,6 +55,24 @@ spec:
           spec:
             description: DockerRegistrySpec defines the desired state of DockerRegistry
             properties:
+              azure:
+                properties:
+                  secrets:
+                    properties:
+                      accountKey:
+                        type: string
+                      accountName:
+                        type: string
+                      container:
+                        type: string
+                    required:
+                    - accountKey
+                    - accountName
+                    - container
+                    type: object
+                required:
+                - secrets
+                type: object
               healthzLivenessTimeout:
                 description: Sets the timeout for the Function health check. The default
                   value in seconds is `10`
