@@ -41,9 +41,9 @@ type StorageAzure struct {
 }
 
 type StorageAzureSecrets struct {
-	AccountName string `json:"accountName"`
-	AccountKey  string `json:"accountKey"`
-	Container   string `json:"container"`
+	AccountName string
+	AccountKey  string
+	Container   string
 }
 
 type State string
