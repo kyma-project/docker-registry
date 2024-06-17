@@ -75,7 +75,7 @@ func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 func prepareStorage(ctx context.Context, r *reconciler, s *systemState) error { //storage *v1alpha1.Storage, flagsBuilder chart.FlagsBuilder, s *systemState) {
 	if s.instance.Spec.Storage != nil {
 		if s.instance.Spec.Storage.Azure != nil {
-			azureSecret, err := registry.GetStorageAzureSecret(ctx, r.client, s.instance.Spec.Storage.Azure.SecretName, s.instance.Namespace)
+			azureSecret, err := registry.GetSecret(ctx, r.client, s.instance.Spec.Storage.Azure.SecretName, s.instance.Namespace)
 			if err != nil {
 				return errors.Wrap(err, fmt.Sprintf("while fetching azure storage secret from %s", s.instance.Namespace))
 			}
