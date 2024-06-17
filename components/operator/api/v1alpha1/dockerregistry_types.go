@@ -37,7 +37,7 @@ type Storage struct {
 }
 
 type StorageAzure struct {
-	Secrets *StorageAzureSecrets `json:"secrets"`
+	SecretName string `json:"secretName"`
 }
 
 type StorageAzureSecrets struct {

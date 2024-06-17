@@ -8,6 +8,8 @@ import (
 	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
@@ -46,14 +48,13 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 	t.Run("internal registry using azure storage", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "kyma-system",
+				},
 				Spec: v1alpha1.DockerRegistrySpec{
 					Storage: &v1alpha1.Storage{
 						Azure: &v1alpha1.StorageAzure{
-							Secrets: &v1alpha1.StorageAzureSecrets{
-								AccountName: "accountName",
-								AccountKey:  "accountKey",
-								Container:   "container",
-							},
+							SecretName: "azureSecret",
 						},
 					},
 				},
@@ -65,6 +66,19 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			k8s: k8s{client: fake.NewClientBuilder().Build()},
 			log: zap.NewNop().Sugar(),
 		}
+		azureSecret := &corev1.Secret{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "azureSecret",
+				Namespace: "kyma-system",
+			},
+			Data: map[string][]byte{
+				"accountName": []byte("accountName"),
+				"accountKey":  []byte("accountKey"),
+				"container":   []byte("container"),
+			},
+		}
+		require.NoError(t, r.k8s.client.Create(context.Background(), azureSecret))
+
 		expectedFlags := map[string]interface{}{
 			"storage": "azure",
 			"secrets": map[string]interface{}{

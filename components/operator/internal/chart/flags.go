@@ -13,7 +13,7 @@ type FlagsBuilder interface {
 	WithRegistryCredentials(username string, password string) *flagsBuilder
 	WithRegistryHttpSecret(httpSecret string) *flagsBuilder
 	WithNodePort(nodePort int64) *flagsBuilder
-	WithAzure(config *v1alpha1.StorageAzure) *flagsBuilder
+	WithAzure(secret *v1alpha1.StorageAzureSecrets) *flagsBuilder
 	WithFilesystem() *flagsBuilder
 }
 
@@ -97,11 +97,11 @@ func (fb *flagsBuilder) WithNodePort(nodePort int64) *flagsBuilder {
 	return fb
 }
 
-func (fb *flagsBuilder) WithAzure(config *v1alpha1.StorageAzure) *flagsBuilder {
+func (fb *flagsBuilder) WithAzure(secret *v1alpha1.StorageAzureSecrets) *flagsBuilder {
 	fb.flags["storage"] = "azure"
-	fb.flags["secrets.azure.accountName"] = config.Secrets.AccountName
-	fb.flags["secrets.azure.accountKey"] = config.Secrets.AccountKey
-	fb.flags["secrets.azure.container"] = config.Secrets.Container
+	fb.flags["secrets.azure.accountName"] = secret.AccountName
+	fb.flags["secrets.azure.accountKey"] = secret.AccountKey
+	fb.flags["secrets.azure.container"] = secret.Container
 	return fb
 }
 

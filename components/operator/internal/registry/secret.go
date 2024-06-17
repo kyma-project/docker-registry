@@ -59,3 +59,17 @@ func GetRegistryHTTPSecretEnvValue(ctx context.Context, c client.Client, namespa
 
 	return "", nil
 }
+
+func GetStorageAzureSecret(ctx context.Context, c client.Client, name, namespace string) (*corev1.Secret, error) {
+	secret := corev1.Secret{}
+	key := client.ObjectKey{
+		Namespace: namespace,
+		Name:      name,
+	}
+	err := c.Get(ctx, key, &secret)
+	if err != nil {
+		return nil, err
+	}
+
+	return &secret, nil
+}

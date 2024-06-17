@@ -2,7 +2,7 @@ package state
 
 import (
 	"context"
-	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
+	"fmt"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
@@ -57,7 +57,10 @@ func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 			)
 	}
 
-	prepareStorage(s.instance.Spec.Storage, s.flagsBuilder)
+	err = prepareStorage(ctx, r, s) //s.instance.Spec.Storage, s.flagsBuilder)
+	if err != nil {
+		return errors.Wrap(err, "while preparing storage")
+	}
 
 	resolver := registry.NewNodePortResolver(registry.RandomNodePort)
 	nodePort, err := resolver.ResolveDockerRegistryNodePortFn(ctx, r.client, s.instance.Namespace)
@@ -69,12 +72,22 @@ func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 	return nil
 }
 
-func prepareStorage(storage *v1alpha1.Storage, flagsBuilder chart.FlagsBuilder) {
-	if storage != nil {
-		if storage.Azure != nil {
-			flagsBuilder.WithAzure(storage.Azure)
-			return
+func prepareStorage(ctx context.Context, r *reconciler, s *systemState) error { //storage *v1alpha1.Storage, flagsBuilder chart.FlagsBuilder, s *systemState) {
+	if s.instance.Spec.Storage != nil {
+		if s.instance.Spec.Storage.Azure != nil {
+			azureSecret, err := registry.GetStorageAzureSecret(ctx, r.client, s.instance.Spec.Storage.Azure.SecretName, s.instance.Namespace)
+			if err != nil {
+				return errors.Wrap(err, fmt.Sprintf("while fetching azure storage secret from %s", s.instance.Namespace))
+			}
+			storageAzureSecret := &v1alpha1.StorageAzureSecrets{
+				AccountName: string(azureSecret.Data["accountName"]),
+				AccountKey:  string(azureSecret.Data["accountKey"]),
+				Container:   string(azureSecret.Data["container"]),
+			}
+			s.flagsBuilder.WithAzure(storageAzureSecret)
+			return nil
 		}
 	}
-	flagsBuilder.WithFilesystem()
+	s.flagsBuilder.WithFilesystem()
+	return nil
 }

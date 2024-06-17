@@ -2,8 +2,9 @@ package state
 
 import (
 	"context"
-	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"testing"
+
+	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
@@ -69,11 +70,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 					HealthzLivenessTimeout: healthzLivenessTimeoutTest,
 					Storage: &v1alpha1.Storage{
 						Azure: &v1alpha1.StorageAzure{
-							Secrets: &v1alpha1.StorageAzureSecrets{
-								AccountName: "accountName",
-								AccountKey:  "accountKey",
-								Container:   "container",
-							},
+							SecretName: "azureSecret",
 						},
 					},
 				},

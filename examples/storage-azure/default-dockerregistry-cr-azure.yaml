@@ -6,7 +6,14 @@ metadata:
 spec:
   storage:
     azure:
-      secrets:
-        accountKey: "accountKey"
-        accountName: "accountName"
-        container: "container"
+      secretName: azure-storage
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: azure-storage
+  namespace: kyma-system
+data:
+  accountKey: "accountKey"
+  accountName: "accountName"
+  container: "container"
