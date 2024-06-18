@@ -75,19 +75,38 @@ func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 func prepareStorage(ctx context.Context, r *reconciler, s *systemState) error { //storage *v1alpha1.Storage, flagsBuilder chart.FlagsBuilder, s *systemState) {
 	if s.instance.Spec.Storage != nil {
 		if s.instance.Spec.Storage.Azure != nil {
-			azureSecret, err := registry.GetSecret(ctx, r.client, s.instance.Spec.Storage.Azure.SecretName, s.instance.Namespace)
-			if err != nil {
-				return errors.Wrap(err, fmt.Sprintf("while fetching azure storage secret from %s", s.instance.Namespace))
-			}
-			storageAzureSecret := &v1alpha1.StorageAzureSecrets{
-				AccountName: string(azureSecret.Data["accountName"]),
-				AccountKey:  string(azureSecret.Data["accountKey"]),
-				Container:   string(azureSecret.Data["container"]),
-			}
-			s.flagsBuilder.WithAzure(storageAzureSecret)
-			return nil
+			return prepareAzureStorage(ctx, r, s)
+		} else if s.instance.Spec.Storage.S3 != nil {
+			return prepareS3Storage(ctx, r, s)
 		}
 	}
 	s.flagsBuilder.WithFilesystem()
+	return nil
+}
+
+func prepareAzureStorage(ctx context.Context, r *reconciler, s *systemState) error {
+	azureSecret, err := registry.GetSecret(ctx, r.client, s.instance.Spec.Storage.Azure.SecretName, s.instance.Namespace)
+	if err != nil {
+		return errors.Wrap(err, fmt.Sprintf("while fetching azure storage secret from %s", s.instance.Namespace))
+	}
+	storageAzureSecret := &v1alpha1.StorageAzureSecrets{
+		AccountName: string(azureSecret.Data["accountName"]),
+		AccountKey:  string(azureSecret.Data["accountKey"]),
+		Container:   string(azureSecret.Data["container"]),
+	}
+	s.flagsBuilder.WithAzure(storageAzureSecret)
+	return nil
+}
+
+func prepareS3Storage(ctx context.Context, r *reconciler, s *systemState) error {
+	s3Secret, err := registry.GetSecret(ctx, r.client, s.instance.Spec.Storage.S3.SecretName, s.instance.Namespace)
+	if err != nil {
+		return errors.Wrap(err, fmt.Sprintf("while fetching s3 storage secret from %s", s.instance.Namespace))
+	}
+	storageS3Secret := &v1alpha1.StorageS3Secrets{
+		AccessKey: string(s3Secret.Data["accessKey"]),
+		SecretKey: string(s3Secret.Data["secretKey"]),
+	}
+	s.flagsBuilder.WithS3(s.instance.Spec.Storage.S3, storageS3Secret)
 	return nil
 }

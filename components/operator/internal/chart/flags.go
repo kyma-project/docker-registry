@@ -14,8 +14,8 @@ type FlagsBuilder interface {
 	WithRegistryHttpSecret(httpSecret string) *flagsBuilder
 	WithNodePort(nodePort int64) *flagsBuilder
 	WithAzure(secret *v1alpha1.StorageAzureSecrets) *flagsBuilder
+	WithS3(config *v1alpha1.StorageS3, secret *v1alpha1.StorageS3Secrets) *flagsBuilder
 	WithFilesystem() *flagsBuilder
-	WithS3() *flagsBuilder
 }
 
 type flagsBuilder struct {
@@ -106,43 +106,23 @@ func (fb *flagsBuilder) WithAzure(secret *v1alpha1.StorageAzureSecrets) *flagsBu
 	return fb
 }
 
-func (fb *flagsBuilder) WithFilesystem() *flagsBuilder {
-	fb.flags["storage"] = "filesystem"
-	fb.flags["configData.storage.filesystem.rootdirectory"] = "/var/lib/registry"
-	return fb
-}
-
-func (fb *flagsBuilder) WithS3() *flagsBuilder {
+func (fb *flagsBuilder) WithS3(config *v1alpha1.StorageS3, secret *v1alpha1.StorageS3Secrets) *flagsBuilder {
 	fb.flags["storage"] = "s3"
 
 	fb.flags["s3.bucket"] = config.Bucket
 	fb.flags["s3.region"] = config.Region
+	fb.flags["s3.encrypt"] = config.Encrypt
+	fb.flags["s3.secure"] = config.Secure
 
 	if config.RegionEndpoint != "" {
 		fb.flags["s3.regionEndpoint"] = config.RegionEndpoint
 	}
 
-	if config.Encrypt {
-		fb.flags["s3.encrypt"] = config.Encrypt
+	if secret != nil {
+		fb.flags["secrets.s3.accessKey"] = secret.AccessKey
+		fb.flags["secrets.s3.secretKey"] = secret.SecretKey
 	}
 
-	if config.Secure {
-		fb.flags["s3.secure"] = config.Secure
-	}
-
-	if config.Secrets != nil {
-		fb.flags["secrets.s3.accessKey"] = config.Secrets.AccessKey
-		fb.flags["secrets.s3.secretKey"] = config.Secrets.SecretKey
-	}
-
-	return fb
-}
-
-func (fb *flagsBuilder) WithAzure(config *v1alpha1.StorageAzure) *flagsBuilder {
-	fb.flags["storage"] = "azure"
-	fb.flags["secrets.azure.accountName"] = config.Secrets.AccountName
-	fb.flags["secrets.azure.accountKey"] = config.Secrets.AccountKey
-	fb.flags["secrets.azure.container"] = config.Secrets.Container
 	return fb
 }
 

@@ -99,4 +99,68 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
+	t.Run("internal registry using s3 storage", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.DockerRegistry{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "kyma-system",
+				},
+				Spec: v1alpha1.DockerRegistrySpec{
+					Storage: &v1alpha1.Storage{
+						S3: &v1alpha1.StorageS3{
+							Bucket:         "bucket",
+							Region:         "region",
+							RegionEndpoint: "regionEndpoint",
+							Encrypt:        false,
+							Secure:         true,
+							SecretName:     "s3Secret",
+						},
+					},
+				},
+			},
+			statusSnapshot: v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:   chart.NewFlagsBuilder(),
+		}
+		r := &reconciler{
+			k8s: k8s{client: fake.NewClientBuilder().Build()},
+			log: zap.NewNop().Sugar(),
+		}
+		azureSecret := &corev1.Secret{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "s3Secret",
+				Namespace: "kyma-system",
+			},
+			Data: map[string][]byte{
+				"accessKey": []byte("accessKey"),
+				"secretKey": []byte("secretKey"),
+			},
+		}
+		require.NoError(t, r.k8s.client.Create(context.Background(), azureSecret))
+
+		expectedFlags := map[string]interface{}{
+			"storage": "s3",
+			"s3": map[string]interface{}{
+				"bucket":         "bucket",
+				"region":         "region",
+				"regionEndpoint": "regionEndpoint",
+				"encrypt":        false,
+				"secure":         true,
+			},
+			"secrets": map[string]interface{}{
+				"s3": map[string]interface{}{
+					"accessKey": "accessKey",
+					"secretKey": "secretKey",
+				},
+			},
+			"registryNodePort": int64(32_137),
+		}
+
+		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
+		require.NoError(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnControllerConfiguration, next)
+
+		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
+	})
 }
