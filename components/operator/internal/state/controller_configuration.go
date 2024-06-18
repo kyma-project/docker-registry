@@ -8,6 +8,11 @@ import (
 	controllerruntime "sigs.k8s.io/controller-runtime"
 )
 
+const (
+	AzureStorageName      = "azure"
+	FilesystemStorageName = "filesystem"
+)
+
 func sFnControllerConfiguration(_ context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
 	err := updateControllerConfigurationStatus(r, &s.instance)
 	if err != nil {
@@ -28,13 +33,25 @@ func sFnControllerConfiguration(_ context.Context, r *reconciler, s *systemState
 
 func updateControllerConfigurationStatus(r *reconciler, instance *v1alpha1.DockerRegistry) error {
 	spec := instance.Spec
+	storageField := getStorageField(spec.Storage, instance)
 	fields := fieldsToUpdate{
 		{spec.HealthzLivenessTimeout, &instance.Status.HealthzLivenessTimeout, "Duration of health check", ""},
 		{registry.SecretName, &instance.Status.SecretName, "Name of secret with registry access data", ""},
+		storageField,
 	}
 
 	updateStatusFields(r.k8s, instance, fields)
 	return nil
+}
+
+func getStorageField(storage *v1alpha1.Storage, instance *v1alpha1.DockerRegistry) fieldToUpdate {
+	storageName := FilesystemStorageName
+	if storage != nil {
+		if storage.Azure != nil {
+			storageName = AzureStorageName
+		}
+	}
+	return fieldToUpdate{storageName, &instance.Status.Storage, "Storage type", ""}
 }
 
 func configureControllerConfigurationFlags(s *systemState) {

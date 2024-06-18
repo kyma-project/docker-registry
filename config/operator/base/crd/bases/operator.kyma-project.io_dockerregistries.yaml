@@ -59,6 +59,16 @@ spec:
                 description: Sets the timeout for the Function health check. The default
                   value in seconds is `10`
                 type: string
+              storage:
+                properties:
+                  azure:
+                    properties:
+                      secretName:
+                        type: string
+                    required:
+                    - secretName
+                    type: object
+                type: object
             type: object
           status:
             properties:
@@ -154,6 +164,8 @@ spec:
                 - Ready
                 - Error
                 - Warning
+                type: string
+              storage:
                 type: string
             required:
             - served

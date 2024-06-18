@@ -2,8 +2,9 @@ package state
 
 import (
 	"context"
-	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"testing"
+
+	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
@@ -43,6 +44,52 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		status := s.instance.Status
 		require.Equal(t, healthzLivenessTimeoutTest, status.HealthzLivenessTimeout)
 		require.Equal(t, registry.SecretName, status.SecretName)
+		require.Equal(t, FilesystemStorageName, status.Storage)
+
+		require.Equal(t, v1alpha1.StateProcessing, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeConfigured,
+			metav1.ConditionTrue,
+			v1alpha1.ConditionReasonConfigured,
+			configurationReadyMsg,
+		)
+
+		expectedEvents := []string{
+			"Normal Configuration Duration of health check set from '' to 'test-healthz-liveness-timeout'",
+		}
+
+		for _, expectedEvent := range expectedEvents {
+			require.Equal(t, expectedEvent, <-eventRecorder.Events)
+		}
+	})
+
+	t.Run("update status additional configuration overrides", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{
+					HealthzLivenessTimeout: healthzLivenessTimeoutTest,
+					Storage: &v1alpha1.Storage{
+						Azure: &v1alpha1.StorageAzure{
+							SecretName: "azureSecret",
+						},
+					},
+				},
+			},
+			flagsBuilder: chart.NewFlagsBuilder(),
+		}
+
+		c := fake.NewClientBuilder().Build()
+		eventRecorder := record.NewFakeRecorder(10)
+		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
+		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
+		require.Nil(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnApplyResources, next)
+
+		status := s.instance.Status
+		require.Equal(t, healthzLivenessTimeoutTest, status.HealthzLivenessTimeout)
+		require.Equal(t, registry.SecretName, status.SecretName)
+		require.Equal(t, AzureStorageName, status.Storage)
 
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
 		requireContainsCondition(t, status,
