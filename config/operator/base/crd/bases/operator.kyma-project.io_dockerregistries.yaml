@@ -68,6 +68,24 @@ spec:
                     required:
                     - secretName
                     type: object
+                  s3:
+                    properties:
+                      bucket:
+                        type: string
+                      encrypt:
+                        type: boolean
+                      region:
+                        type: string
+                      regionEndpoint:
+                        type: string
+                      secretName:
+                        type: string
+                      secure:
+                        type: boolean
+                    required:
+                    - bucket
+                    - region
+                    type: object
                 type: object
             type: object
           status:
