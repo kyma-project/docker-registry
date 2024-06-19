@@ -1,6 +1,6 @@
 # Expose Registry
 
-This tutorial shows how you can expose registry to the outside of the cluster with istio.
+This tutorial shows how you can expose the registry to the outside of the cluster with Istio.
 
 ## Prerequsities
 
@@ -12,10 +12,11 @@ This tutorial shows how you can expose registry to the outside of the cluster wi
 1. Export cluster address:
 
     ```bash
-    export CLUSTER_ADDRESS=<CLUSTER_ADDRESS>
+    export CLUSTER_ADDRESS={YOUR_CLUSTER_ADDRESS}
     ```
 
-    >**NOTE:** Put your cluster address instead of the `<CLUSTER_ADDRESS>`. You can find it in the `kyma-system/kyma-gateway` gateway resource.
+    >[!NOTE] 
+    > You can find your cluster address in the `kyma-system/kyma-gateway` gateway resource.
 
 1. Expose the registry service using a VirtualService CR based on the `kyma-gateway` gateway in the `kyma-system` namespace:
 
@@ -39,7 +40,7 @@ This tutorial shows how you can expose registry to the outside of the cluster wi
     EOF
     ```
 
-2. Login to the registry using the docker-cli:
+2. Log in to the registry using the docker-cli:
 
     ```bash
     export REGISTRY_USERNAME=$(kubectl get secrets -n kyma-system dockerregistry-config -o jsonpath={.data.username} | base64 -d)
@@ -47,14 +48,14 @@ This tutorial shows how you can expose registry to the outside of the cluster wi
     docker login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} registry-default-kyma-system.${CLUSTER_ADDRESS}
     ```
 
-3. Rename image to contains registry address:
+3. Rename the image to contain the registry address:
 
     ```bash
     export IMAGE_NAME=<IMAGE_NAME> # put your image name here
     docker tag ${IMAGE_NAME} registry-default-kyma-system.${CLUSTER_ADDRESS}/${IMAGE_NAME}
     ```
 
-4. Create registry auth secret:
+4. Create the registry `auth` Secret:
 
     ```bash
     export REGISTRY_AUTH=$(echo -n "${REGISTRY_USERNAME}:${REGISTRY_PASSWORD}" | base64)
@@ -71,7 +72,7 @@ This tutorial shows how you can expose registry to the outside of the cluster wi
     EOF
     ```
 
-5. Push image to the registry:
+5. Push the image to the registry:
 
     ```bash
     docker push registry-default-kyma-system.${CLUSTER_ADDRESS}/${IMAGE_NAME}
