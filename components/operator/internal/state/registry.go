@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
+	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"github.com/pkg/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -52,6 +53,8 @@ func setInternalAccessConfig(ctx context.Context, r *reconciler, s *systemState)
 		return errors.Wrap(err, "while resolving registry node port")
 	}
 	r.log.Debugf("docker registry node port: %d", nodePort)
-	s.flagsBuilder.WithNodePort(int64(nodePort))
+	s.flagsBuilder.WithNodePort(int64(nodePort)).
+		WithServicePort(registry.ServicePort).
+		WithFullname(chart.FullnameOverride)
 	return nil
 }
