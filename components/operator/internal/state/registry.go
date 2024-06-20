@@ -24,7 +24,7 @@ func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState
 		return stopWithEventualError(err)
 	}
 
-	return nextState(sFnControllerConfiguration)
+	return nextState(sFnConfigurationStatus)
 }
 
 func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error {
