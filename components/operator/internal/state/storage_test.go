@@ -45,6 +45,18 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 	})
 
 	t.Run("internal registry using azure storage", func(t *testing.T) {
+		azureSecret := &corev1.Secret{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "azureSecret",
+				Namespace: "kyma-system",
+			},
+			Data: map[string][]byte{
+				"accountName": []byte("accountName"),
+				"accountKey":  []byte("accountKey"),
+				"container":   []byte("container"),
+			},
+		}
+
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
@@ -62,21 +74,9 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			flagsBuilder:   chart.NewFlagsBuilder(),
 		}
 		r := &reconciler{
-			k8s: k8s{client: fake.NewClientBuilder().Build()},
+			k8s: k8s{client: fake.NewClientBuilder().WithObjects(azureSecret).Build()},
 			log: zap.NewNop().Sugar(),
 		}
-		azureSecret := &corev1.Secret{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "azureSecret",
-				Namespace: "kyma-system",
-			},
-			Data: map[string][]byte{
-				"accountName": []byte("accountName"),
-				"accountKey":  []byte("accountKey"),
-				"container":   []byte("container"),
-			},
-		}
-		require.NoError(t, r.k8s.client.Create(context.Background(), azureSecret))
 
 		expectedFlags := map[string]interface{}{
 			"storage": "azure",
@@ -98,6 +98,17 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 	t.Run("internal registry using s3 storage", func(t *testing.T) {
+		s3Secret := &corev1.Secret{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "s3Secret",
+				Namespace: "kyma-system",
+			},
+			Data: map[string][]byte{
+				"accessKey": []byte("accessKey"),
+				"secretKey": []byte("secretKey"),
+			},
+		}
+
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
@@ -120,20 +131,9 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			flagsBuilder:   chart.NewFlagsBuilder(),
 		}
 		r := &reconciler{
-			k8s: k8s{client: fake.NewClientBuilder().Build()},
+			k8s: k8s{client: fake.NewClientBuilder().WithObjects(s3Secret).Build()},
 			log: zap.NewNop().Sugar(),
 		}
-		azureSecret := &corev1.Secret{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "s3Secret",
-				Namespace: "kyma-system",
-			},
-			Data: map[string][]byte{
-				"accessKey": []byte("accessKey"),
-				"secretKey": []byte("secretKey"),
-			},
-		}
-		require.NoError(t, r.k8s.client.Create(context.Background(), azureSecret))
 
 		expectedFlags := map[string]interface{}{
 			"storage": "s3",
