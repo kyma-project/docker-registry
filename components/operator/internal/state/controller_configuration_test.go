@@ -26,9 +26,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 	t.Run("update status additional configuration overrides", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
-				Spec: v1alpha1.DockerRegistrySpec{
-					HealthzLivenessTimeout: healthzLivenessTimeoutTest,
-				},
+				Spec: v1alpha1.DockerRegistrySpec{},
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),
 		}
@@ -42,7 +40,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, healthzLivenessTimeoutTest, status.HealthzLivenessTimeout)
 		require.Equal(t, registry.SecretName, status.SecretName)
 		require.Equal(t, FilesystemStorageName, status.Storage)
 
@@ -67,7 +64,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
 				Spec: v1alpha1.DockerRegistrySpec{
-					HealthzLivenessTimeout: healthzLivenessTimeoutTest,
 					Storage: &v1alpha1.Storage{
 						Azure: &v1alpha1.StorageAzure{
 							SecretName: "azureSecret",
@@ -87,7 +83,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, healthzLivenessTimeoutTest, status.HealthzLivenessTimeout)
 		require.Equal(t, registry.SecretName, status.SecretName)
 		require.Equal(t, AzureStorageName, status.Storage)
 
