@@ -34,7 +34,7 @@ func Test_sFnInitialize(t *testing.T) {
 		next, result, err := sFnInitialize(context.Background(), r, s)
 		require.Nil(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnRegistryConfiguration, next)
+		requireEqualFunc(t, sFnAccessConfiguration, next)
 	})
 
 	t.Run("setup and return next step sFnDeleteResources", func(t *testing.T) {

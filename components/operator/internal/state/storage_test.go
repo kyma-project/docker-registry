@@ -13,7 +13,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
-func Test_sFnRegistryConfiguration(t *testing.T) {
+func Test_sFnStorageConfiguration(t *testing.T) {
 	t.Run("internal registry using default storage", func(t *testing.T) {
 		s := &systemState{
 			instance:       v1alpha1.DockerRegistry{},
@@ -32,11 +32,10 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 					},
 				},
 			},
-			"storage":          "filesystem",
-			"registryNodePort": int64(32_137),
+			"storage": "filesystem",
 		}
 
-		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
+		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnConfigurationStatus, next)
@@ -88,10 +87,9 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 					"container":   "container",
 				},
 			},
-			"registryNodePort": int64(32_137),
 		}
 
-		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
+		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnConfigurationStatus, next)
@@ -152,10 +150,9 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 					"secretKey": "secretKey",
 				},
 			},
-			"registryNodePort": int64(32_137),
 		}
 
-		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
+		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnConfigurationStatus, next)
