@@ -46,14 +46,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			v1alpha1.ConditionReasonConfigured,
 			configurationReadyMsg,
 		)
-
-		expectedEvents := []string{
-			"Normal Configuration Duration of health check set from '' to 'test-healthz-liveness-timeout'",
-		}
-
-		for _, expectedEvent := range expectedEvents {
-			require.Equal(t, expectedEvent, <-eventRecorder.Events)
-		}
 	})
 
 	t.Run("update status additional configuration overrides", func(t *testing.T) {
@@ -90,13 +82,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			configurationReadyMsg,
 		)
 
-		expectedEvents := []string{
-			"Normal Configuration Duration of health check set from '' to 'test-healthz-liveness-timeout'",
-		}
-
-		for _, expectedEvent := range expectedEvents {
-			require.Equal(t, expectedEvent, <-eventRecorder.Events)
-		}
 	})
 
 	t.Run("reconcile from configurationError", func(t *testing.T) {

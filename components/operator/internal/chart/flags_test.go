@@ -14,15 +14,6 @@ func Test_flagsBuilder_Build(t *testing.T) {
 
 	t.Run("build flags", func(t *testing.T) {
 		expectedFlags := map[string]interface{}{
-			"containers": map[string]interface{}{
-				"manager": map[string]interface{}{
-					"configuration": map[string]interface{}{
-						"data": map[string]interface{}{
-							"healthzLivenessTimeout": "testHealthzLivenessTimeout",
-						},
-					},
-				},
-			},
 			"registryHTTPSecret": "testHttpSecret",
 			"rollme":             "dontrollplease",
 			"dockerRegistry": map[string]interface{}{
