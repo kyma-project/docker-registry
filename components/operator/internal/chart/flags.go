@@ -1,7 +1,6 @@
 package chart
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
@@ -9,7 +8,6 @@ import (
 
 type FlagsBuilder interface {
 	Build() map[string]interface{}
-	WithControllerConfiguration(healthzLivenessTimeout string) *flagsBuilder
 	WithRegistryCredentials(username string, password string) *flagsBuilder
 	WithRegistryHttpSecret(httpSecret string) *flagsBuilder
 	WithNodePort(nodePort int64) *flagsBuilder
@@ -61,24 +59,6 @@ func lastElement(values []string, i int) bool {
 
 func nextDeeperFlag(currentFlag map[string]interface{}, path string) map[string]interface{} {
 	return currentFlag[path].(map[string]interface{})
-}
-
-func (fb *flagsBuilder) WithControllerConfiguration(healthzLivenessTimeout string) *flagsBuilder {
-	optionalFlags := []struct {
-		key   string
-		value string
-	}{
-		{"healthzLivenessTimeout", healthzLivenessTimeout},
-	}
-
-	for _, flag := range optionalFlags {
-		if flag.value != "" {
-			fullPath := fmt.Sprintf("containers.manager.configuration.data.%s", flag.key)
-			fb.flags[fullPath] = flag.value
-		}
-	}
-
-	return fb
 }
 
 func (fb *flagsBuilder) WithRegistryCredentials(username, password string) *flagsBuilder {

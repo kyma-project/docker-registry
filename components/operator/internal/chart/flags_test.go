@@ -14,15 +14,6 @@ func Test_flagsBuilder_Build(t *testing.T) {
 
 	t.Run("build flags", func(t *testing.T) {
 		expectedFlags := map[string]interface{}{
-			"containers": map[string]interface{}{
-				"manager": map[string]interface{}{
-					"configuration": map[string]interface{}{
-						"data": map[string]interface{}{
-							"healthzLivenessTimeout": "testHealthzLivenessTimeout",
-						},
-					},
-				},
-			},
 			"registryHTTPSecret": "testHttpSecret",
 			"rollme":             "dontrollplease",
 			"dockerRegistry": map[string]interface{}{
@@ -36,9 +27,7 @@ func Test_flagsBuilder_Build(t *testing.T) {
 			WithNodePort(1234).
 			WithRegistryCredentials("testUsername", "testPassword").
 			WithRegistryHttpSecret("testHttpSecret").
-			WithControllerConfiguration(
-				"testHealthzLivenessTimeout",
-			).Build()
+			Build()
 
 		require.Equal(t, expectedFlags, flags)
 	})
@@ -54,27 +43,6 @@ func Test_flagsBuilder_Build(t *testing.T) {
 		flags := NewFlagsBuilder().
 			WithRegistryCredentials("testUsername", "testPassword").
 			Build()
-
-		require.Equal(t, expectedFlags, flags)
-	})
-
-	t.Run("build not empty controller configuration flags only", func(t *testing.T) {
-		expectedFlags := map[string]interface{}{
-			"containers": map[string]interface{}{
-				"manager": map[string]interface{}{
-					"configuration": map[string]interface{}{
-						"data": map[string]interface{}{
-							"healthzLivenessTimeout": "testHealthzLivenessTimeout",
-						},
-					},
-				},
-			},
-		}
-
-		flags := NewFlagsBuilder().
-			WithControllerConfiguration(
-				"testHealthzLivenessTimeout",
-			).Build()
 
 		require.Equal(t, expectedFlags, flags)
 	})

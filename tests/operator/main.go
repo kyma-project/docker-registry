@@ -45,9 +45,7 @@ func main() {
 		Name:                     "default-test",
 		DockerregistryDeployName: "dockerregistry",
 		RegistryName:             "dockerregistry-docker-registry",
-		UpdateSpec: v1alpha1.DockerRegistrySpec{
-			HealthzLivenessTimeout: "20",
-		},
+		UpdateSpec:               v1alpha1.DockerRegistrySpec{},
 	})
 	if err != nil {
 		log.Error(err)
