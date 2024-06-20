@@ -16,10 +16,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
-const (
-	healthzLivenessTimeoutTest = "test-healthz-liveness-timeout"
-)
-
 func Test_sFnControllerConfiguration(t *testing.T) {
 	configurationReadyMsg := "Configuration ready"
 
