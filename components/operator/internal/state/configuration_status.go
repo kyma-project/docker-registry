@@ -11,6 +11,7 @@ import (
 
 const (
 	AzureStorageName      = "azure"
+	S3StorageName         = "s3"
 	FilesystemStorageName = "filesystem"
 )
 
@@ -49,7 +50,10 @@ func getStorageField(storage *v1alpha1.Storage, instance *v1alpha1.DockerRegistr
 	if storage != nil {
 		if storage.Azure != nil {
 			storageName = AzureStorageName
+		} else if storage.S3 != nil {
+			storageName = S3StorageName
 		}
+
 	}
 	return fieldToUpdate{storageName, &instance.Status.Storage, "Storage type", ""}
 }
