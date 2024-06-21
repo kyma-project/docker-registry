@@ -14,8 +14,10 @@ const (
 	FilesystemStorageName = "filesystem"
 )
 
-func sFnControllerConfiguration(_ context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
-	err := updateControllerConfigurationStatus(r, &s.instance)
+func sFnConfigurationStatus(_ context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
+	// TODO: I think we should move this to the end of the reconciliation to not update status with new information when
+	// (for example) installation can't be fullied because of any error. we should update status only when everything is done
+	err := updateConfigurationStatus(r, &s.instance)
 	if err != nil {
 		return stopWithEventualError(err)
 	}
@@ -30,7 +32,7 @@ func sFnControllerConfiguration(_ context.Context, r *reconciler, s *systemState
 	return nextState(sFnApplyResources)
 }
 
-func updateControllerConfigurationStatus(r *reconciler, instance *v1alpha1.DockerRegistry) error {
+func updateConfigurationStatus(r *reconciler, instance *v1alpha1.DockerRegistry) error {
 	spec := instance.Spec
 	storageField := getStorageField(spec.Storage, instance)
 	fields := fieldsToUpdate{

@@ -16,7 +16,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
-func Test_sFnControllerConfiguration(t *testing.T) {
+func Test_sFnConfigurationStatus(t *testing.T) {
 	configurationReadyMsg := "Configuration ready"
 
 	t.Run("update status additional configuration overrides", func(t *testing.T) {
@@ -30,7 +30,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		c := fake.NewClientBuilder().Build()
 		eventRecorder := record.NewFakeRecorder(10)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
-		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
+		next, result, err := sFnConfigurationStatus(context.TODO(), r, s)
 		require.Nil(t, err)
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnApplyResources, next)
@@ -65,7 +65,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		c := fake.NewClientBuilder().Build()
 		eventRecorder := record.NewFakeRecorder(10)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
-		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
+		next, result, err := sFnConfigurationStatus(context.TODO(), r, s)
 		require.Nil(t, err)
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnApplyResources, next)
@@ -119,7 +119,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			},
 		}
 
-		next, result, err := sFnControllerConfiguration(context.Background(), r, s)
+		next, result, err := sFnConfigurationStatus(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnApplyResources, next)

@@ -39,7 +39,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnControllerConfiguration, next)
+		requireEqualFunc(t, sFnConfigurationStatus, next)
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
@@ -94,7 +94,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnControllerConfiguration, next)
+		requireEqualFunc(t, sFnConfigurationStatus, next)
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
@@ -158,7 +158,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnControllerConfiguration, next)
+		requireEqualFunc(t, sFnConfigurationStatus, next)
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
