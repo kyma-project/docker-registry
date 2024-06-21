@@ -56,14 +56,14 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 |-----------------------------------------|--------|-----------------------------------------------------------------------------------------|
 | **storage**                             | object | Contains configuration of the registry images storage.                                  |
 | **storage.azure**                       | object | Contains configuration of the Azure storage.                                            |
-| **storage.azure.secretName** (required) | string | Specifies name of the Secret that contains data needed to connect to the Azure storage. |
+| **storage.azure.secretName** (required) | string | Specifies the name of the Secret that contains data needed to connect to the Azure storage. |
 | **storage.s3**                          | object | Contains configuration of the s3 storage.                                               |
 | **storage.s3.bucket** (required)        | string | Specifies the name of the s3 bucket.                                                    |
 | **storage.s3.region** (required)        | string | Specifies the region of the s3 bucket.                                                  |
-| **storage.s3.regionEndpoint**           | string | Specifies the endpoint fo the s3 region.                                                |
-| **storage.s3.encrypt**                  | string | Specifies if data in the bucket will be encrypted.                                      |
-| **storage.s3.secure**                   | string | Specifies if registry will use TLS communication with the s3.                           |
-| **storage.s3.secretName**               | string | Specifies name of the Secret that contains data needed to connect to the s3 storage.    |
+| **storage.s3.regionEndpoint**           | string | Specifies the endpoint of the s3 region.                                                |
+| **storage.s3.encrypt**                  | string | Specifies if data in the bucket is encrypted.                                      |
+| **storage.s3.secure**                   | string | Specifies if registry uses the TLS communication with the s3.                           |
+| **storage.s3.secretName**               | string | Specifies the name of the Secret that contains data needed to connect to the s3 storage.    |
 
 **Status:**
 

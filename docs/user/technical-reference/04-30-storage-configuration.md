@@ -1,12 +1,12 @@
 # Registry Storage Configuration
 
-The DockerRegistry CR allows to store images in three way: filesystem, Azure and s3. This article describes how to configure DockerRegistry CR to cooperate with all these storage types.
+The DockerRegistry CR allows you to store images in three ways: filesystem, Azure, and s3. This document describes how to configure DockerRegistry CR to cooperate with all these storage types.
 
 ## Filesystem
 
-The filesystem storage is a buildin storage type based on the PersistentVolumeClaim CR which is a part of the Kubernetes functionality. This is a default DockerRegistry CR configuration and no additional configuration is needed.
+The filesystem storage is a built-in storage type based on the PersistentVolumeClaim CR, which is part of the Kubernetes functionality. This is a default DockerRegistry CR configuration, and no additional configuration is needed.
 
-All images pushed to this storage will be removed when the docker registry is uninstalled or cluster is removed. Stored images can't be shared between clusters.
+All images pushed to this storage are removed when the Docker Registry is uninstalled or the cluster is removed. Stored images can't be shared between clusters.
 
 ### Sample CR
 
@@ -21,13 +21,13 @@ spec: {}
 
 ## Azure
 
-The Azure storage can be configured in the DockerRegistry `spec.storage.azure` field. The only thing that is required is the `secretName` field that needs to contain name of the Secret with Azure configuration located in the same namespace. The following Secret should have three values inside:
+The Azure storage can be configured in the DockerRegistry `spec.storage.azure` field. The only thing that is required is the `secretName` field that needs to contain the name of the Secret with Azure configuration located in the same namespace. The following Secret must have three values inside:
 
 * `container` - contains the name of the storage container
 * `accountKey` - contains the key used to authenticate to the Azure Storage
 * `accountName` - contains the name used to authenticate to the Azure Storage
 
-The huge advantage is images can be stored centrally and shared between clusters so that different registries can reuse specific layers or whole images. After deleting cluster or uninstalling the registry module images will not be removed.
+The images can be stored centrally and shared between clusters so that different registries can reuse specific layers or whole images. After deleting cluster or uninstalling the registry module images will not be removed.
 
 ### Sample CR
 
@@ -59,7 +59,7 @@ data:
 
 ## s3
 
-Similarly to the Azure, the s3 storage can be configured in the DockerRegistry `spec.storage.s3` field. The only required field are `bucket` that contains the s3 bucket name and `region` that specifies where the bucket is located. This storage type allows to provide additional optional configuration, which is described in the [article about the DockerRegistry CR](../resources/06-20-docker-registry-cr.md). One of the optional configuration is the `secretName` that contains authentication method to the s3 storage in following format:
+Similarly to Azure, the s3 storage can be configured in the DockerRegistry `spec.storage.s3` field. The only required field is `bucket` which contains the s3 bucket name and `region` which specifies where the bucket is located. This storage type allows you to provide additional optional configuration, which is described in [DockerRegistry CR](../resources/06-20-docker-registry-cr.md). One of the optional configurations is the `secretName` that contains the authentication method to the s3 storage in the following format:
 
 * `accountKey` - contains the key used to authenticate to the s3 storage
 * `secretKey` - contains the name used to authenticate to the s3 storage
