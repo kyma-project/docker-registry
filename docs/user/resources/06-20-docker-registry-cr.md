@@ -38,6 +38,7 @@ The following Docker Registry custom resource (CR) shows configuration of Docker
        reason: Installed
        status: "True"
        type: Installed
+     storage: filesystem
      secretName: dockerregistry-config
      served: "True"
      state: Ready
@@ -51,8 +52,18 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 
 **Spec:**
 
-| Parameter                                 | Type    | Description |
-|-------------------------------------------|---------|-------------|
+| Parameter                               | Type   | Description                                                                             |
+|-----------------------------------------|--------|-----------------------------------------------------------------------------------------|
+| **storage**                             | object | Contains configuration of the registry images storage.                                  |
+| **storage.azure**                       | object | Contains configuration of the Azure storage.                                            |
+| **storage.azure.secretName** (required) | string | Specifies the name of the Secret that contains data needed to connect to the Azure storage. |
+| **storage.s3**                          | object | Contains configuration of the s3 storage.                                               |
+| **storage.s3.bucket** (required)        | string | Specifies the name of the s3 bucket.                                                    |
+| **storage.s3.region** (required)        | string | Specifies the region of the s3 bucket.                                                  |
+| **storage.s3.regionEndpoint**           | string | Specifies the endpoint of the s3 region.                                                |
+| **storage.s3.encrypt**                  | string | Specifies if data in the bucket is encrypted.                                      |
+| **storage.s3.secure**                   | string | Specifies if registry uses the TLS communication with the s3.                           |
+| **storage.s3.secretName**               | string | Specifies the name of the Secret that contains data needed to connect to the s3 storage.    |
 
 **Status:**
 
@@ -61,12 +72,13 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 | **conditions**                                       | \[\]object | Conditions associated with CustomStatus.                                                                                                                                                                                                                                                                                                                       |
 | **conditions.&#x200b;lastTransitionTime** (required) | string     | Specifies the last time the condition transitioned from one status to another. This should be when the underlying condition changes.  If that is not known, then using the time when the API field changed is acceptable.                                                                                                                                      |
 | **conditions.&#x200b;message** (required)            | string     | Provides a human-readable message indicating details about the transition. This may be an empty string.                                                                                                                                                                                                                                                        |
-| **conditions.&#x200b;observedGeneration**            | integer    | Represents **.metadata.generation** that the condition was set based upon. For instance, if **.metadata.generation** is currently `12`, but the **.status.conditions[x].observedGeneration** is `9`, the condition is out of date with respect to the current state of the instance.                                                                       |
+| **conditions.&#x200b;observedGeneration**            | integer    | Represents **.metadata.generation** that the condition was set based upon. For instance, if **.metadata.generation** is currently `12`, but the **.status.conditions[x].observedGeneration** is `9`, the condition is out of date with respect to the current state of the instance.                                                                           |
 | **conditions.&#x200b;reason** (required)             | string     | Contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field and whether the values are considered a guaranteed API. The value should be a camelCase string. This field may not be empty.                                        |
 | **conditions.&#x200b;status** (required)             | string     | Specifies the status of the condition. The value is either `True`, `False`, or `Unknown`.                                                                                                                                                                                                                                                                      |
 | **conditions.&#x200b;type** (required)               | string     | Specifies the condition type in camelCase or in `foo.example.com/CamelCase`. Many **.conditions.type** values are consistent across resources like `Available`, but because arbitrary conditions can be useful (see **.node.status.conditions**), the ability to deconflict is important. The regex it matches is `(dns1123SubdomainFmt/)?(qualifiedNameFmt)`. |
+| **storage**                                          | string     | Type of the used registry images storage.                                                                                                                                                                                                                                                                                                                      |
 | **secretName**                                       | string     | Name of Secret with data needed to connect to Docker Registry.                                                                                                                                                                                                                                                                                                 |
-| **served** (required)                                | string     | Signifies if the current Serverless is managed. Value can be one of `True`, or `False`.                                                                                                                                                                                                                                                                   |
+| **served** (required)                                | string     | Signifies if the current Serverless is managed. Value can be one of `True`, or `False`.                                                                                                                                                                                                                                                                        |
 | **state**                                            | string     | Signifies the current state of Serverless. Value can be one of `Ready`, `Processing`, `Error`, or `Deleting`.                                                                                                                                                                                                                                                  |
 
 <!-- TABLE-END -->
