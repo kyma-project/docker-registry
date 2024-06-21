@@ -115,8 +115,6 @@ type DockerRegistryStatus struct {
 	// ExternalAccess contains the external access configuration of the DockerRegistry.
 	ExternalAccess NetworkAccess `json:"externalAddresses,omitempty"`
 
-	SecretName string `json:"secretName,omitempty"`
-
 	// Storage signifies the storage type of DockerRegistry.
 	Storage string `json:"storage,omitempty"`
 
