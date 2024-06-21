@@ -49,9 +49,8 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 				},
 			},
 			Data: map[string][]byte{
-				"isInternal": []byte("true"),
-				"username":   []byte("ala"),
-				"password":   []byte("makota"),
+				"username": []byte("ala"),
+				"password": []byte("makota"),
 			},
 		}
 

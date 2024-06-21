@@ -12,7 +12,6 @@ const (
 	SecretName     = "dockerregistry-config"
 	LabelConfigKey = "dockerregistry.kyma-project.io/config"
 	LabelConfigVal = "credentials"
-	IsInternalKey  = "isInternal"
 	DeploymentName = "dockerregistry"
 	HttpEnvKey     = "REGISTRY_HTTP_SECRET"
 )
@@ -29,10 +28,6 @@ func GetDockerRegistryInternalRegistrySecret(ctx context.Context, c client.Clien
 	}
 
 	if val, ok := secret.GetLabels()[LabelConfigKey]; !ok || val != LabelConfigVal {
-		return nil, nil
-	}
-
-	if val := string(secret.Data[IsInternalKey]); val != "true" {
 		return nil, nil
 	}
 
