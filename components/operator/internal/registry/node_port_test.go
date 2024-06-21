@@ -16,13 +16,11 @@ const nonConflictPort int32 = 32238
 
 const kymaNamespace = "kyma-system"
 
-type assertFn func(t *testing.T, overrides map[string]interface{})
-
 func TestNodePortAction(t *testing.T) {
 	testCases := map[string]struct {
-		givenService *corev1.Service
-		expectedPort int32
-		assertFn     assertFn
+		givenService  *corev1.Service
+		givenNodePort int32
+		expectedPort  int32
 	}{
 		"Return default port new port when nodePort installed on default port": {
 			givenService: fixtureServiceNodePort(dockerRegistryService, kymaNamespace, dockerRegistryNodePort),
@@ -51,6 +49,10 @@ func TestNodePortAction(t *testing.T) {
 			givenService: fixtureLoadBalancer(),
 			expectedPort: nonConflictPort,
 		},
+		"Return previously resolved nodePort": {
+			givenNodePort: 1234,
+			expectedPort:  1234,
+		},
 	}
 
 	for testName, testCase := range testCases {
@@ -61,17 +63,19 @@ func TestNodePortAction(t *testing.T) {
 				WithRuntimeObjects(fixtureServices()...).
 				Build()
 			resolver := NewNodePortResolver(fixedNodePort(nonConflictPort))
+			resolver.nodePort = testCase.givenNodePort
 			if testCase.givenService != nil {
 				err := k8sClient.Create(ctx, testCase.givenService, &client.CreateOptions{})
 				require.NoError(t, err)
 			}
 
 			//WHEN
-			port, err := resolver.ResolveDockerRegistryNodePortFn(ctx, k8sClient, kymaNamespace)
+			port, err := resolver.GetNodePort(ctx, k8sClient, kymaNamespace)
 
 			//THEN
 			require.NoError(t, err)
 			require.Equal(t, testCase.expectedPort, port)
+			require.Equal(t, testCase.expectedPort, resolver.nodePort)
 		})
 	}
 }

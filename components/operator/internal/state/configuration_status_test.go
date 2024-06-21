@@ -22,9 +22,13 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 	t.Run("update status additional configuration overrides", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "test-namespace",
+				},
 				Spec: v1alpha1.DockerRegistrySpec{},
 			},
-			flagsBuilder: chart.NewFlagsBuilder(),
+			flagsBuilder:     chart.NewFlagsBuilder(),
+			nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
 		}
 
 		c := fake.NewClientBuilder().Build()
@@ -36,7 +40,9 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, registry.SecretName, status.SecretName)
+		require.Equal(t, registry.SecretName, status.InternalAccess.SecretName)
+		require.Equal(t, []string{"dockerregistry.test-namespace.svc.cluster.local:5000", "localhost:32137"}, status.InternalAccess.Addresses)
+
 		require.Equal(t, FilesystemStorageName, status.Storage)
 
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
@@ -48,9 +54,12 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		)
 	})
 
-	t.Run("update status additional configuration overrides", func(t *testing.T) {
+	t.Run("update status additional storage configuration overrides", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "test-namespace",
+				},
 				Spec: v1alpha1.DockerRegistrySpec{
 					Storage: &v1alpha1.Storage{
 						Azure: &v1alpha1.StorageAzure{
@@ -59,7 +68,8 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 					},
 				},
 			},
-			flagsBuilder: chart.NewFlagsBuilder(),
+			flagsBuilder:     chart.NewFlagsBuilder(),
+			nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
 		}
 
 		c := fake.NewClientBuilder().Build()
@@ -71,7 +81,9 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, registry.SecretName, status.SecretName)
+		require.Equal(t, registry.SecretName, status.InternalAccess.SecretName)
+		require.Equal(t, []string{"dockerregistry.test-namespace.svc.cluster.local:5000", "localhost:32137"}, status.InternalAccess.Addresses)
+
 		require.Equal(t, AzureStorageName, status.Storage)
 
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
@@ -87,6 +99,9 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 	t.Run("reconcile from configurationError", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "test-namespace",
+				},
 				Status: v1alpha1.DockerRegistryStatus{
 					Conditions: []metav1.Condition{
 						{
@@ -103,8 +118,9 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 					State: v1alpha1.StateError,
 				},
 			},
-			statusSnapshot: v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:   chart.NewFlagsBuilder(),
+			statusSnapshot:   v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:     chart.NewFlagsBuilder(),
+			nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
 		}
 		secret := &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
@@ -115,7 +131,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 			k8s: k8s{
 				client:        fake.NewClientBuilder().WithObjects(secret).Build(),
-				EventRecorder: record.NewFakeRecorder(2),
+				EventRecorder: record.NewFakeRecorder(4),
 			},
 		}
 

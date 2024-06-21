@@ -100,9 +100,24 @@ const (
 	Finalizer = "dockerregistry-operator.kyma-project.io/deletion-hook"
 )
 
-type DockerRegistryStatus struct {
+type NetworkAccess struct {
+	// SecretName is the name of the Secret containing the addresses and auth methods.
 	SecretName string `json:"secretName,omitempty"`
 
+	// Addresses is a list of addresses.
+	Addresses []string `json:"addresses,omitempty"`
+}
+
+type DockerRegistryStatus struct {
+	// InternalAccess contains the in-cluster access configuration of the DockerRegistry.
+	InternalAccess NetworkAccess `json:"internalAddresses,omitempty"`
+
+	// ExternalAccess contains the external access configuration of the DockerRegistry.
+	ExternalAccess NetworkAccess `json:"externalAddresses,omitempty"`
+
+	SecretName string `json:"secretName,omitempty"`
+
+	// Storage signifies the storage type of DockerRegistry.
 	Storage string `json:"storage,omitempty"`
 
 	// State signifies current state of DockerRegistry.

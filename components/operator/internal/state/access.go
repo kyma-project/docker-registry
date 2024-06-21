@@ -47,8 +47,7 @@ func setInternalAccessConfig(ctx context.Context, r *reconciler, s *systemState)
 			)
 	}
 
-	resolver := registry.NewNodePortResolver(registry.RandomNodePort)
-	nodePort, err := resolver.ResolveDockerRegistryNodePortFn(ctx, r.client, s.instance.Namespace)
+	nodePort, err := s.nodePortResolver.GetNodePort(ctx, r.client, s.instance.Namespace)
 	if err != nil {
 		return errors.Wrap(err, "while resolving registry node port")
 	}
