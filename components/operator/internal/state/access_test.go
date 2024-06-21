@@ -9,9 +9,14 @@ import (
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
+	networkingv1beta1 "istio.io/api/networking/v1beta1"
+	istiov1beta1 "istio.io/client-go/pkg/apis/networking/v1beta1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
@@ -118,6 +123,73 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 			},
 			"registryHTTPSecret": "httpEnvKeyVal",
 			"rollme":             "dontrollplease",
+		}
+
+		next, result, err := sFnAccessConfiguration(context.Background(), r, s)
+		require.NoError(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnStorageConfiguration, next)
+
+		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
+	})
+
+	t.Run("setup external access", func(t *testing.T) {
+		testScheme := runtime.NewScheme()
+		require.NoError(t, istiov1beta1.AddToScheme(testScheme))
+		require.NoError(t, clientgoscheme.AddToScheme(testScheme))
+
+		testGateway := &istiov1beta1.Gateway{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "kyma-gateway",
+				Namespace: "kyma-system",
+			},
+			Spec: networkingv1beta1.Gateway{
+				Servers: []*networkingv1beta1.Server{
+					{
+						Hosts: []string{"*.cluster.local"},
+					},
+				},
+			},
+		}
+
+		s := &systemState{
+			instance: v1alpha1.DockerRegistry{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "test-name",
+					Namespace: "test-namespace",
+				},
+				Spec: v1alpha1.DockerRegistrySpec{
+					ExternalAccess: &v1alpha1.ExternalAccess{
+						Enabled: ptr.To(true),
+					},
+				},
+			},
+			statusSnapshot:          v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:            chart.NewFlagsBuilder(),
+			nodePortResolver:        registry.NewNodePortResolver(registry.RandomNodePort),
+			externalAddressResolver: registry.NewExternalAccessResolver(),
+		}
+		r := &reconciler{
+			k8s: k8s{client: fake.NewClientBuilder().WithScheme(testScheme).WithObjects(testGateway).Build()},
+			log: zap.NewNop().Sugar(),
+		}
+		expectedFlags := map[string]interface{}{
+			"FullnameOverride": "dockerregistry",
+			"configData": map[string]interface{}{
+				"http": map[string]interface{}{
+					"addr": ":5000",
+				},
+			},
+			"registryNodePort": int64(32_137),
+			"service": map[string]interface{}{
+				"port": int64(5_000),
+			},
+			"virtualService": map[string]interface{}{
+				"enabled": true,
+				"gateway": "kyma-system/kyma-gateway",
+				"host":    "registry-test-name-test-namespace.cluster.local",
+			},
 		}
 
 		next, result, err := sFnAccessConfiguration(context.Background(), r, s)

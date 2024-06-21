@@ -13,6 +13,7 @@ type FlagsBuilder interface {
 	WithRegistryCredentials(username string, password string) *flagsBuilder
 	WithRegistryHttpSecret(httpSecret string) *flagsBuilder
 	WithServicePort(servicePort int64) *flagsBuilder
+	WithVirtualService(host, gateway string) *flagsBuilder
 	WithNodePort(nodePort int64) *flagsBuilder
 	WithAzure(secret *v1alpha1.StorageAzureSecrets) *flagsBuilder
 	WithS3(config *v1alpha1.StorageS3, secret *v1alpha1.StorageS3Secrets) *flagsBuilder
@@ -84,6 +85,13 @@ func (fb *flagsBuilder) WithRegistryHttpSecret(httpSecret string) *flagsBuilder 
 func (fb *flagsBuilder) WithServicePort(servicePort int64) *flagsBuilder {
 	fb.flags["service.port"] = servicePort
 	fb.flags["configData.http.addr"] = fmt.Sprintf(":%d", servicePort)
+	return fb
+}
+
+func (fb *flagsBuilder) WithVirtualService(host, gateway string) *flagsBuilder {
+	fb.flags["virtualService.enabled"] = true
+	fb.flags["virtualService.host"] = host
+	fb.flags["virtualService.gateway"] = gateway
 	return fb
 }
 
