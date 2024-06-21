@@ -21,13 +21,13 @@ spec: {}
 
 ## Azure
 
-The Azure storage can be configured in the DockerRegistry `spec.storage.azure` field. The only thing that is required is the `secretName` field that needs to contain the name of the Secret with Azure configuration located in the same namespace. The following Secret must have three values inside:
+The Azure storage can be configured in the DockerRegistry `spec.storage.azure` field. The only thing that is required is the `secretName` field that must contain the name of the Secret with Azure configuration located in the same namespace. The following Secret must have three values inside:
 
 * `container` - contains the name of the storage container
 * `accountKey` - contains the key used to authenticate to the Azure Storage
 * `accountName` - contains the name used to authenticate to the Azure Storage
 
-The images can be stored centrally and shared between clusters so that different registries can reuse specific layers or whole images. After deleting cluster or uninstalling the registry module images will not be removed.
+The images can be stored centrally and shared between clusters so that different registries can reuse specific layers or whole images. After deleting the cluster or uninstalling the registry module, images will not be removed.
 
 ### Sample CR
 
