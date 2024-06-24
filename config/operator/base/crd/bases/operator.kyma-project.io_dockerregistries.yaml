@@ -156,8 +156,20 @@ spec:
                   - type
                   type: object
                 type: array
-              secretName:
-                type: string
+              internalAddresses:
+                description: InternalAccess contains the in-cluster access configuration
+                  of the DockerRegistry.
+                properties:
+                  addresses:
+                    description: Addresses is a list of addresses.
+                    items:
+                      type: string
+                    type: array
+                  secretName:
+                    description: SecretName is the name of the Secret containing the
+                      addresses and auth methods.
+                    type: string
+                type: object
               served:
                 description: |-
                   Served signifies that current DockerRegistry is managed.
@@ -178,6 +190,7 @@ spec:
                 - Warning
                 type: string
               storage:
+                description: Storage signifies the storage type of DockerRegistry.
                 type: string
             required:
             - served
