@@ -113,11 +113,11 @@ type DockerRegistryStatus struct {
 	PullAddress string `json:"pullAddress,omitempty"`
 
 	// InternalAccess contains the in-cluster access configuration of the DockerRegistry.
-	InternalAccess NetworkAccess `json:"internalAddresses,omitempty"`
+	InternalAccess NetworkAccess `json:"internalAccess,omitempty"`
 
 	// TODO: implement it in next PRs
 	// ExternalAccess contains the external access configuration of the DockerRegistry.
-	// ExternalAccess NetworkAccess `json:"externalAddresses,omitempty"`
+	// ExternalAccess NetworkAccess `json:"externalAccess,omitempty"`
 
 	// Storage signifies the storage type of DockerRegistry.
 	Storage string `json:"storage,omitempty"`
