@@ -41,7 +41,8 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 
 		status := s.instance.Status
 		require.Equal(t, registry.SecretName, status.InternalAccess.SecretName)
-		require.Equal(t, []string{"dockerregistry.test-namespace.svc.cluster.local:5000", "localhost:32137"}, status.InternalAccess.Addresses)
+		require.Equal(t, "localhost:32137", status.PullAddress)
+		require.Equal(t, "dockerregistry.test-namespace.svc.cluster.local:5000", status.InternalAccess.PushAddress)
 
 		require.Equal(t, FilesystemStorageName, status.Storage)
 
@@ -81,8 +82,8 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, registry.SecretName, status.InternalAccess.SecretName)
-		require.Equal(t, []string{"dockerregistry.test-namespace.svc.cluster.local:5000", "localhost:32137"}, status.InternalAccess.Addresses)
+		require.Equal(t, "localhost:32137", status.PullAddress)
+		require.Equal(t, "dockerregistry.test-namespace.svc.cluster.local:5000", status.InternalAccess.PushAddress)
 
 		require.Equal(t, AzureStorageName, status.Storage)
 

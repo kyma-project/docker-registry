@@ -161,15 +161,18 @@ spec:
                   of the DockerRegistry.
                 properties:
                   addresses:
-                    description: Addresses is a list of addresses.
-                    items:
-                      type: string
-                    type: array
+                    description: PushAddress contains an address that can be used
+                      to push images to the registry from inside the cluster.
+                    type: string
                   secretName:
                     description: SecretName is the name of the Secret containing the
                       addresses and auth methods.
                     type: string
                 type: object
+              pullAddress:
+                description: PullAddress contains address kubernetes can use to pull
+                  images from the registry.
+                type: string
               served:
                 description: |-
                   Served signifies that current DockerRegistry is managed.
