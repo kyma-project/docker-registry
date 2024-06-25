@@ -6,13 +6,12 @@ metadata:
   labels:
     control-plane: operator
     app.kubernetes.io/instance: dockerregistry-operator-deployment
-    app.kubernetes.io/component: operator
+    app.kubernetes.io/component: dockerregistry-operator.kyma-project.io
 spec:
   selector:
     matchLabels:
       control-plane: operator
-      app.kubernetes.io/component: operator
-      app.kubernetes.io/instance: dockerregistry-operator
+      app.kubernetes.io/component: dockerregistry-operator.kyma-project.io
   replicas: 1
   template:
     metadata:
@@ -21,7 +20,7 @@ spec:
       labels:
         control-plane: operator
         app.kubernetes.io/instance: dockerregistry-operator
-        app.kubernetes.io/component: operator
+        app.kubernetes.io/component: dockerregistry-operator.kyma-project.io
         sidecar.istio.io/inject: "false"
     spec:
       securityContext:

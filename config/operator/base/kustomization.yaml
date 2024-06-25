@@ -8,16 +8,18 @@ namespace: kyma-system
 # field above.
 namePrefix: dockerregistry-
 
-# Labels to add to all resources and selectors.
-commonLabels:
-  kyma-project.io/module: dockerregistry-operator
-  app.kubernetes.io/name: dockerregistry-operator
-  app.kubernetes.io/version: "0.1.0"
-  app.kubernetes.io/part-of: dockerregistry-operator
-  app.kubernetes.io/managed-by: kustomize
+# Labels to add to all resources.
+labels:
+  - pairs:
+      kyma-project.io/module: dockerregistry-operator
+      app.kubernetes.io/name: dockerregistry-operator
+      app.kubernetes.io/version: "0.1.0"
+      app.kubernetes.io/part-of: dockerregistry-operator
+      app.kubernetes.io/managed-by: kustomize
+    includeSelectors: false
 
 resources:
-- ./crd
-- ./deployment
-- ./rbac
-- ./ui-extensions
+  - ./crd
+  - ./deployment
+  - ./rbac
+  - ./ui-extensions
