@@ -28,6 +28,7 @@ const (
 type nodePortFinder func() int32
 
 type NodePortResolver struct {
+	nodePort int32
 	nodePortFinder
 }
 
@@ -35,7 +36,18 @@ func NewNodePortResolver(finder nodePortFinder) *NodePortResolver {
 	return &NodePortResolver{nodePortFinder: finder}
 }
 
-func (npr *NodePortResolver) ResolveDockerRegistryNodePortFn(ctx context.Context, k8sClient client.Client, namespace string) (int32, error) {
+func (npr *NodePortResolver) GetNodePort(ctx context.Context, k8sClient client.Client, namespace string) (int32, error) {
+	if npr.nodePort != 0 {
+		// if nodePort was already resolved, return it
+		return npr.nodePort, nil
+	}
+
+	var err error
+	npr.nodePort, err = npr.resolveDockerRegistryNodePortFn(ctx, k8sClient, namespace)
+	return npr.nodePort, err
+}
+
+func (npr *NodePortResolver) resolveDockerRegistryNodePortFn(ctx context.Context, k8sClient client.Client, namespace string) (int32, error) {
 	svc, err := getService(ctx, k8sClient, namespace, dockerRegistryService)
 	if err != nil {
 		return 0, errors.Wrap(err, fmt.Sprintf("while checking if %s service is installed on cluster", dockerRegistryService))

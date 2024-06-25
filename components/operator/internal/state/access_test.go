@@ -18,16 +18,26 @@ import (
 func Test_sFnAccessConfiguration(t *testing.T) {
 	t.Run("setup node port only when registry secret does not exist", func(t *testing.T) {
 		s := &systemState{
-			instance:       v1alpha1.DockerRegistry{},
-			statusSnapshot: v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:   chart.NewFlagsBuilder(),
+			instance:         v1alpha1.DockerRegistry{},
+			statusSnapshot:   v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:     chart.NewFlagsBuilder(),
+			nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
 		}
 		r := &reconciler{
 			k8s: k8s{client: fake.NewClientBuilder().Build()},
 			log: zap.NewNop().Sugar(),
 		}
 		expectedFlags := map[string]interface{}{
+			"FullnameOverride": "dockerregistry",
+			"configData": map[string]interface{}{
+				"http": map[string]interface{}{
+					"addr": ":5000",
+				},
+			},
 			"registryNodePort": int64(32_137),
+			"service": map[string]interface{}{
+				"port": int64(5_000),
+			},
 		}
 
 		next, result, err := sFnAccessConfiguration(context.Background(), r, s)
@@ -83,15 +93,25 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 					Namespace: "kyma",
 				},
 			},
-			statusSnapshot: v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:   chart.NewFlagsBuilder(),
+			statusSnapshot:   v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:     chart.NewFlagsBuilder(),
+			nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
 		}
 		r := &reconciler{
 			k8s: k8s{client: fake.NewClientBuilder().WithObjects(registrySecret, registryDeploy).Build()},
 			log: zap.NewNop().Sugar(),
 		}
 		expectedFlags := map[string]interface{}{
+			"FullnameOverride": "dockerregistry",
+			"configData": map[string]interface{}{
+				"http": map[string]interface{}{
+					"addr": ":5000",
+				},
+			},
 			"registryNodePort": int64(32_137),
+			"service": map[string]interface{}{
+				"port": int64(5_000),
+			},
 			"dockerRegistry": map[string]interface{}{
 				"username": "ala",
 				"password": "makota",

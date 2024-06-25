@@ -2,7 +2,9 @@ package state
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
@@ -15,10 +17,10 @@ const (
 	FilesystemStorageName = "filesystem"
 )
 
-func sFnConfigurationStatus(_ context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
+func sFnConfigurationStatus(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
 	// TODO: I think we should move this to the end of the reconciliation to not update status with new information when
 	// (for example) installation can't be fullied because of any error. we should update status only when everything is done
-	err := updateConfigurationStatus(r, &s.instance)
+	err := updateConfigurationStatus(ctx, r, s)
 	if err != nil {
 		return stopWithEventualError(err)
 	}
@@ -33,15 +35,26 @@ func sFnConfigurationStatus(_ context.Context, r *reconciler, s *systemState) (s
 	return nextState(sFnApplyResources)
 }
 
-func updateConfigurationStatus(r *reconciler, instance *v1alpha1.DockerRegistry) error {
-	spec := instance.Spec
-	storageField := getStorageField(spec.Storage, instance)
+func updateConfigurationStatus(ctx context.Context, r *reconciler, s *systemState) error {
+	spec := s.instance.Spec
+	storageField := getStorageField(spec.Storage, &s.instance)
+
+	nodeport, err := s.nodePortResolver.GetNodePort(ctx, r.client, s.instance.GetNamespace())
+	if err != nil {
+		return err
+	}
+
+	pulladdress := fmt.Sprintf("localhost:%d", nodeport)
+	pushAddress := fmt.Sprintf("%s.%s.svc.cluster.local:%d", chart.FullnameOverride, s.instance.GetNamespace(), registry.ServicePort)
+
 	fields := fieldsToUpdate{
-		{registry.SecretName, &instance.Status.SecretName, "Name of secret with registry access data", ""},
+		{pulladdress, &s.instance.Status.PullAddress, "Internal pull address", ""},
+		{pushAddress, &s.instance.Status.InternalAccess.PushAddress, "Internal push address", ""},
+		{registry.SecretName, &s.instance.Status.InternalAccess.SecretName, "Name of secret with registry access data", ""},
 		storageField,
 	}
 
-	updateStatusFields(r.k8s, instance, fields)
+	updateStatusFields(r.k8s, &s.instance, fields)
 	return nil
 }
 

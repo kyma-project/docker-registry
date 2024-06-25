@@ -21,6 +21,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+const (
+	FullnameOverride = "dockerregistry"
+)
+
 type Config struct {
 	Ctx        context.Context
 	Log        *zap.SugaredLogger

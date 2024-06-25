@@ -1,6 +1,7 @@
 package chart
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
@@ -8,8 +9,10 @@ import (
 
 type FlagsBuilder interface {
 	Build() map[string]interface{}
+	WithFullname(fullname string) *flagsBuilder
 	WithRegistryCredentials(username string, password string) *flagsBuilder
 	WithRegistryHttpSecret(httpSecret string) *flagsBuilder
+	WithServicePort(servicePort int64) *flagsBuilder
 	WithNodePort(nodePort int64) *flagsBuilder
 	WithAzure(secret *v1alpha1.StorageAzureSecrets) *flagsBuilder
 	WithS3(config *v1alpha1.StorageS3, secret *v1alpha1.StorageS3Secrets) *flagsBuilder
@@ -61,6 +64,11 @@ func nextDeeperFlag(currentFlag map[string]interface{}, path string) map[string]
 	return currentFlag[path].(map[string]interface{})
 }
 
+func (fb *flagsBuilder) WithFullname(fullname string) *flagsBuilder {
+	fb.flags["FullnameOverride"] = fullname
+	return fb
+}
+
 func (fb *flagsBuilder) WithRegistryCredentials(username, password string) *flagsBuilder {
 	fb.flags["dockerRegistry.username"] = username
 	fb.flags["dockerRegistry.password"] = password
@@ -70,6 +78,12 @@ func (fb *flagsBuilder) WithRegistryCredentials(username, password string) *flag
 func (fb *flagsBuilder) WithRegistryHttpSecret(httpSecret string) *flagsBuilder {
 	fb.flags["rollme"] = "dontrollplease"
 	fb.flags["registryHTTPSecret"] = httpSecret
+	return fb
+}
+
+func (fb *flagsBuilder) WithServicePort(servicePort int64) *flagsBuilder {
+	fb.flags["service.port"] = servicePort
+	fb.flags["configData.http.addr"] = fmt.Sprintf(":%d", servicePort)
 	return fb
 }
 

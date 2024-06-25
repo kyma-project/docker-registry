@@ -9,6 +9,7 @@ import (
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
+	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"github.com/kyma-project/docker-registry/components/operator/internal/warning"
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/types"
@@ -35,11 +36,12 @@ type cfg struct {
 }
 
 type systemState struct {
-	instance       v1alpha1.DockerRegistry
-	statusSnapshot v1alpha1.DockerRegistryStatus
-	chartConfig    *chart.Config
-	warningBuilder *warning.Builder
-	flagsBuilder   chart.FlagsBuilder
+	instance         v1alpha1.DockerRegistry
+	statusSnapshot   v1alpha1.DockerRegistryStatus
+	chartConfig      *chart.Config
+	warningBuilder   *warning.Builder
+	flagsBuilder     chart.FlagsBuilder
+	nodePortResolver *registry.NodePortResolver
 }
 
 func (s *systemState) saveStatusSnapshot() {
@@ -106,10 +108,11 @@ func (m *reconciler) stateFnName() string {
 
 func (m *reconciler) Reconcile(ctx context.Context, v v1alpha1.DockerRegistry) (ctrl.Result, error) {
 	state := systemState{
-		instance:       v,
-		warningBuilder: warning.NewBuilder(),
-		flagsBuilder:   chart.NewFlagsBuilder(),
-		chartConfig:    chartConfig(ctx, m, v.Namespace),
+		instance:         v,
+		warningBuilder:   warning.NewBuilder(),
+		flagsBuilder:     chart.NewFlagsBuilder(),
+		chartConfig:      chartConfig(ctx, m, v.Namespace),
+		nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
 	}
 	state.saveStatusSnapshot()
 	var err error
