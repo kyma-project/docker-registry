@@ -21,13 +21,23 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type Endpoint struct {
-	Endpoint string `json:"endpoint"`
-}
-
 // DockerRegistrySpec defines the desired state of DockerRegistry
 type DockerRegistrySpec struct {
+	// Storage defines the storage configuration ( filesystem / s3 / azure... ).
 	Storage *Storage `json:"storage,omitempty"`
+
+	// ExternalAccess defines the external access configuration.
+	ExternalAccess *ExternalAccess `json:"externalAccess,omitempty"`
+}
+
+type ExternalAccess struct {
+	// Enable indicates whether the external access is enabled.
+	// default: false
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// HostPrefix is the prefix for the host.
+	// default: registry-<cr_name>.<cr_namespace>
+	HostPrefix *string `json:"hostPrefix,omitempty"`
 }
 
 type Storage struct {
@@ -105,7 +115,7 @@ type NetworkAccess struct {
 	SecretName string `json:"secretName,omitempty"`
 
 	// PushAddress contains an address that can be used to push images to the registry from inside the cluster.
-	PushAddress string `json:"addresses,omitempty"`
+	PushAddress string `json:"pushAddress,omitempty"`
 }
 
 type DockerRegistryStatus struct {
@@ -115,9 +125,8 @@ type DockerRegistryStatus struct {
 	// InternalAccess contains the in-cluster access configuration of the DockerRegistry.
 	InternalAccess NetworkAccess `json:"internalAccess,omitempty"`
 
-	// TODO: implement it in next PRs
 	// ExternalAccess contains the external access configuration of the DockerRegistry.
-	// ExternalAccess NetworkAccess `json:"externalAccess,omitempty"`
+	ExternalAccess NetworkAccess `json:"externalAccess,omitempty"`
 
 	// Storage signifies the storage type of DockerRegistry.
 	Storage string `json:"storage,omitempty"`

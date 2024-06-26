@@ -55,7 +55,23 @@ spec:
           spec:
             description: DockerRegistrySpec defines the desired state of DockerRegistry
             properties:
+              externalAccess:
+                description: ExternalAccess defines the external access configuration.
+                properties:
+                  enabled:
+                    description: |-
+                      Enable indicates whether the external access is enabled.
+                      default: false
+                    type: boolean
+                  hostPrefix:
+                    description: |-
+                      HostPrefix is the prefix for the host.
+                      default: registry-<cr_name>.<cr_namespace>
+                    type: string
+                type: object
               storage:
+                description: Storage defines the storage configuration ( filesystem
+                  / s3 / azure... ).
                 properties:
                   azure:
                     properties:
@@ -156,11 +172,24 @@ spec:
                   - type
                   type: object
                 type: array
+              externalAccess:
+                description: ExternalAccess contains the external access configuration
+                  of the DockerRegistry.
+                properties:
+                  pushAddress:
+                    description: PushAddress contains an address that can be used
+                      to push images to the registry from inside the cluster.
+                    type: string
+                  secretName:
+                    description: SecretName is the name of the Secret containing the
+                      addresses and auth methods.
+                    type: string
+                type: object
               internalAccess:
                 description: InternalAccess contains the in-cluster access configuration
                   of the DockerRegistry.
                 properties:
-                  addresses:
+                  pushAddress:
                     description: PushAddress contains an address that can be used
                       to push images to the registry from inside the cluster.
                     type: string

@@ -15,6 +15,9 @@ package controllers
 
 //+kubebuilder:rbac:groups=autoscaling,resources=horizontalpodautoscalers,verbs=get;list;watch;create;update;patch;delete;deletecollection
 
+//+kubebuilder:rbac:groups=networking.istio.io,resources=gateways,verbs=get;list;watch
+//+kubebuilder:rbac:groups=networking.istio.io,resources=virtualservices,verbs=get;list;watch;create;update;patch;delete;deletecollection
+
 //+kubebuilder:rbac:groups=batch,resources=jobs,verbs=get;list;watch;create;update;patch;delete;deletecollection
 //+kubebuilder:rbac:groups=batch,resources=jobs/status,verbs=get
 
