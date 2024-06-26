@@ -13,8 +13,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/record"
-	"k8s.io/utils/ptr"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
@@ -25,18 +23,12 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test-name",
 					Namespace: "test-namespace",
 				},
-				Spec: v1alpha1.DockerRegistrySpec{
-					ExternalAccess: &v1alpha1.ExternalAccess{
-						Enabled: ptr.To(true),
-					},
-				},
+				Spec: v1alpha1.DockerRegistrySpec{},
 			},
-			flagsBuilder:            chart.NewFlagsBuilder(),
-			nodePortResolver:        registry.NewNodePortResolver(registry.RandomNodePort),
-			externalAddressResolver: &testExternalAddressResolver{expectedAddress: "registry-test-name-test-namespace.cluster.local"},
+			flagsBuilder:     chart.NewFlagsBuilder(),
+			nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
 		}
 
 		c := fake.NewClientBuilder().Build()
@@ -51,8 +43,6 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		require.Equal(t, registry.SecretName, status.InternalAccess.SecretName)
 		require.Equal(t, "localhost:32137", status.PullAddress)
 		require.Equal(t, "dockerregistry.test-namespace.svc.cluster.local:5000", status.InternalAccess.PushAddress)
-		require.Equal(t, registry.SecretName, status.ExternalAccess.SecretName)
-		require.Equal(t, "registry-test-name-test-namespace.cluster.local", status.ExternalAccess.PushAddress)
 
 		require.Equal(t, FilesystemStorageName, status.Storage)
 
@@ -79,9 +69,8 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 					},
 				},
 			},
-			flagsBuilder:            chart.NewFlagsBuilder(),
-			nodePortResolver:        registry.NewNodePortResolver(registry.RandomNodePort),
-			externalAddressResolver: &testExternalAddressResolver{expectedAddress: "registry-test-name-test-namespace.cluster.local"},
+			flagsBuilder:     chart.NewFlagsBuilder(),
+			nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
 		}
 
 		c := fake.NewClientBuilder().Build()
@@ -158,13 +147,4 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 			configurationReadyMsg)
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
-}
-
-type testExternalAddressResolver struct {
-	expectedAddress string
-	expectedError   error
-}
-
-func (r *testExternalAddressResolver) GetExternalAddress(_ context.Context, _ client.Client, _ string) (string, error) {
-	return r.expectedAddress, r.expectedError
 }
