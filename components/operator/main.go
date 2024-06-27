@@ -19,27 +19,21 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"os"
 	"time"
 
-	"github.com/kyma-project/docker-registry/components/operator/internal/config"
-	"github.com/kyma-project/docker-registry/components/operator/internal/gitrepository"
-	"github.com/pkg/errors"
-
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
+	"github.com/pkg/errors"
 	uberzap "go.uber.org/zap"
 	uberzapcore "go.uber.org/zap/zapcore"
-	_ "k8s.io/client-go/plugin/pkg/client/auth"
-
-	k8s "github.com/kyma-project/docker-registry/components/operator/internal/controllers/kubernetes"
-	internalresource "github.com/kyma-project/docker-registry/components/operator/internal/resource"
+	istionetworking "istio.io/client-go/pkg/apis/networking/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	apiextensionsscheme "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/scheme"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
+	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	ctrl "sigs.k8s.io/controller-runtime"
 	ctrlcache "sigs.k8s.io/controller-runtime/pkg/cache"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -49,6 +43,11 @@ import (
 
 	operatorv1alpha1 "github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/controllers"
+	"github.com/kyma-project/docker-registry/components/operator/internal/config"
+	k8s "github.com/kyma-project/docker-registry/components/operator/internal/controllers/kubernetes"
+	"github.com/kyma-project/docker-registry/components/operator/internal/gitrepository"
+	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
+	internalresource "github.com/kyma-project/docker-registry/components/operator/internal/resource"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -65,6 +64,8 @@ func init() {
 	utilruntime.Must(operatorv1alpha1.AddToScheme(scheme))
 
 	utilruntime.Must(apiextensionsscheme.AddToScheme(scheme))
+
+	utilruntime.Must(istionetworking.AddToScheme(scheme))
 
 	//+kubebuilder:scaffold:scheme
 }
