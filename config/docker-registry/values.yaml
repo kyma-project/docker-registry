@@ -40,6 +40,10 @@ service:
   name: registry
   port: "5000" # same as configData.http.addr
   annotations: {}
+virtualService:
+  enabled: false
+  host: "registry.cluster.local"
+  gateway: "kyma-system/kyma-gateway"
 ingress:
   enabled: false
   path: /

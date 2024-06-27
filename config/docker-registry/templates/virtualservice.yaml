@@ -1,0 +1,42 @@
+{{- if .Values.virtualService.enabled }}
+{{- $username := include "tplValue" ( dict "value" .Values.dockerRegistry.username "context" . ) -}}
+{{- $password := include "tplValue" ( dict "value" .Values.dockerRegistry.password "context" . ) -}}
+{{- $encodedUsernamePassword := printf "%s:%s" $username $password | b64enc }}
+{{- $host := include "tplValue" ( dict "value" .Values.virtualService.host "context" . ) -}}
+
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ template "docker-registry.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "docker-registry.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+spec:
+  gateways:
+  - "{{ .Values.virtualService.gateway }}"
+  hosts:
+  - "{{ $host }}"
+  http:
+  - route:
+    - destination:
+        host: "{{ template "docker-registry.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local"
+        port:
+          number: {{ .Values.service.port }}
+---
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/dockerconfigjson
+metadata:
+  name: dockerregistry-config-external
+  namespace: {{ .Release.Namespace }}
+  labels:
+    dockerregistry.kyma-project.io/config: credentials
+data:
+  username: "{{ $username | b64enc }}"
+  password: "{{ $password | b64enc }}"
+  pullRegAddr: "{{ $host | b64enc }}"
+  pushRegAddr: "{{ $host | b64enc }}"
+  .dockerconfigjson: "{{- (printf "{\"auths\": {\"%s\": {\"auth\": \"%s\"}}}" $host $encodedUsernamePassword) | b64enc }}"
+{{- end -}}
