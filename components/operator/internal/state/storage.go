@@ -28,6 +28,7 @@ func sFnStorageConfiguration(ctx context.Context, r *reconciler, s *systemState)
 
 func prepareStorage(ctx context.Context, r *reconciler, s *systemState) error {
 	if s.instance.Spec.Storage != nil {
+		s.flagsBuilder.WithPVCDisabled()
 		if s.instance.Spec.Storage.Azure != nil {
 			return prepareAzureStorage(ctx, r, s)
 		} else if s.instance.Spec.Storage.S3 != nil {
