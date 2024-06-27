@@ -63,10 +63,10 @@ func updateConfigurationStatus(ctx context.Context, r *reconciler, s *systemStat
 }
 
 func getExternalAccessFields(ctx context.Context, r *reconciler, s *systemState) (fieldsToUpdate, error) {
-	if s.instance.Spec.ExternalAccess == nil ||
-		s.instance.Spec.ExternalAccess.Enabled == nil ||
-		!*s.instance.Spec.ExternalAccess.Enabled {
-		// reset external access fields to empty values
+	externalConfigured := s.instance.Spec.ExternalAccess != nil && s.instance.Spec.ExternalAccess.Enabled != nil
+
+	if !externalConfigured || !*s.instance.Spec.ExternalAccess.Enabled {
+		// skip if its disabled
 		return fieldsToUpdate{
 			{"", &s.instance.Status.ExternalAccess.PushAddress, "External push address", ""},
 			{"", &s.instance.Status.ExternalAccess.SecretName, "Name of secret with registry external access data", ""},
@@ -75,7 +75,8 @@ func getExternalAccessFields(ctx context.Context, r *reconciler, s *systemState)
 
 	externalPushAddress, err := resolveRegistryHost(ctx, r, s)
 	if err != nil {
-		return nil, err
+		// gateway is not operational but we should continue the reconciliation with old status configuration
+		return nil, nil
 	}
 
 	return fieldsToUpdate{

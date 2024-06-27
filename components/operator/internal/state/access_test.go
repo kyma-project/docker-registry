@@ -7,6 +7,7 @@ import (
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
+	"github.com/kyma-project/docker-registry/components/operator/internal/warning"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	networkingv1beta1 "istio.io/api/networking/v1beta1"
@@ -199,5 +200,53 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
+	})
+
+	t.Run("external access gateway not found error", func(t *testing.T) {
+		testScheme := runtime.NewScheme()
+		require.NoError(t, istiov1beta1.AddToScheme(testScheme))
+		require.NoError(t, clientgoscheme.AddToScheme(testScheme))
+
+		s := &systemState{
+			instance: v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{
+					ExternalAccess: &v1alpha1.ExternalAccess{
+						Enabled: ptr.To(true),
+					},
+				},
+			},
+			statusSnapshot:          v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:            chart.NewFlagsBuilder(),
+			nodePortResolver:        registry.NewNodePortResolver(registry.RandomNodePort),
+			externalAddressResolver: registry.NewExternalAccessResolver(),
+			warningBuilder:          warning.NewBuilder(),
+		}
+
+		r := &reconciler{
+			k8s: k8s{client: fake.NewClientBuilder().WithScheme(testScheme).Build()},
+			log: zap.NewNop().Sugar(),
+		}
+		expectedFlags := map[string]interface{}{
+			"FullnameOverride": "dockerregistry",
+			"configData": map[string]interface{}{
+				"http": map[string]interface{}{
+					"addr": ":5000",
+				},
+			},
+			"registryNodePort": int64(32_137),
+			"service": map[string]interface{}{
+				"port": int64(5_000),
+			},
+		}
+
+		next, result, err := sFnAccessConfiguration(context.Background(), r, s)
+		require.NoError(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnStorageConfiguration, next)
+
+		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
+
+		require.Equal(t, "Warning: .spec.externalAccess.enabled is true but the kyma-gateway Gateway in the kyma-system namespace is not found", s.warningBuilder.Build())
 	})
 }

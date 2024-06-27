@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
@@ -81,7 +82,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 			},
 			flagsBuilder:            chart.NewFlagsBuilder(),
 			nodePortResolver:        registry.NewNodePortResolver(registry.RandomNodePort),
-			externalAddressResolver: &testExternalAddressResolver{expectedAddress: "registry-test-name-test-namespace.cluster.local"},
+			externalAddressResolver: &testExternalAddressResolver{expectedError: errors.New("test-error")},
 		}
 
 		c := fake.NewClientBuilder().Build()
@@ -95,6 +96,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		status := s.instance.Status
 		require.Equal(t, "localhost:32137", status.PullAddress)
 		require.Equal(t, "dockerregistry.test-namespace.svc.cluster.local:5000", status.InternalAccess.PushAddress)
+		require.Equal(t, v1alpha1.NetworkAccess{}, status.ExternalAccess)
 
 		require.Equal(t, AzureStorageName, status.Storage)
 
