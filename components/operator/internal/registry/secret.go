@@ -9,11 +9,12 @@ import (
 )
 
 const (
-	SecretName     = "dockerregistry-config"
-	LabelConfigKey = "dockerregistry.kyma-project.io/config"
-	LabelConfigVal = "credentials"
-	DeploymentName = "dockerregistry"
-	HttpEnvKey     = "REGISTRY_HTTP_SECRET"
+	SecretName        = "dockerregistry-config"
+	ExposedSecretName = "dockerregistry-config-external"
+	LabelConfigKey    = "dockerregistry.kyma-project.io/config"
+	LabelConfigVal    = "credentials"
+	DeploymentName    = "dockerregistry"
+	HttpEnvKey        = "REGISTRY_HTTP_SECRET"
 )
 
 func GetDockerRegistryInternalRegistrySecret(ctx context.Context, c client.Client, namespace string) (*corev1.Secret, error) {

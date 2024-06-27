@@ -49,9 +49,11 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
+		require.Equal(t, "true", status.InternalAccess.Enabled)
 		require.Equal(t, registry.SecretName, status.InternalAccess.SecretName)
-		require.Equal(t, "localhost:32137", status.PullAddress)
+		require.Equal(t, "localhost:32137", status.InternalAccess.PullAddress)
 		require.Equal(t, "dockerregistry.test-namespace.svc.cluster.local:5000", status.InternalAccess.PushAddress)
+		require.Equal(t, "true", status.ExternalAccess.Enabled)
 		require.Equal(t, registry.SecretName, status.ExternalAccess.SecretName)
 		require.Equal(t, "registry-test-name-test-namespace.cluster.local", status.ExternalAccess.PushAddress)
 
@@ -94,9 +96,10 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, "localhost:32137", status.PullAddress)
+		require.Equal(t, "true", status.InternalAccess.Enabled)
+		require.Equal(t, "localhost:32137", status.InternalAccess.PullAddress)
 		require.Equal(t, "dockerregistry.test-namespace.svc.cluster.local:5000", status.InternalAccess.PushAddress)
-		require.Equal(t, v1alpha1.NetworkAccess{}, status.ExternalAccess)
+		require.Equal(t, "false", status.ExternalAccess.Enabled)
 
 		require.Equal(t, AzureStorageName, status.Storage)
 
@@ -145,7 +148,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 			k8s: k8s{
 				client:        fake.NewClientBuilder().WithObjects(secret).Build(),
-				EventRecorder: record.NewFakeRecorder(4),
+				EventRecorder: record.NewFakeRecorder(10),
 			},
 		}
 

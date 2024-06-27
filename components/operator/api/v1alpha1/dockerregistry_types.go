@@ -111,17 +111,20 @@ const (
 )
 
 type NetworkAccess struct {
+	// Enabled indicates whether the network access is enabled.
+	Enabled string `json:"enabled,omitempty"`
+
 	// SecretName is the name of the Secret containing the addresses and auth methods.
 	SecretName string `json:"secretName,omitempty"`
 
 	// PushAddress contains an address that can be used to push images to the registry from inside the cluster.
 	PushAddress string `json:"pushAddress,omitempty"`
+
+	// PullAddress contains address kubernetes can use to pull images from the registry.
+	PullAddress string `json:"pullAddress,omitempty"`
 }
 
 type DockerRegistryStatus struct {
-	// PullAddress contains address kubernetes can use to pull images from the registry.
-	PullAddress string `json:"pullAddress,omitempty"`
-
 	// InternalAccess contains the in-cluster access configuration of the DockerRegistry.
 	InternalAccess NetworkAccess `json:"internalAccess,omitempty"`
 

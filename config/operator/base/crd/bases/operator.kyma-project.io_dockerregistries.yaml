@@ -176,6 +176,13 @@ spec:
                 description: ExternalAccess contains the external access configuration
                   of the DockerRegistry.
                 properties:
+                  enabled:
+                    description: Enabled indicates whether the network access is enabled.
+                    type: string
+                  pullAddress:
+                    description: PullAddress contains address kubernetes can use to
+                      pull images from the registry.
+                    type: string
                   pushAddress:
                     description: PushAddress contains an address that can be used
                       to push images to the registry from inside the cluster.
@@ -189,6 +196,13 @@ spec:
                 description: InternalAccess contains the in-cluster access configuration
                   of the DockerRegistry.
                 properties:
+                  enabled:
+                    description: Enabled indicates whether the network access is enabled.
+                    type: string
+                  pullAddress:
+                    description: PullAddress contains address kubernetes can use to
+                      pull images from the registry.
+                    type: string
                   pushAddress:
                     description: PushAddress contains an address that can be used
                       to push images to the registry from inside the cluster.
@@ -198,10 +212,6 @@ spec:
                       addresses and auth methods.
                     type: string
                 type: object
-              pullAddress:
-                description: PullAddress contains address kubernetes can use to pull
-                  images from the registry.
-                type: string
               served:
                 description: |-
                   Served signifies that current DockerRegistry is managed.
