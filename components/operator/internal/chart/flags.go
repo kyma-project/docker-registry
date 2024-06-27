@@ -15,6 +15,7 @@ type FlagsBuilder interface {
 	WithServicePort(servicePort int64) *flagsBuilder
 	WithVirtualService(host, gateway string) *flagsBuilder
 	WithNodePort(nodePort int64) *flagsBuilder
+	WithPVCDisabled() *flagsBuilder
 	WithAzure(secret *v1alpha1.StorageAzureSecrets) *flagsBuilder
 	WithS3(config *v1alpha1.StorageS3, secret *v1alpha1.StorageS3Secrets) *flagsBuilder
 	WithFilesystem() *flagsBuilder
@@ -97,6 +98,11 @@ func (fb *flagsBuilder) WithVirtualService(host, gateway string) *flagsBuilder {
 
 func (fb *flagsBuilder) WithNodePort(nodePort int64) *flagsBuilder {
 	fb.flags["registryNodePort"] = nodePort
+	return fb
+}
+
+func (fb *flagsBuilder) WithPVCDisabled() *flagsBuilder {
+	fb.flags["persistence.enabled"] = false
 	return fb
 }
 
