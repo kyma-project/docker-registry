@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/pkg/errors"
 	networkingv1beta1 "istio.io/api/networking/v1beta1"
 	"istio.io/client-go/pkg/apis/networking/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -18,6 +19,7 @@ func TestExternalAccessResolver_GetExternalAddress(t *testing.T) {
 
 	type fields struct {
 		resolvedAddress string
+		resolvedError   error
 	}
 	type args struct {
 		c      client.Client
@@ -65,11 +67,19 @@ func TestExternalAccessResolver_GetExternalAddress(t *testing.T) {
 			},
 			wantErr: true,
 		},
+		{
+			name: "return previously resolved error",
+			fields: fields{
+				resolvedError: errors.New("test-error"),
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ear := &externalAccessResolver{
 				resolvedAddress: tt.fields.resolvedAddress,
+				resolvedError:   tt.fields.resolvedError,
 			}
 			got, err := ear.GetExternalAddress(context.Background(), tt.args.c, tt.args.prefix)
 			if (err != nil) != tt.wantErr {

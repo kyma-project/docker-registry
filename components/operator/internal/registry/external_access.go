@@ -15,6 +15,7 @@ type ExternalAccessResolver interface {
 
 type externalAccessResolver struct {
 	resolvedAddress string
+	resolvedError   error
 }
 
 func NewExternalAccessResolver() ExternalAccessResolver {
@@ -22,15 +23,18 @@ func NewExternalAccessResolver() ExternalAccessResolver {
 }
 
 func (ear *externalAccessResolver) GetExternalAddress(ctx context.Context, c client.Client, prefix string) (string, error) {
-	if ear.resolvedAddress != "" {
-		return ear.resolvedAddress, nil
+	if ear.resolvedAddress != "" || ear.resolvedError != nil {
+		return ear.resolvedAddress, ear.resolvedError
 	}
 
 	clusterAddress, err := istio.GetClusterAddressFromGateway(ctx, c)
 	if err != nil {
-		return "", errors.Wrap(err, "while fetching cluster address from Istio Gateway")
+		ear.resolvedAddress = ""
+		ear.resolvedError = errors.Wrap(err, "while fetching cluster address from Istio Gateway")
+	} else {
+		ear.resolvedAddress = fmt.Sprintf("%s.%s", prefix, clusterAddress)
+		ear.resolvedError = nil
 	}
 
-	ear.resolvedAddress = fmt.Sprintf("%s.%s", prefix, clusterAddress)
-	return ear.resolvedAddress, nil
+	return ear.resolvedAddress, ear.resolvedError
 }

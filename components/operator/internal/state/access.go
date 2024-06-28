@@ -69,17 +69,21 @@ func setInternalAccessConfig(ctx context.Context, r *reconciler, s *systemState)
 }
 
 func setExternalAccessConfig(ctx context.Context, r *reconciler, s *systemState) error {
-	if s.instance.Spec.ExternalAccess == nil ||
-		s.instance.Spec.ExternalAccess.Enabled == nil ||
-		!*s.instance.Spec.ExternalAccess.Enabled {
-		// skip if external access is not enabled
+	spec := s.instance.Spec
+	externalConfigured := spec.ExternalAccess != nil && spec.ExternalAccess.Enabled != nil
+
+	if !externalConfigured || !*spec.ExternalAccess.Enabled {
+		// skip if its disabled
 		return nil
 	}
 
 	gateway := fmt.Sprintf("%s/%s", istio.GatewayNamespace, istio.GatewayName)
 	host, err := resolveRegistryHost(ctx, r, s)
 	if err != nil {
-		return errors.Wrap(err, "while fetching external access host")
+		// set warning and continue reconciliation because external access is optional
+		s.warningBuilder.With(".spec.externalAccess.enabled is true but the kyma-gateway Gateway in the kyma-system namespace is not found")
+		r.log.Warnf("%s/%s gateway not found: %s", istio.GatewayNamespace, istio.GatewayName, err)
+		return nil
 	}
 
 	s.flagsBuilder.WithVirtualService(
