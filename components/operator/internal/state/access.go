@@ -82,6 +82,7 @@ func setExternalAccessConfig(ctx context.Context, r *reconciler, s *systemState)
 	if err != nil {
 		// set warning and continue reconciliation because external access is optional
 		s.warningBuilder.With(".spec.externalAccess.enabled is true but the kyma-gateway Gateway in the kyma-system namespace is not found")
+		r.log.Warnf("%s/%s gateway not found: %s", istio.GatewayNamespace, istio.GatewayName, err)
 		return nil
 	}
 
