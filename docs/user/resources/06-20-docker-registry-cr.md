@@ -39,7 +39,13 @@ The following Docker Registry custom resource (CR) shows configuration of Docker
        status: "True"
        type: Installed
      storage: filesystem
-     secretName: dockerregistry-config
+     externalAccess:
+       enabled: "False"
+     internalAccess:
+       enabled: "True"
+       pullAddress: localhost:32137
+       pushAddress: dockerregistry.kyma-system.svc.cluster.local:5000
+       secretName: dockerregistry-config
      served: "True"
      state: Ready
    ```
@@ -52,18 +58,21 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 
 **Spec:**
 
-| Parameter                               | Type   | Description                                                                             |
-|-----------------------------------------|--------|-----------------------------------------------------------------------------------------|
-| **storage**                             | object | Contains configuration of the registry images storage.                                  |
-| **storage.azure**                       | object | Contains configuration of the Azure storage.                                            |
-| **storage.azure.secretName** (required) | string | Specifies the name of the Secret that contains data needed to connect to the Azure storage. |
-| **storage.s3**                          | object | Contains configuration of the s3 storage.                                               |
-| **storage.s3.bucket** (required)        | string | Specifies the name of the s3 bucket.                                                    |
-| **storage.s3.region** (required)        | string | Specifies the region of the s3 bucket.                                                  |
-| **storage.s3.regionEndpoint**           | string | Specifies the endpoint of the s3 region.                                                |
-| **storage.s3.encrypt**                  | string | Specifies if data in the bucket is encrypted.                                      |
-| **storage.s3.secure**                   | string | Specifies if registry uses the TLS communication with the s3.                           |
-| **storage.s3.secretName**               | string | Specifies the name of the Secret that contains data needed to connect to the s3 storage.    |
+| Parameter                               | Type   | Description                                                                                                   |
+|-----------------------------------------|--------|---------------------------------------------------------------------------------------------------------------|
+| **externalAccess**                      | object | Contains configuration of the registry external access throw the kyma-gateway Istio Gateway with tls enabled. |
+| **externalAccess.enabled**              | string | Specifies if registry is exposed.                                                                             |
+| **externalAccess.hostPrefix**           | string | Specifies prefix for the host address. (default "registry-<cr_name>-<cr_namespace>").                         |
+| **storage**                             | object | Contains configuration of the registry images storage.                                                        |
+| **storage.azure**                       | object | Contains configuration of the Azure storage.                                                                  |
+| **storage.azure.secretName** (required) | string | Specifies the name of the Secret that contains data needed to connect to the Azure storage.                   |
+| **storage.s3**                          | object | Contains configuration of the s3 storage.                                                                     |
+| **storage.s3.bucket** (required)        | string | Specifies the name of the s3 bucket.                                                                          |
+| **storage.s3.region** (required)        | string | Specifies the region of the s3 bucket.                                                                        |
+| **storage.s3.regionEndpoint**           | string | Specifies the endpoint of the s3 region.                                                                      |
+| **storage.s3.encrypt**                  | string | Specifies if data in the bucket is encrypted.                                                                 |
+| **storage.s3.secure**                   | string | Specifies if registry uses the TLS communication with the s3.                                                 |
+| **storage.s3.secretName**               | string | Specifies the name of the Secret that contains data needed to connect to the s3 storage.                      |
 
 **Status:**
 
