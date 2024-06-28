@@ -80,6 +80,9 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 
 		expectedFlags := map[string]interface{}{
 			"storage": "azure",
+			"persistence": map[string]interface{}{
+				"enabled": false,
+			},
 			"secrets": map[string]interface{}{
 				"azure": map[string]interface{}{
 					"accountName": "accountName",
@@ -137,6 +140,9 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 
 		expectedFlags := map[string]interface{}{
 			"storage": "s3",
+			"persistence": map[string]interface{}{
+				"enabled": false,
+			},
 			"s3": map[string]interface{}{
 				"bucket":         "bucket",
 				"region":         "region",
