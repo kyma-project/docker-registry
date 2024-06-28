@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
+	"github.com/kyma-project/docker-registry/components/operator/internal/warning"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
@@ -20,8 +21,6 @@ import (
 )
 
 func Test_sFnConfigurationStatus(t *testing.T) {
-	configurationReadyMsg := "Configuration ready"
-
 	t.Run("update status additional configuration overrides", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
@@ -38,15 +37,16 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 			flagsBuilder:            chart.NewFlagsBuilder(),
 			nodePortResolver:        registry.NewNodePortResolver(registry.RandomNodePort),
 			externalAddressResolver: &testExternalAddressResolver{expectedAddress: "registry-test-name-test-namespace.cluster.local"},
+			warningBuilder:          warning.NewBuilder(),
 		}
 
 		c := fake.NewClientBuilder().Build()
 		eventRecorder := record.NewFakeRecorder(10)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
-		next, result, err := sFnConfigurationStatus(context.TODO(), r, s)
-		require.Nil(t, err)
+		next, result, err := sFnUpdateStatus(context.TODO(), r, s)
+		require.NoError(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnApplyResources, next)
+		require.Nil(t, next)
 
 		status := s.instance.Status
 		require.Equal(t, "True", status.InternalAccess.Enabled)
@@ -59,16 +59,16 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 
 		require.Equal(t, FilesystemStorageName, status.Storage)
 
-		require.Equal(t, v1alpha1.StateProcessing, status.State)
+		require.Equal(t, v1alpha1.StateReady, status.State)
 		requireContainsCondition(t, status,
-			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionTypeInstalled,
 			metav1.ConditionTrue,
-			v1alpha1.ConditionReasonConfigured,
-			configurationReadyMsg,
+			v1alpha1.ConditionReasonInstalled,
+			"DockerRegistry installed",
 		)
 	})
 
-	t.Run("update status additional storage configuration overrides", func(t *testing.T) {
+	t.Run("update status additional storage configuration overrides and warning", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
@@ -85,15 +85,17 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 			flagsBuilder:            chart.NewFlagsBuilder(),
 			nodePortResolver:        registry.NewNodePortResolver(registry.RandomNodePort),
 			externalAddressResolver: &testExternalAddressResolver{expectedError: errors.New("test-error")},
+			warningBuilder:          warning.NewBuilder(),
 		}
 
+		s.warningBuilder.With("test warning")
 		c := fake.NewClientBuilder().Build()
 		eventRecorder := record.NewFakeRecorder(10)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
-		next, result, err := sFnConfigurationStatus(context.TODO(), r, s)
-		require.Nil(t, err)
+		next, result, err := sFnUpdateStatus(context.TODO(), r, s)
+		require.NoError(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnApplyResources, next)
+		require.Nil(t, next)
 
 		status := s.instance.Status
 		require.Equal(t, "True", status.InternalAccess.Enabled)
@@ -103,14 +105,13 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 
 		require.Equal(t, AzureStorageName, status.Storage)
 
-		require.Equal(t, v1alpha1.StateProcessing, status.State)
+		require.Equal(t, v1alpha1.StateWarning, status.State)
 		requireContainsCondition(t, status,
-			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionTypeInstalled,
 			metav1.ConditionTrue,
-			v1alpha1.ConditionReasonConfigured,
-			configurationReadyMsg,
+			v1alpha1.ConditionReasonInstalled,
+			"Warning: test warning",
 		)
-
 	})
 
 	t.Run("reconcile from configurationError", func(t *testing.T) {
@@ -138,6 +139,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 			statusSnapshot:   v1alpha1.DockerRegistryStatus{},
 			flagsBuilder:     chart.NewFlagsBuilder(),
 			nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
+			warningBuilder:   warning.NewBuilder(),
 		}
 		secret := &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
@@ -152,16 +154,17 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 			},
 		}
 
-		next, result, err := sFnConfigurationStatus(context.Background(), r, s)
+		next, result, err := sFnUpdateStatus(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnApplyResources, next)
+		require.Nil(t, next)
+		require.Equal(t, v1alpha1.StateReady, s.instance.Status.State)
 		requireContainsCondition(t, s.instance.Status,
-			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionTypeInstalled,
 			metav1.ConditionTrue,
-			v1alpha1.ConditionReasonConfigured,
-			configurationReadyMsg)
-		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
+			v1alpha1.ConditionReasonInstalled,
+			"DockerRegistry installed",
+		)
 	})
 }
 

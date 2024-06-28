@@ -23,7 +23,14 @@ func sFnStorageConfiguration(ctx context.Context, r *reconciler, s *systemState)
 		return stopWithEventualError(err)
 	}
 
-	return nextState(sFnConfigurationStatus)
+	s.setState(v1alpha1.StateProcessing)
+	s.instance.UpdateConditionTrue(
+		v1alpha1.ConditionTypeConfigured,
+		v1alpha1.ConditionReasonConfigured,
+		"Configuration ready",
+	)
+
+	return nextState(sFnApplyResources)
 }
 
 func prepareStorage(ctx context.Context, r *reconciler, s *systemState) error {
