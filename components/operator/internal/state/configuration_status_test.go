@@ -50,11 +50,11 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 
 		status := s.instance.Status
 		require.Equal(t, "True", status.InternalAccess.Enabled)
-		require.Equal(t, registry.SecretName, status.InternalAccess.SecretName)
+		require.Equal(t, registry.InternalAccessSecretName, status.InternalAccess.SecretName)
 		require.Equal(t, "localhost:32137", status.InternalAccess.PullAddress)
 		require.Equal(t, "dockerregistry.test-namespace.svc.cluster.local:5000", status.InternalAccess.PushAddress)
 		require.Equal(t, "True", status.ExternalAccess.Enabled)
-		require.Equal(t, registry.ExposedSecretName, status.ExternalAccess.SecretName)
+		require.Equal(t, registry.ExternalAccessSecretName, status.ExternalAccess.SecretName)
 		require.Equal(t, "registry-test-name-test-namespace.cluster.local", status.ExternalAccess.PushAddress)
 
 		require.Equal(t, FilesystemStorageName, status.Storage)

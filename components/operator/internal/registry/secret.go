@@ -9,19 +9,19 @@ import (
 )
 
 const (
-	SecretName        = "dockerregistry-config"
-	ExposedSecretName = "dockerregistry-config-external"
-	LabelConfigKey    = "dockerregistry.kyma-project.io/config"
-	LabelConfigVal    = "credentials"
-	DeploymentName    = "dockerregistry"
-	HttpEnvKey        = "REGISTRY_HTTP_SECRET"
+	InternalAccessSecretName = "dockerregistry-config"
+	ExternalAccessSecretName = "dockerregistry-config-external"
+	LabelConfigKey           = "dockerregistry.kyma-project.io/config"
+	LabelConfigVal           = "credentials"
+	DeploymentName           = "dockerregistry"
+	HttpEnvKey               = "REGISTRY_HTTP_SECRET"
 )
 
 func GetDockerRegistryInternalRegistrySecret(ctx context.Context, c client.Client, namespace string) (*corev1.Secret, error) {
 	secret := corev1.Secret{}
 	key := client.ObjectKey{
 		Namespace: namespace,
-		Name:      SecretName,
+		Name:      InternalAccessSecretName,
 	}
 	err := c.Get(ctx, key, &secret)
 	if err != nil {
