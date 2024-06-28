@@ -58,7 +58,7 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 	t.Run("setup node port and use existing username and password", func(t *testing.T) {
 		registrySecret := &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      registry.SecretName,
+				Name:      registry.InternalAccessSecretName,
 				Namespace: "kyma",
 				Labels: map[string]string{
 					registry.LabelConfigKey: registry.LabelConfigVal,

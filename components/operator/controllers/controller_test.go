@@ -19,7 +19,7 @@ var _ = Describe("DockerRegistry controller", func() {
 			namespaceName  = "kyma-system"
 			crName         = "cr-test"
 			deploymentName = "dockerregistry"
-			registrySecret = registry.SecretName
+			registrySecret = registry.InternalAccessSecretName
 		)
 
 		var (

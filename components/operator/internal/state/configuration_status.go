@@ -52,9 +52,10 @@ func updateConfigurationStatus(ctx context.Context, r *reconciler, s *systemStat
 	pushAddress := fmt.Sprintf("%s.%s.svc.cluster.local:%d", chart.FullnameOverride, s.instance.GetNamespace(), registry.ServicePort)
 
 	fields := append(externalAddressFields, fieldsToUpdate{
-		{pulladdress, &s.instance.Status.PullAddress, "Internal pull address", ""},
+		{"True", &s.instance.Status.InternalAccess.Enabled, "Internal access enabled", ""},
+		{pulladdress, &s.instance.Status.InternalAccess.PullAddress, "Internal pull address", ""},
 		{pushAddress, &s.instance.Status.InternalAccess.PushAddress, "Internal push address", ""},
-		{registry.SecretName, &s.instance.Status.InternalAccess.SecretName, "Name of secret with registry access data", ""},
+		{registry.InternalAccessSecretName, &s.instance.Status.InternalAccess.SecretName, "Name of secret with registry access data", ""},
 		storageField,
 	}...)
 
@@ -68,6 +69,8 @@ func getExternalAccessFields(ctx context.Context, r *reconciler, s *systemState)
 	if !externalConfigured || !*s.instance.Spec.ExternalAccess.Enabled {
 		// skip if its disabled
 		return fieldsToUpdate{
+			{"False", &s.instance.Status.ExternalAccess.Enabled, "External access disabled", ""},
+			{"", &s.instance.Status.ExternalAccess.PullAddress, "Internal pull address", ""},
 			{"", &s.instance.Status.ExternalAccess.PushAddress, "External push address", ""},
 			{"", &s.instance.Status.ExternalAccess.SecretName, "Name of secret with registry external access data", ""},
 		}, nil
@@ -80,8 +83,10 @@ func getExternalAccessFields(ctx context.Context, r *reconciler, s *systemState)
 	}
 
 	return fieldsToUpdate{
+		{"True", &s.instance.Status.ExternalAccess.Enabled, "External access enabled", ""},
+		{externalPushAddress, &s.instance.Status.ExternalAccess.PullAddress, "External pull address", ""},
 		{externalPushAddress, &s.instance.Status.ExternalAccess.PushAddress, "External push address", ""},
-		{registry.SecretName, &s.instance.Status.ExternalAccess.SecretName, "Name of secret with registry external access data", ""},
+		{registry.ExternalAccessSecretName, &s.instance.Status.ExternalAccess.SecretName, "Name of secret with registry external access data", ""},
 	}, nil
 }
 
