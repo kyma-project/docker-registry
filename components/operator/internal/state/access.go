@@ -93,8 +93,3 @@ func setExternalAccessConfig(ctx context.Context, r *reconciler, s *systemState)
 
 	return nil
 }
-
-func resolveRegistryHost(ctx context.Context, r *reconciler, s *systemState) (string, error) {
-	hostPrefix := fmt.Sprintf("registry-%s-%s", s.instance.GetName(), s.instance.GetNamespace())
-	return s.externalAddressResolver.GetExternalAddress(ctx, r.client, hostPrefix)
-}

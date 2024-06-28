@@ -162,7 +162,8 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 				},
 				Spec: v1alpha1.DockerRegistrySpec{
 					ExternalAccess: &v1alpha1.ExternalAccess{
-						Enabled: ptr.To(true),
+						Enabled:    ptr.To(true),
+						HostPrefix: ptr.To("registry"),
 					},
 				},
 			},
@@ -189,7 +190,7 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 			"virtualService": map[string]interface{}{
 				"enabled": true,
 				"gateway": "kyma-system/kyma-gateway",
-				"host":    "registry-test-name-test-namespace.cluster.local",
+				"host":    "registry.cluster.local",
 			},
 		}
 
