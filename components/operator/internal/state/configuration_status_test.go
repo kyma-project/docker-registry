@@ -49,12 +49,12 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, "true", status.InternalAccess.Enabled)
+		require.Equal(t, "True", status.InternalAccess.Enabled)
 		require.Equal(t, registry.SecretName, status.InternalAccess.SecretName)
 		require.Equal(t, "localhost:32137", status.InternalAccess.PullAddress)
 		require.Equal(t, "dockerregistry.test-namespace.svc.cluster.local:5000", status.InternalAccess.PushAddress)
-		require.Equal(t, "true", status.ExternalAccess.Enabled)
-		require.Equal(t, registry.SecretName, status.ExternalAccess.SecretName)
+		require.Equal(t, "True", status.ExternalAccess.Enabled)
+		require.Equal(t, registry.ExposedSecretName, status.ExternalAccess.SecretName)
 		require.Equal(t, "registry-test-name-test-namespace.cluster.local", status.ExternalAccess.PushAddress)
 
 		require.Equal(t, FilesystemStorageName, status.Storage)
@@ -96,10 +96,10 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, "true", status.InternalAccess.Enabled)
+		require.Equal(t, "True", status.InternalAccess.Enabled)
 		require.Equal(t, "localhost:32137", status.InternalAccess.PullAddress)
 		require.Equal(t, "dockerregistry.test-namespace.svc.cluster.local:5000", status.InternalAccess.PushAddress)
-		require.Equal(t, "false", status.ExternalAccess.Enabled)
+		require.Equal(t, "False", status.ExternalAccess.Enabled)
 
 		require.Equal(t, AzureStorageName, status.Storage)
 
