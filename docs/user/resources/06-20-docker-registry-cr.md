@@ -39,7 +39,13 @@ The following Docker Registry custom resource (CR) shows configuration of Docker
        status: "True"
        type: Installed
      storage: filesystem
-     secretName: dockerregistry-config
+     externalAccess:
+       enabled: "False"
+     internalAccess:
+       enabled: "True"
+       pullAddress: localhost:32137
+       pushAddress: dockerregistry.kyma-system.svc.cluster.local:5000
+       secretName: dockerregistry-config
      served: "True"
      state: Ready
    ```
@@ -52,18 +58,21 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 
 **Spec:**
 
-| Parameter                               | Type   | Description                                                                             |
-|-----------------------------------------|--------|-----------------------------------------------------------------------------------------|
-| **storage**                             | object | Contains configuration of the registry images storage.                                  |
-| **storage.azure**                       | object | Contains configuration of the Azure storage.                                            |
-| **storage.azure.secretName** (required) | string | Specifies the name of the Secret that contains data needed to connect to the Azure storage. |
-| **storage.s3**                          | object | Contains configuration of the s3 storage.                                               |
-| **storage.s3.bucket** (required)        | string | Specifies the name of the s3 bucket.                                                    |
-| **storage.s3.region** (required)        | string | Specifies the region of the s3 bucket.                                                  |
-| **storage.s3.regionEndpoint**           | string | Specifies the endpoint of the s3 region.                                                |
-| **storage.s3.encrypt**                  | string | Specifies if data in the bucket is encrypted.                                      |
-| **storage.s3.secure**                   | string | Specifies if registry uses the TLS communication with the s3.                           |
-| **storage.s3.secretName**               | string | Specifies the name of the Secret that contains data needed to connect to the s3 storage.    |
+| Parameter                               | Type   | Description                                                                                                   |
+|-----------------------------------------|--------|---------------------------------------------------------------------------------------------------------------|
+| **externalAccess**                      | object | Contains configuration of the registry external access through the `kyma-gateway` Istio Gateway with TLS enabled. |
+| **externalAccess.enabled**              | string | Specifies if registry is exposed.                                                                             |
+| **externalAccess.hostPrefix**           | string | Specifies prefix for the host address. (default "registry-<cr_name>-<cr_namespace>").                         |
+| **storage**                             | object | Contains configuration of the registry images storage.                                                        |
+| **storage.azure**                       | object | Contains configuration of the Azure storage.                                                                  |
+| **storage.azure.secretName** (required) | string | Specifies the name of the Secret that contains data needed to connect to the Azure storage.                   |
+| **storage.s3**                          | object | Contains configuration of the s3 storage.                                                                     |
+| **storage.s3.bucket** (required)        | string | Specifies the name of the s3 bucket.                                                                          |
+| **storage.s3.region** (required)        | string | Specifies the region of the s3 bucket.                                                                        |
+| **storage.s3.regionEndpoint**           | string | Specifies the endpoint of the s3 region.                                                                      |
+| **storage.s3.encrypt**                  | string | Specifies if data in the bucket is encrypted.                                                                 |
+| **storage.s3.secure**                   | string | Specifies if registry uses the TLS communication with the s3.                                                 |
+| **storage.s3.secretName**               | string | Specifies the name of the Secret that contains data needed to connect to the s3 storage.                      |
 
 **Status:**
 
@@ -77,7 +86,16 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 | **conditions.&#x200b;status** (required)             | string     | Specifies the status of the condition. The value is either `True`, `False`, or `Unknown`.                                                                                                                                                                                                                                                                      |
 | **conditions.&#x200b;type** (required)               | string     | Specifies the condition type in camelCase or in `foo.example.com/CamelCase`. Many **.conditions.type** values are consistent across resources like `Available`, but because arbitrary conditions can be useful (see **.node.status.conditions**), the ability to deconflict is important. The regex it matches is `(dns1123SubdomainFmt/)?(qualifiedNameFmt)`. |
 | **storage**                                          | string     | Type of the used registry images storage.                                                                                                                                                                                                                                                                                                                      |
-| **secretName**                                       | string     | Name of Secret with data needed to connect to Docker Registry.                                                                                                                                                                                                                                                                                                 |
+| **internalAccess**                                   | object     | Contains installed internal access configuration.                                                                                                                                                                                                                                                                                                              |
+| **internalAccess.enabled**                           | string     | Specifies if internal access is enabled.                                                                                                                                                                                                                                                                                                                       |
+| **internalAccess.secretName**                        | string     | Name of the Secret with data needed for internal connection to Docker Registry.                                                                                                                                                                                                                                                                                    |
+| **internalAccess.pushAddress**                       | string     | Address that can be used to push images from inside the cluster.                                                                                                                                                                                                                                                                                               |
+| **internalAccess.pullAddress**                       | string     | Address that can be used by Kubernetes to make a communication with the registry.                                                                                                                                                                                                                                                                                  |
+| **externalAccess**                                   | object     | Contains installed external access configuration.                                                                                                                                                                                                                                                                                                              |
+| **externalAccess.enabled**                           | string     | Specifies if external access is enabled.                                                                                                                                                                                                                                                                                                                       |
+| **externalAccess.secretName**                        | string     | Name of the Secret with data needed for external connection to Docker Registry.                                                                                                                                                                                                                                                                                    |
+| **externalAccess.pushAddress**                       | string     | Address that can be used to push images from outside the cluster.                                                                                                                                                                                                                                                                                              |
+| **externalAccess.pullAddress**                       | string     | Address that can be used by Kubernetes to make a communication with the registry.                                                                                                                                                                                                                                                                                  |
 | **served** (required)                                | string     | Signifies if the current Serverless is managed. Value can be one of `True`, or `False`.                                                                                                                                                                                                                                                                        |
 | **state**                                            | string     | Signifies the current state of Serverless. Value can be one of `Ready`, `Processing`, `Error`, or `Deleting`.                                                                                                                                                                                                                                                  |
 
