@@ -60,7 +60,7 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 
 | Parameter                               | Type   | Description                                                                                                   |
 |-----------------------------------------|--------|---------------------------------------------------------------------------------------------------------------|
-| **externalAccess**                      | object | Contains configuration of the registry external access throw the kyma-gateway Istio Gateway with tls enabled. |
+| **externalAccess**                      | object | Contains configuration of the registry external access through the `kyma-gateway` Istio Gateway with TLS enabled. |
 | **externalAccess.enabled**              | string | Specifies if registry is exposed.                                                                             |
 | **externalAccess.hostPrefix**           | string | Specifies prefix for the host address. (default "registry-<cr_name>-<cr_namespace>").                         |
 | **storage**                             | object | Contains configuration of the registry images storage.                                                        |
