@@ -36,7 +36,6 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		requireEqualFunc(t, sFnVerifyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, v1alpha1.StateProcessing, status.State)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeInstalled,
 			metav1.ConditionUnknown,

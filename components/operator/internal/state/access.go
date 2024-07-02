@@ -13,7 +13,6 @@ import (
 )
 
 func sFnAccessConfiguration(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-	s.setState(v1alpha1.StateProcessing)
 	err := setAccessConfig(ctx, r, s)
 	if err != nil {
 		s.setState(v1alpha1.StateError)

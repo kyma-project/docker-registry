@@ -3,12 +3,17 @@ package state
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/pkg/errors"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+)
+
+var (
+	requeueDuration = time.Second * 3
 )
 
 func GetDockerRegistryOrServed(ctx context.Context, req ctrl.Request, c client.Client) (*v1alpha1.DockerRegistry, error) {

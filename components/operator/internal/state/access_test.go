@@ -52,7 +52,6 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnStorageConfiguration, next)
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
-		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 
 	t.Run("setup node port and use existing username and password", func(t *testing.T) {
@@ -132,7 +131,6 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnStorageConfiguration, next)
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
-		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 
 	t.Run("setup external access", func(t *testing.T) {
@@ -200,7 +198,6 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnStorageConfiguration, next)
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
-		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 
 	t.Run("external access gateway not found error", func(t *testing.T) {
@@ -246,7 +243,6 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnStorageConfiguration, next)
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
-		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 
 		require.Equal(t, "Warning: .spec.externalAccess.enabled is true but the kyma-gateway Gateway in the kyma-system namespace is not found", s.warningBuilder.Build())
 	})

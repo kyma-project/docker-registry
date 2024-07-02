@@ -46,8 +46,7 @@ metadata:
 func Test_sFnVerifyResources(t *testing.T) {
 	t.Run("ready", func(t *testing.T) {
 		s := &systemState{
-			warningBuilder: warning.NewBuilder(),
-			instance:       *testInstalledDockerRegistry.DeepCopy(),
+			instance: *testInstalledDockerRegistry.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
@@ -67,17 +66,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 		next, result, err := sFnVerifyResources(context.Background(), r, s)
 		require.Nil(t, err)
 		require.Nil(t, result)
-		require.Nil(t, next)
-
-		status := s.instance.Status
-		require.Equal(t, v1alpha1.StateReady, status.State)
-		require.Len(t, status.Conditions, 2)
-		requireContainsCondition(t, status,
-			v1alpha1.ConditionTypeInstalled,
-			metav1.ConditionTrue,
-			v1alpha1.ConditionReasonInstalled,
-			"DockerRegistry installed",
-		)
+		requireEqualFunc(t, sFnUpdateFinalStatus, next)
 	})
 
 	t.Run("warning", func(t *testing.T) {
@@ -100,16 +89,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 		next, result, err := sFnVerifyResources(context.Background(), r, s)
 		require.Nil(t, err)
 		require.Nil(t, result)
-		require.Nil(t, next)
-
-		status := s.instance.Status
-		require.Equal(t, v1alpha1.StateWarning, status.State)
-		requireContainsCondition(t, status,
-			v1alpha1.ConditionTypeInstalled,
-			metav1.ConditionTrue,
-			v1alpha1.ConditionReasonInstalled,
-			s.warningBuilder.Build(),
-		)
+		requireEqualFunc(t, sFnUpdateFinalStatus, next)
 	})
 
 	t.Run("verify error", func(t *testing.T) {

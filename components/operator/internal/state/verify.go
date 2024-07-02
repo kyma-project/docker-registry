@@ -28,22 +28,5 @@ func sFnVerifyResources(_ context.Context, r *reconciler, s *systemState) (state
 		return requeueAfter(requeueDuration)
 	}
 
-	warning := s.warningBuilder.Build()
-	if warning != "" {
-		s.setState(v1alpha1.StateWarning)
-		s.instance.UpdateConditionTrue(
-			v1alpha1.ConditionTypeInstalled,
-			v1alpha1.ConditionReasonInstalled,
-			warning,
-		)
-		return stop()
-	}
-
-	s.setState(v1alpha1.StateReady)
-	s.instance.UpdateConditionTrue(
-		v1alpha1.ConditionTypeInstalled,
-		v1alpha1.ConditionReasonInstalled,
-		"DockerRegistry installed",
-	)
-	return stop()
+	return nextState(sFnUpdateFinalStatus)
 }

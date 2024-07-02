@@ -11,7 +11,6 @@ import (
 )
 
 func sFnStorageConfiguration(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-	s.setState(v1alpha1.StateProcessing)
 	err := prepareStorage(ctx, r, s)
 	if err != nil {
 		s.setState(v1alpha1.StateError)
@@ -23,7 +22,7 @@ func sFnStorageConfiguration(ctx context.Context, r *reconciler, s *systemState)
 		return stopWithEventualError(err)
 	}
 
-	return nextState(sFnConfigurationStatus)
+	return nextState(sFnUpdateConfigurationStatus)
 }
 
 func prepareStorage(ctx context.Context, r *reconciler, s *systemState) error {

@@ -38,10 +38,9 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnConfigurationStatus, next)
+		requireEqualFunc(t, sFnUpdateConfigurationStatus, next)
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
-		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 
 	t.Run("internal registry using azure storage", func(t *testing.T) {
@@ -95,10 +94,9 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnConfigurationStatus, next)
+		requireEqualFunc(t, sFnUpdateConfigurationStatus, next)
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
-		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 	t.Run("internal registry using s3 storage", func(t *testing.T) {
 		s3Secret := &corev1.Secret{
@@ -161,9 +159,8 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnConfigurationStatus, next)
+		requireEqualFunc(t, sFnUpdateConfigurationStatus, next)
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
-		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 }
