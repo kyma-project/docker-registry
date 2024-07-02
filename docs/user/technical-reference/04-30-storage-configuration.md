@@ -110,11 +110,11 @@ metadata:
   namespace: kyma-system
 spec:
   storage:
-      gcs:
-        bucket: "bucketName"
-        secretName: "gcs-secret"
-        rootDirectory: "dir"
-        chunkSize: 5242880
+    gcs:
+      bucket: "bucketName"
+      secretName: "gcs-secret"
+      rootDirectory: "dir"
+      chunkSize: 5242880
 ```
 
 ### Sample Secret
