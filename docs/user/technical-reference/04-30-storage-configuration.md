@@ -126,5 +126,5 @@ metadata:
   name: gcs-secret
   namespace: kyma-system
 data:
-   key: "Z3Njc2VjcmV0"
+   accountkey: "Z3Njc2VjcmV0"
 ```
