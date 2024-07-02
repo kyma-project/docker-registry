@@ -7,6 +7,7 @@ import (
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
+	"k8s.io/client-go/tools/record"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 )
 
@@ -109,4 +110,36 @@ func getStorageField(storage *v1alpha1.Storage, instance *v1alpha1.DockerRegistr
 
 	}
 	return fieldToUpdate{storageName, &instance.Status.Storage, "Storage type", ""}
+}
+
+type fieldsToUpdate []fieldToUpdate
+
+type fieldToUpdate struct {
+	specField    string
+	statusField  *string
+	fieldName    string
+	defaultValue string
+}
+
+func updateStatusFields(eventRecorder record.EventRecorder, instance *v1alpha1.DockerRegistry, fields fieldsToUpdate) {
+	for _, field := range fields {
+		// set default value if spec field is empty
+		if field.specField == "" {
+			field.specField = field.defaultValue
+		}
+
+		if field.specField != *field.statusField {
+			oldStatusValue := *field.statusField
+			*field.statusField = field.specField
+			eventRecorder.Eventf(
+				instance,
+				"Normal",
+				string(v1alpha1.ConditionReasonConfiguration),
+				"%s set from '%s' to '%s'",
+				field.fieldName,
+				oldStatusValue,
+				field.specField,
+			)
+		}
+	}
 }

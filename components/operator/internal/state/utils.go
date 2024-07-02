@@ -3,7 +3,6 @@ package state
 import (
 	"context"
 	"fmt"
-	"reflect"
 	"time"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
@@ -50,20 +49,6 @@ func GetServedDockerRegistry(ctx context.Context, c client.Client) (*v1alpha1.Do
 	}
 
 	return nil, nil
-}
-
-func updateDockerRegistryWithoutStatus(ctx context.Context, r *reconciler, s *systemState) error {
-	return r.client.Update(ctx, &s.instance)
-}
-
-func updateDockerRegistryStatus(ctx context.Context, r *reconciler, s *systemState) error {
-	if !reflect.DeepEqual(s.instance.Status, s.statusSnapshot) {
-		err := r.client.Status().Update(ctx, &s.instance)
-		emitEvent(r, s)
-		s.saveStatusSnapshot()
-		return err
-	}
-	return nil
 }
 
 func resolveRegistryHost(ctx context.Context, r *reconciler, s *systemState) (string, error) {

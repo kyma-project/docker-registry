@@ -1,10 +1,10 @@
 package state
 
 import (
+	"context"
+	"reflect"
 	"time"
 
-	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
-	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
@@ -34,34 +34,16 @@ func requeueAfter(duration time.Duration) (stateFn, *ctrl.Result, error) {
 	}, nil
 }
 
-type fieldsToUpdate []fieldToUpdate
-
-type fieldToUpdate struct {
-	specField    string
-	statusField  *string
-	fieldName    string
-	defaultValue string
+func updateDockerRegistryWithoutStatus(ctx context.Context, r *reconciler, s *systemState) error {
+	return r.client.Update(ctx, &s.instance)
 }
 
-func updateStatusFields(eventRecorder record.EventRecorder, instance *v1alpha1.DockerRegistry, fields fieldsToUpdate) {
-	for _, field := range fields {
-		// set default value if spec field is empty
-		if field.specField == "" {
-			field.specField = field.defaultValue
-		}
-
-		if field.specField != *field.statusField {
-			oldStatusValue := *field.statusField
-			*field.statusField = field.specField
-			eventRecorder.Eventf(
-				instance,
-				"Normal",
-				string(v1alpha1.ConditionReasonConfiguration),
-				"%s set from '%s' to '%s'",
-				field.fieldName,
-				oldStatusValue,
-				field.specField,
-			)
-		}
+func updateDockerRegistryStatus(ctx context.Context, r *reconciler, s *systemState) error {
+	if !reflect.DeepEqual(s.instance.Status, s.statusSnapshot) {
+		err := r.client.Status().Update(ctx, &s.instance)
+		emitEvent(r, s)
+		s.saveStatusSnapshot()
+		return err
 	}
+	return nil
 }
