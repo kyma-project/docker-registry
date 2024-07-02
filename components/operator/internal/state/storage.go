@@ -32,6 +32,8 @@ func prepareStorage(ctx context.Context, r *reconciler, s *systemState) error {
 			return prepareAzureStorage(ctx, r, s)
 		} else if s.instance.Spec.Storage.S3 != nil {
 			return prepareS3Storage(ctx, r, s)
+		} else if s.instance.Spec.Storage.GCS != nil {
+			return prepareGCSStorage(ctx, r, s)
 		}
 	}
 	s.flagsBuilder.WithFilesystem()
@@ -62,5 +64,17 @@ func prepareS3Storage(ctx context.Context, r *reconciler, s *systemState) error 
 		SecretKey: string(s3Secret.Data["secretKey"]),
 	}
 	s.flagsBuilder.WithS3(s.instance.Spec.Storage.S3, storageS3Secret)
+	return nil
+}
+
+func prepareGCSStorage(ctx context.Context, r *reconciler, s *systemState) error {
+	gcsSecret, err := registry.GetSecret(ctx, r.client, s.instance.Spec.Storage.GCS.SecretName, s.instance.Namespace)
+	if err != nil {
+		return errors.Wrap(err, fmt.Sprintf("while fetching gcs storage secret from %s", s.instance.Namespace))
+	}
+	storageGCSSecret := &v1alpha1.StorageGCSSecrets{
+		Key: string(gcsSecret.Data["key"]),
+	}
+	s.flagsBuilder.WithGCS(s.instance.Spec.Storage.GCS, storageGCSSecret)
 	return nil
 }

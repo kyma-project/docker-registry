@@ -19,6 +19,7 @@ type FlagsBuilder interface {
 	WithAzure(secret *v1alpha1.StorageAzureSecrets) *flagsBuilder
 	WithS3(config *v1alpha1.StorageS3, secret *v1alpha1.StorageS3Secrets) *flagsBuilder
 	WithFilesystem() *flagsBuilder
+	WithGCS(config *v1alpha1.StorageGCS, secret *v1alpha1.StorageGCSSecrets) *flagsBuilder
 }
 
 type flagsBuilder struct {
@@ -137,5 +138,24 @@ func (fb *flagsBuilder) WithS3(config *v1alpha1.StorageS3, secret *v1alpha1.Stor
 func (fb *flagsBuilder) WithFilesystem() *flagsBuilder {
 	fb.flags["storage"] = "filesystem"
 	fb.flags["configData.storage.filesystem.rootdirectory"] = "/var/lib/registry"
+	return fb
+}
+
+func (fb *flagsBuilder) WithGCS(config *v1alpha1.StorageGCS, secret *v1alpha1.StorageGCSSecrets) *flagsBuilder {
+	fb.flags["storage"] = "gcs"
+	fb.flags["gcs.bucket"] = config.Bucket
+
+	if config.Rootdirectory != "" {
+		fb.flags["gcs.rootDirectory"] = config.Rootdirectory
+	}
+
+	if config.Chunksize != 0 {
+		fb.flags["gcs.chunkSize"] = config.Chunksize
+	}
+
+	if secret != nil {
+		fb.flags["secrets.gcs.key"] = secret.Key
+	}
+
 	return fb
 }

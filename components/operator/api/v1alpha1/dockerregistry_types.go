@@ -43,6 +43,7 @@ type ExternalAccess struct {
 type Storage struct {
 	Azure *StorageAzure `json:"azure,omitempty"`
 	S3    *StorageS3    `json:"s3,omitempty"`
+	GCS   *StorageGCS   `json:"gcp,omitempty"`
 }
 
 type StorageAzure struct {
@@ -53,6 +54,17 @@ type StorageAzureSecrets struct {
 	AccountName string
 	AccountKey  string
 	Container   string
+}
+
+type StorageGCSSecrets struct {
+	Key string `json:"key"`
+}
+
+type StorageGCS struct {
+	Bucket        string `json:"bucket"`
+	SecretName    string `json:"secretName,omitempty"`
+	Rootdirectory string `json:"rootdirectory,omitempty"`
+	Chunksize     int    `json:"chunksize,omitempty"`
 }
 
 type StorageS3 struct {

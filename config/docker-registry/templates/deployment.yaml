@@ -168,6 +168,24 @@ spec:
             - name: REGISTRY_STORAGE_S3_SECURE
               value: {{ .Values.s3.secure | quote }}
           {{- end }}
+  {{- else if eq .Values.storage "gcs" }}
+            {{- if .Values.secrets.gcs.key }}
+            - name: REGISTRY_STORAGE_GCS_KEYFILE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "docker-registry.fullname" . }}-secret
+                  key: gcsKeyFile
+            {{- end }}
+            - name: REGISTRY_STORAGE_GCS_BUCKET
+              value: {{ required ".Values.gcp.bucket is required" .Values.gcp.bucket }}
+            {{- if .Values.secrets.gcs.rootDirectory }}
+            - name: REGISTRY_STORAGE_GCS_ROOTDIRECTORY
+              value: {{ .Values.gcp.rootDirectory }}
+            {{- end }}
+            {{- if .Values.gcp.chunkSize }}
+            - name: REGISTRY_STORAGE_GCS_CHUNKSIZE
+              value: {{ .Values.gcp.chunkSize}}
+            {{- end }}
 {{- else if eq .Values.storage "swift" }}
             - name: REGISTRY_STORAGE_SWIFT_AUTHURL
               value: {{ required ".Values.swift.authurl is required" .Values.swift.authurl }}

@@ -163,4 +163,64 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
 	})
+	t.Run("internal registry using gcs storage", func(t *testing.T) {
+		gcsSecret := &corev1.Secret{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "gcsSecret",
+				Namespace: "kyma-system",
+			},
+			Data: map[string][]byte{
+				"key": []byte("key"),
+			},
+		}
+
+		s := &systemState{
+			instance: v1alpha1.DockerRegistry{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "kyma-system",
+				},
+				Spec: v1alpha1.DockerRegistrySpec{
+					Storage: &v1alpha1.Storage{
+						GCS: &v1alpha1.StorageGCS{
+							Bucket:        "gcsBucket",
+							SecretName:    "gcsSecret",
+							Rootdirectory: "dir",
+							Chunksize:     10,
+						},
+					},
+				},
+			},
+			statusSnapshot: v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:   chart.NewFlagsBuilder(),
+		}
+		r := &reconciler{
+			k8s: k8s{client: fake.NewClientBuilder().WithObjects(gcsSecret).Build()},
+			log: zap.NewNop().Sugar(),
+		}
+
+		expectedFlags := map[string]interface{}{
+			"storage": "gcs",
+			"persistence": map[string]interface{}{
+				"enabled": false,
+			},
+			"gcs": map[string]interface{}{
+				"bucket":        "gcsBucket",
+				"rootDirectory": "dir",
+				"chunkSize":     10,
+			},
+			"secrets": map[string]interface{}{
+				"gcs": map[string]interface{}{
+					"key": "key",
+				},
+			},
+		}
+
+		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
+		require.NoError(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnConfigurationStatus, next)
+
+		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
+	})
 }
