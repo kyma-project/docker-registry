@@ -73,7 +73,7 @@ func prepareGCSStorage(ctx context.Context, r *reconciler, s *systemState) error
 		return errors.Wrap(err, fmt.Sprintf("while fetching gcs storage secret from %s", s.instance.Namespace))
 	}
 	storageGCSSecret := &v1alpha1.StorageGCSSecrets{
-		Key: string(gcsSecret.Data["key"]),
+		AccountKey: string(gcsSecret.Data["accountkey"]),
 	}
 	s.flagsBuilder.WithGCS(s.instance.Spec.Storage.GCS, storageGCSSecret)
 	return nil

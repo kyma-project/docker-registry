@@ -169,7 +169,7 @@ spec:
               value: {{ .Values.s3.secure | quote }}
           {{- end }}
   {{- else if eq .Values.storage "gcs" }}
-            {{- if .Values.secrets.gcs.key }}
+            {{- if .Values.secrets.gcs.accountkey }}
             - name: REGISTRY_STORAGE_GCS_KEYFILE
               valueFrom:
                 secretKeyRef:

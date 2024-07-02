@@ -154,7 +154,7 @@ func (fb *flagsBuilder) WithGCS(config *v1alpha1.StorageGCS, secret *v1alpha1.St
 	}
 
 	if secret != nil {
-		fb.flags["secrets.gcs.key"] = secret.Key
+		fb.flags["secrets.gcs.accountkey"] = secret.AccountKey
 	}
 
 	return fb

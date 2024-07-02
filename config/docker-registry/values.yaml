@@ -100,7 +100,7 @@ storage: filesystem
 #     secretKey: ""
 # Secrets for Google Cloud
 #   gcs:
-#     key: ""
+#     accountkey: ""
 
 # Secrets for Swift username and password
 #   swift:

@@ -170,7 +170,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 				Namespace: "kyma-system",
 			},
 			Data: map[string][]byte{
-				"key": []byte("key"),
+				"accountkey": []byte("accountkey"),
 			},
 		}
 
@@ -210,7 +210,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			},
 			"secrets": map[string]interface{}{
 				"gcs": map[string]interface{}{
-					"key": "key",
+					"accountkey": "accountkey",
 				},
 			},
 		}

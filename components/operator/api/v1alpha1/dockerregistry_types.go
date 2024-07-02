@@ -57,7 +57,7 @@ type StorageAzureSecrets struct {
 }
 
 type StorageGCSSecrets struct {
-	Key string `json:"key"`
+	AccountKey string `json:"accountkey"`
 }
 
 type StorageGCS struct {
