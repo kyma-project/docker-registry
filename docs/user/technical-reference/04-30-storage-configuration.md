@@ -109,8 +109,8 @@ metadata:
   name: default
   namespace: kyma-system
 spec:
-    storage:
-        gcs:
+  storage:
+      gcs:
         bucket: "bucketName"
         secretName: "gcs-secret"
         rootDirectory: "dir"
