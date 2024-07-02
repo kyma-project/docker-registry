@@ -177,7 +177,7 @@ spec:
                   key: gcsKeyFile
             {{- end }}
             - name: REGISTRY_STORAGE_GCS_BUCKET
-              value: {{ required ".Values.gcp.bucket is required" .Values.gcs.bucket }}
+              value: {{ required ".Values.gcs.bucket is required" .Values.gcs.bucket }}
             {{- if .Values.secrets.gcs.rootDirectory }}
             - name: REGISTRY_STORAGE_GCS_ROOTDIRECTORY
               value: {{ .Values.gcs.rootDirectory }}
