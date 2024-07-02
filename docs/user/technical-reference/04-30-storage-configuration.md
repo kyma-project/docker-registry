@@ -95,3 +95,36 @@ data:
   accessKey: "YWNjZXNzS2V5"
   secretKey: "c2VjcmV0S2V5"
 ```
+
+## GCS
+
+Google cloud storage can be configured using the `spec.storage.gcs` field. The only required field is `bucket` which contains the GCS bucket name. This storage type allows you to provide additional optional configuration, which is described in [DockerRegistry CR](../resources/06-20-docker-registry-cr.md). One of the optional configurations is the `secretName` that contains the authentication method to the GCS storage which is a private service account key in JSON format.
+
+### Sample CR
+
+```yaml
+apiVersion: operator.kyma-project.io/v1alpha1
+kind: DockerRegistry
+metadata:
+  name: default
+  namespace: kyma-system
+spec:
+    storage:
+        gcs:
+        bucket: "bucketName"
+        secretName: "gcs-secret"
+        rootDirectory: "dir"
+        chunkSize: 5242880
+```
+
+### Sample Secret
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gcs-secret
+  namespace: kyma-system
+data:
+   key: "Z3Njc2VjcmV0"
+```
