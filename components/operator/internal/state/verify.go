@@ -28,5 +28,5 @@ func sFnVerifyResources(_ context.Context, r *reconciler, s *systemState) (state
 		return requeueAfter(requeueDuration)
 	}
 
-	return nextState(sFnUpdateStatus)
+	return nextState(sFnUpdateFinalStatus)
 }

@@ -35,6 +35,8 @@ func Test_sFnInitialize(t *testing.T) {
 		require.Nil(t, err)
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnAccessConfiguration, next)
+
+		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 
 	t.Run("setup and return next step sFnDeleteResources", func(t *testing.T) {
@@ -63,5 +65,7 @@ func Test_sFnInitialize(t *testing.T) {
 		require.Nil(t, err)
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnDeleteResources, next)
+
+		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 }

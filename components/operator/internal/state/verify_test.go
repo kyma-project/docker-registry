@@ -66,7 +66,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 		next, result, err := sFnVerifyResources(context.Background(), r, s)
 		require.Nil(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnUpdateStatus, next)
+		requireEqualFunc(t, sFnUpdateFinalStatus, next)
 	})
 
 	t.Run("warning", func(t *testing.T) {
@@ -89,7 +89,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 		next, result, err := sFnVerifyResources(context.Background(), r, s)
 		require.Nil(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnUpdateStatus, next)
+		requireEqualFunc(t, sFnUpdateFinalStatus, next)
 	})
 
 	t.Run("verify error", func(t *testing.T) {

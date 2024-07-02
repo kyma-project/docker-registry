@@ -43,7 +43,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		c := fake.NewClientBuilder().Build()
 		eventRecorder := record.NewFakeRecorder(10)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
-		next, result, err := sFnUpdateStatus(context.TODO(), r, s)
+		next, result, err := sFnUpdateFinalStatus(context.TODO(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
 		require.Nil(t, next)
@@ -92,7 +92,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		c := fake.NewClientBuilder().Build()
 		eventRecorder := record.NewFakeRecorder(10)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
-		next, result, err := sFnUpdateStatus(context.TODO(), r, s)
+		next, result, err := sFnUpdateFinalStatus(context.TODO(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
 		require.Nil(t, next)
@@ -154,7 +154,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 			},
 		}
 
-		next, result, err := sFnUpdateStatus(context.Background(), r, s)
+		next, result, err := sFnUpdateFinalStatus(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
 		require.Nil(t, next)

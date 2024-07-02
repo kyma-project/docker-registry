@@ -17,7 +17,7 @@ const (
 	FilesystemStorageName = "filesystem"
 )
 
-func sFnUpdateStatus(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
+func sFnUpdateFinalStatus(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
 	err := updateStatus(ctx, r, s)
 	if err != nil {
 		return stopWithEventualError(err)
