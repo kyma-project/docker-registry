@@ -218,9 +218,8 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnConfigurationStatus, next)
+		requireEqualFunc(t, sFnUpdateConfigurationStatus, next)
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
-		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 }
