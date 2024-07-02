@@ -171,10 +171,7 @@ spec:
   {{- else if eq .Values.storage "gcs" }}
             {{- if .Values.secrets.gcs.accountkey }}
             - name: REGISTRY_STORAGE_GCS_KEYFILE
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "docker-registry.fullname" . }}-secret
-                  key: gcsKeyFile
+              value: /gcs_secret/keyfile.json
             {{- end }}
             - name: REGISTRY_STORAGE_GCS_BUCKET
               value: {{ required ".Values.gcs.bucket is required" .Values.gcs.bucket }}
@@ -214,6 +211,11 @@ spec:
               name: tls-cert
               readOnly: true
 {{- end }}
+{{- if .Values.secrets.gcs.accountkey}}
+            - mountPath: /gcs_secret
+              name: {{ template "docker-registry.fullname" . }}-secret
+              readOnly: true
+{{- end }}
 {{- with .Values.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
 {{- end }}
@@ -243,6 +245,11 @@ spec:
         - name: tls-cert
           secret:
             secretName: {{ .Values.tlsSecretName }}
+{{- end }}
+{{- if .Values.secrets.gcs.accountkey }}
+        - name: {{ template "docker-registry.fullname" . }}-secret
+          secret:
+            secretName: {{ template "docker-registry.fullname" . }}-secret
 {{- end }}
 {{- with .Values.extraVolumes }}
         {{- toYaml . | nindent 8 }}
