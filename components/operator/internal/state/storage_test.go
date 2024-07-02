@@ -205,7 +205,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			},
 			"gcs": map[string]interface{}{
 				"bucket":        "gcsBucket",
-				"rootDirectory": "dir",
+				"rootdirectory": "dir",
 				"chunkSize":     10,
 			},
 			"secrets": map[string]interface{}{

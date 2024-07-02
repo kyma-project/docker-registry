@@ -146,7 +146,7 @@ func (fb *flagsBuilder) WithGCS(config *v1alpha1.StorageGCS, secret *v1alpha1.St
 	fb.flags["gcs.bucket"] = config.Bucket
 
 	if config.Rootdirectory != "" {
-		fb.flags["gcs.rootDirectory"] = config.Rootdirectory
+		fb.flags["gcs.rootdirectory"] = config.Rootdirectory
 	}
 
 	if config.Chunksize != 0 {

@@ -175,9 +175,9 @@ spec:
             {{- end }}
             - name: REGISTRY_STORAGE_GCS_BUCKET
               value: {{ required ".Values.gcs.bucket is required" .Values.gcs.bucket }}
-            {{- if .Values.secrets.gcs.rootDirectory }}
+            {{- if .Values.gcs.rootdirectory }}
             - name: REGISTRY_STORAGE_GCS_ROOTDIRECTORY
-              value: {{ .Values.gcs.rootDirectory }}
+              value: {{ .Values.gcs.rootdirectory }}
             {{- end }}
             {{- if .Values.gcs.chunkSize }}
             - name: REGISTRY_STORAGE_GCS_CHUNKSIZE
@@ -211,7 +211,7 @@ spec:
               name: tls-cert
               readOnly: true
 {{- end }}
-{{- if .Values.secrets.gcs.accountkey}}
+{{- if and .Values.secrets.gcs .Values.secrets.gcs.accountkey }}
             - mountPath: /gcs_secret
               name: {{ template "docker-registry.fullname" . }}-secret
               readOnly: true
@@ -246,7 +246,7 @@ spec:
           secret:
             secretName: {{ .Values.tlsSecretName }}
 {{- end }}
-{{- if .Values.secrets.gcs.accountkey }}
+{{- if and .Values.secrets.gcs .Values.secrets.gcs.accountkey }}
         - name: {{ template "docker-registry.fullname" . }}-secret
           secret:
             secretName: {{ template "docker-registry.fullname" . }}-secret

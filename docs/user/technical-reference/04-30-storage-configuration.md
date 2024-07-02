@@ -113,7 +113,7 @@ spec:
     gcs:
       bucket: "bucketName"
       secretName: "gcs-secret"
-      rootDirectory: "dir"
+      rootdirectory: "dir"
       chunkSize: 5242880
 ```
 
