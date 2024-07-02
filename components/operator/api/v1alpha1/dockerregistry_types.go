@@ -43,7 +43,7 @@ type ExternalAccess struct {
 type Storage struct {
 	Azure *StorageAzure `json:"azure,omitempty"`
 	S3    *StorageS3    `json:"s3,omitempty"`
-	GCS   *StorageGCS   `json:"gcp,omitempty"`
+	GCS   *StorageGCS   `json:"gcs,omitempty"`
 }
 
 type StorageAzure struct {

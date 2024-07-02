@@ -177,14 +177,14 @@ spec:
                   key: gcsKeyFile
             {{- end }}
             - name: REGISTRY_STORAGE_GCS_BUCKET
-              value: {{ required ".Values.gcp.bucket is required" .Values.gcp.bucket }}
+              value: {{ required ".Values.gcp.bucket is required" .Values.gcs.bucket }}
             {{- if .Values.secrets.gcs.rootDirectory }}
             - name: REGISTRY_STORAGE_GCS_ROOTDIRECTORY
-              value: {{ .Values.gcp.rootDirectory }}
+              value: {{ .Values.gcs.rootDirectory }}
             {{- end }}
-            {{- if .Values.gcp.chunkSize }}
+            {{- if .Values.gcs.chunkSize }}
             - name: REGISTRY_STORAGE_GCS_CHUNKSIZE
-              value: {{ .Values.gcp.chunkSize}}
+              value: {{ .Values.gcs.chunkSize}}
             {{- end }}
 {{- else if eq .Values.storage "swift" }}
             - name: REGISTRY_STORAGE_SWIFT_AUTHURL
