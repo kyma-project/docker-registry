@@ -168,6 +168,21 @@ spec:
             - name: REGISTRY_STORAGE_S3_SECURE
               value: {{ .Values.s3.secure | quote }}
           {{- end }}
+  {{- else if eq .Values.storage "gcs" }}
+            {{- if .Values.secrets.gcs.accountkey }}
+            - name: REGISTRY_STORAGE_GCS_KEYFILE
+              value: /gcs_secret/keyfile.json
+            {{- end }}
+            - name: REGISTRY_STORAGE_GCS_BUCKET
+              value: {{ required ".Values.gcs.bucket is required" .Values.gcs.bucket }}
+            {{- if .Values.gcs.rootdirectory }}
+            - name: REGISTRY_STORAGE_GCS_ROOTDIRECTORY
+              value: {{ .Values.gcs.rootdirectory }}
+            {{- end }}
+            {{- if .Values.gcs.chunkSize }}
+            - name: REGISTRY_STORAGE_GCS_CHUNKSIZE
+              value: {{ .Values.gcs.chunkSize}}
+            {{- end }}
 {{- else if eq .Values.storage "swift" }}
             - name: REGISTRY_STORAGE_SWIFT_AUTHURL
               value: {{ required ".Values.swift.authurl is required" .Values.swift.authurl }}
@@ -194,6 +209,11 @@ spec:
 {{- if .Values.tlsSecretName }}
             - mountPath: /etc/ssl/docker
               name: tls-cert
+              readOnly: true
+{{- end }}
+{{- if and .Values.secrets.gcs .Values.secrets.gcs.accountkey }}
+            - mountPath: /gcs_secret
+              name: {{ template "docker-registry.fullname" . }}-secret
               readOnly: true
 {{- end }}
 {{- with .Values.extraVolumeMounts }}
@@ -225,6 +245,11 @@ spec:
         - name: tls-cert
           secret:
             secretName: {{ .Values.tlsSecretName }}
+{{- end }}
+{{- if and .Values.secrets.gcs .Values.secrets.gcs.accountkey }}
+        - name: {{ template "docker-registry.fullname" . }}-secret
+          secret:
+            secretName: {{ template "docker-registry.fullname" . }}-secret
 {{- end }}
 {{- with .Values.extraVolumes }}
         {{- toYaml . | nindent 8 }}

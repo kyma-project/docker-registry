@@ -98,6 +98,10 @@ storage: filesystem
 #   s3:
 #     accessKey: ""
 #     secretKey: ""
+# Secrets for Google Cloud
+#   gcs:
+#     accountkey: ""
+
 # Secrets for Swift username and password
 #   swift:
 #     username: ""
@@ -115,6 +119,13 @@ storage: filesystem
 # swift:
 #  authurl: http://swift.example.com/
 #  container: my-container
+
+
+# gcs:
+#  bucket: ""
+#  rootdirectory: ""
+#  chunkSize: 5242880
+
 
 # https://docs.docker.com/registry/configuration/
 configData: # example: https://github.com/docker/distribution/blob/master/cmd/registry/config-dev.yml

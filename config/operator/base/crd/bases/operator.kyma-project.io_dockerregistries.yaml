@@ -80,6 +80,19 @@ spec:
                     required:
                     - secretName
                     type: object
+                  gcs:
+                    properties:
+                      bucket:
+                        type: string
+                      chunksize:
+                        type: integer
+                      rootdirectory:
+                        type: string
+                      secretName:
+                        type: string
+                    required:
+                    - bucket
+                    type: object
                   s3:
                     properties:
                       bucket:
