@@ -96,7 +96,7 @@ data:
   secretKey: "c2VjcmV0S2V5"
 ```
 
-## GCS
+## Google Cloud Storage
 
 Google Cloud Storage (GCS) can be configured using the **spec.storage.gcs** field. The only required field is the **bucket**, which contains the GCS bucket name. This storage type allows you to provide additional optional configuration described in [DockerRegistry CR](../resources/06-20-docker-registry-cr.md). One of the optional configurations is the **secretName**, which contains the authentication method to the GCS storage, which is a private service account key in the JSON format.
 
