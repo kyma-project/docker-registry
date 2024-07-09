@@ -18,26 +18,30 @@ This tutorial shows how you can expose the registry to the outside of the cluste
     >[!NOTE] 
     > You can find your cluster address in the `kyma-system/kyma-gateway` gateway resource.
 
-1. Expose the registry service using a VirtualService CR based on the `kyma-gateway` gateway in the `kyma-system` namespace:
+1. Expose the registry service by changing the `spec.externalAccess.enabled` flag to true. Optionally, you could also change the host name:
 
     ```bash
     kubectl apply -n kyma-system -f - <<EOF
-    apiVersion: networking.istio.io/v1beta1
-    kind: VirtualService
+    apiVersion: operator.kyma-project.io/v1alpha1
+    kind: DockerRegistry
     metadata:
-        name: registry-default-kyma-system
+      name: default
+      namespace: kyma-system
     spec:
-        gateways:
-        - kyma-system/kyma-gateway
-        hosts:
-        - registry-default-kyma-system.${CLUSTER_ADDRESS}
-        http:
-        - route:
-            - destination:
-                host: dockerregistry.kyma-system.svc.cluster.local
-                port:
-                    number: 5000
+      externalAccess:
+        enabled: true
+        hostPrefix: my-registry
     EOF
+    ```
+   
+   Once DockerRegistry CR becomes `Ready`, you will see a secret name that shall be used as `ImagePullSecret` when scheduling workloads in the cluster.
+    ```yaml
+    ...
+    status:
+      externalAccess:
+        enabled: "True"
+        ...
+        secretName: dockerregistry-config-external
     ```
 
 2. Log in to the registry using the docker-cli:
@@ -45,41 +49,24 @@ This tutorial shows how you can expose the registry to the outside of the cluste
     ```bash
     export REGISTRY_USERNAME=$(kubectl get secrets -n kyma-system dockerregistry-config -o jsonpath={.data.username} | base64 -d)
     export REGISTRY_PASSWORD=$(kubectl get secrets -n kyma-system dockerregistry-config -o jsonpath={.data.password} | base64 -d)
-    docker login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} registry-default-kyma-system.${CLUSTER_ADDRESS}
+    docker login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} my-registry.${CLUSTER_ADDRESS}
     ```
 
 3. Rename the image to contain the registry address:
 
     ```bash
     export IMAGE_NAME=<IMAGE_NAME> # put your image name here
-    docker tag ${IMAGE_NAME} registry-default-kyma-system.${CLUSTER_ADDRESS}/${IMAGE_NAME}
+    docker tag ${IMAGE_NAME} my-registry.${CLUSTER_ADDRESS}/${IMAGE_NAME}
     ```
 
-4. Create the registry `auth` Secret:
+4. Push the image to the registry:
 
     ```bash
-    export REGISTRY_AUTH=$(echo -n "${REGISTRY_USERNAME}:${REGISTRY_PASSWORD}" | base64)
-    export DOCKER_CONFIG_JSON=$(echo -n '{"auths": {"registry-default-kyma-system.'${CLUSTER_ADDRESS}'": {"auth": "'${REGISTRY_AUTH}'"}}}' | base64)
-
-    kubectl apply -f - <<EOF
-    apiVersion: v1
-    kind: Secret
-    metadata:
-        name: exposed-registry-auth
-    data:
-        .dockerconfigjson: ${DOCKER_CONFIG_JSON}
-    type: kubernetes.io/dockerconfigjson
-    EOF
-    ```
-
-5. Push the image to the registry:
-
-    ```bash
-    docker push registry-default-kyma-system.${CLUSTER_ADDRESS}/${IMAGE_NAME}
+    docker push my-registry.${CLUSTER_ADDRESS}/${IMAGE_NAME}
     ```
 
 6. Create a Pod using the image from Docker Registry:
 
     ```bash
-    kubectl run my-pod --image=registry-default-kyma-system.${CLUSTER_ADDRESS}/${IMAGE_NAME} --overrides='{ "spec": { "imagePullSecrets": [ { "name": "exposed-registry-auth" } ] } }'
+    kubectl run my-pod --image=my-registry.${CLUSTER_ADDRESS}/${IMAGE_NAME} --overrides='{ "spec": { "imagePullSecrets": [ { "name": "dockerregistry-config-external" } ] } }'
     ```
