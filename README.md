@@ -7,8 +7,8 @@
 
 ## Overview
 
-Docker Registry module aims to provide a lightweight, open-source Docker registry for storing and distributing container images in kubernetes environment. It could be used in development and testing environments where a full-fledged, highly-available, production-grade registry is not necessary (We do not recommend using it in production environments).
-Use the Docker Registry module as a part of a Kyma or Kubernetes runtimes to manage container images that are deployed within the cluster. This is particularly useful for self-contained development clusters or for testing deployments in an isolated system.
+Docker Registry module aims to provide a lightweight, open-source Docker registry for storing and distributing container images in kubernetes environment. It could be used in self-contained development clusters or testing environments allowing you to test deployments in an isolated system. 
+Usage on production clusters, where a full-fledged, highly-available, production-grade registry is necessary, is not recomended.
 
 Docker Registry module comes with a dedicated kubernetes operator for efortless installation and upgrades. It manages the lifecycle of the Docker Registry resources according to the desired specification expressed via dedicated `Dockerregistry` Custom Resource. Read more about configuration options in the [user documentation](./docs/user). 
 
