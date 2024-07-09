@@ -9,8 +9,8 @@
 
 Docker Registry module aims to provide a lightweight, open-source Docker registry for storing and distributing container images in kubernetes environment. It could be used in self-contained development clusters or testing environments allowing you to test deployments in an isolated system. 
 
->> Warning
->> Do not use on production clusters, where a full-fledged, highly-available, production-grade registry is necessary.
+> [!WARNING]  
+> Do not use on production clusters, where a full-fledged, highly-available, production-grade registry is necessary.
 
 Docker Registry module comes with a dedicated kubernetes operator for efortless installation and upgrades. It manages the lifecycle of the Docker Registry resources according to the desired specification expressed via dedicated `Dockerregistry` Custom Resource. Read more about configuration options in the [user documentation](./docs/user). 
 
