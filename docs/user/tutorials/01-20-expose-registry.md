@@ -47,8 +47,8 @@ This tutorial shows how you can expose the registry to the outside of the cluste
 2. Log in to the registry using the docker-cli:
 
     ```bash
-    export REGISTRY_USERNAME=$(kubectl get secrets -n kyma-system dockerregistry-config -o jsonpath={.data.username} | base64 -d)
-    export REGISTRY_PASSWORD=$(kubectl get secrets -n kyma-system dockerregistry-config -o jsonpath={.data.password} | base64 -d)
+    export REGISTRY_USERNAME=$(kubectl get secrets -n kyma-system dockerregistry-config-external -o jsonpath={.data.username} | base64 -d)
+    export REGISTRY_PASSWORD=$(kubectl get secrets -n kyma-system dockerregistry-config-external -o jsonpath={.data.password} | base64 -d)
     docker login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} my-registry.${CLUSTER_ADDRESS}
     ```
 
