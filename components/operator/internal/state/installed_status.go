@@ -12,6 +12,7 @@ import (
 )
 
 const (
+	BTPStorageName        = "btp-objectstore"
 	AzureStorageName      = "azure"
 	GCSStorageName        = "gcs"
 	S3StorageName         = "s3"
@@ -109,6 +110,9 @@ func getStorageField(storage *v1alpha1.Storage, instance *v1alpha1.DockerRegistr
 			storageName = S3StorageName
 		} else if storage.GCS != nil {
 			storageName = GCSStorageName
+		} else if storage.BTPObjectStore != nil {
+			// TODO: add info which underlying storage is used
+			storageName = fmt.Sprintf("%s-%s", BTPStorageName, "replaceme")
 		}
 
 	}

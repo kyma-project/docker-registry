@@ -27,6 +27,9 @@ func sFnStorageConfiguration(ctx context.Context, r *reconciler, s *systemState)
 
 func prepareStorage(ctx context.Context, r *reconciler, s *systemState) error {
 	if s.instance.Spec.Storage != nil {
+		if err := prepareStorageUnique(s); err != nil {
+			return err
+		}
 		s.flagsBuilder.WithPVCDisabled()
 		if s.instance.Spec.Storage.Azure != nil {
 			return prepareAzureStorage(ctx, r, s)
@@ -34,9 +37,32 @@ func prepareStorage(ctx context.Context, r *reconciler, s *systemState) error {
 			return prepareS3Storage(ctx, r, s)
 		} else if s.instance.Spec.Storage.GCS != nil {
 			return prepareGCSStorage(ctx, r, s)
+		} else if s.instance.Spec.Storage.BTPObjectStore != nil {
+			return prepareBTPStorage(ctx, r, s)
 		}
 	}
 	s.flagsBuilder.WithFilesystem()
+	return nil
+}
+
+func prepareStorageUnique(s *systemState) error {
+	// make sure only one of the storage options is used
+	storages := 0
+	if s.instance.Spec.Storage.Azure != nil {
+		storages++
+	}
+	if s.instance.Spec.Storage.S3 != nil {
+		storages++
+	}
+	if s.instance.Spec.Storage.GCS != nil {
+		storages++
+	}
+	if s.instance.Spec.Storage.BTPObjectStore != nil {
+		storages++
+	}
+	if storages > 1 {
+		return errors.New("only one storage option can be used")
+	}
 	return nil
 }
 
@@ -76,5 +102,10 @@ func prepareGCSStorage(ctx context.Context, r *reconciler, s *systemState) error
 		AccountKey: string(gcsSecret.Data["accountkey"]),
 	}
 	s.flagsBuilder.WithGCS(s.instance.Spec.Storage.GCS, storageGCSSecret)
+	return nil
+}
+
+func prepareBTPStorage(ctx context.Context, r *reconciler, s *systemState) error {
+	// TODO: get secret, guess which hypersapler is used, call proper flafBuilder commad (withStorage())
 	return nil
 }

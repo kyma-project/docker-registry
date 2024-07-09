@@ -71,7 +71,7 @@ spec:
                 type: object
               storage:
                 description: Storage defines the storage configuration ( filesystem
-                  / s3 / azure... ).
+                  / s3 / azure / gcs / btpObjectStore ).
                 properties:
                   azure:
                     properties:
@@ -79,6 +79,11 @@ spec:
                         type: string
                     required:
                     - secretName
+                    type: object
+                  btpObjectStore:
+                    properties:
+                      secretName:
+                        type: string
                     type: object
                   gcs:
                     properties:
