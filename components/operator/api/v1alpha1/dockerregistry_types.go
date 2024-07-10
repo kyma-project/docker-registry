@@ -87,6 +87,38 @@ type StorageBTPObjectStore struct {
 }
 
 type StorageBTPObjectStoreSecrets struct {
+	//metadata
+	Type         string `json:"type"` // objectstore
+	Tags         string `json:"tags"` // ["blobStore", "objectStore"]
+	Metadata     string `json:".metadata"`
+	InstanceName string `json:"instance_name"`
+	InstanceGUID string `json:"instance_guid"`
+	Label        string `json:"label"`
+	Plan         string `json:"plan"` // reference-instance
+
+	// all hyperscalers
+	Region string `json:"region,omitempty"`
+
+	// AWS+GCP-specific
+	Bucket string `json:"bucket,omitempty"`
+
+	// AWS-specific
+	Username        string `json:"username,omitempty"`
+	AccessKeyID     string `json:"access_key_id,omitempty"`
+	Host            string `json:"host,omitempty"`
+	SecretAccessKey string `json:"secret_access_key,omitempty"`
+	URI             string `json:"uri,omitempty"`
+
+	// Azure-specific
+	SASToken      string `json:"sas_token,omitempty"`
+	AccountName   string `json:"account_name,omitempty"`
+	ContainerName string `json:"container_name,omitempty"`
+	ContainerURI  string `json:"container_uri,omitempty"`
+
+	// GCP-specific
+	Base64EncodedPrivateKeyData string `json:"base64EncodedPrivateKeyData,omitempty"`
+	KeyAlgo                     string `json:"keyAlgo,omitempty"`
+	ProjectID                   string `json:"projectId,omitempty"`
 }
 
 type State string
