@@ -7,12 +7,12 @@
 
 ## Overview
 
-Docker Registry module aims to provide a lightweight, open-source Docker registry for storing and distributing container images in kubernetes environment. It could be used in self-contained development clusters or testing environments allowing you to test deployments in an isolated system. 
+Docker Registry module aims to provide a lightweight, open-source Docker registry for storing and distributing container images in the Kubernetes environment. You can use it in self-contained development clusters or testing environments, which allows you to test deployments in an isolated system. 
 
 > [!WARNING]  
-> Do not use on production clusters, where a full-fledged, highly-available, production-grade registry is necessary.
+> Do not use Docker Registry in production clusters, where a full-fledged, highly-available, production-grade registry is necessary.
 
-Docker Registry module comes with a dedicated kubernetes operator for efortless installation and upgrades. It manages the lifecycle of the Docker Registry resources according to the desired specification expressed via dedicated `Dockerregistry` Custom Resource. Read more about configuration options in the [user documentation](./docs/user). 
+The Docker Registry module comes with a dedicated Kubernetes operator for effortless installation and upgrades. It manages the lifecycle of the Docker Registry resources according to the desired specification expressed through a dedicated `Dockerregistry` custom resource (CR). Read more about configuration options in the [user documentation](./docs/user). 
 
 ## Install
 
@@ -36,9 +36,9 @@ kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest
 
 ## Usage
 
-Having installed Docker Registry module, you can start pushing images to it via [kyma CLI (v3)](https://github.com/kyma-project/cli?tab=readme-ov-file#install) or, if you decide to expose the registry externally, using Docker CLI.
+Having installed the Docker Registry module, you can start pushing images to it using [kyma CLI (v3)](https://github.com/kyma-project/cli?tab=readme-ov-file#install) or, if you decide to expose the registry externally, using Docker CLI.
 Please find both variants described in the dedicated tutorials:
- - [How to use non exposed registry](docs/user/tutorials/01-10-simple-usage.md)
+ - [How to Use Non Exposed Registry](docs/user/tutorials/01-10-simple-usage.md)
  - [How to Expose Registry](docs/user/tutorials/01-20-expose-registry.md)
 
 ## Development
