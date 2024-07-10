@@ -7,7 +7,12 @@
 
 ## Overview
 
-Docker Registry Operator allows deploying the [Docker Registry](docs/user/README.md) component in the Kyma cluster in compatibility with [Lifecycle Manager](https://github.com/kyma-project/lifecycle-manager).
+Docker Registry module aims to provide a lightweight, open-source Docker registry for storing and distributing container images in the Kubernetes environment. You can use it in self-contained development clusters or testing environments, which allows you to test deployments in an isolated system. 
+
+> [!WARNING]  
+> Do not use Docker Registry in production clusters, where a full-fledged, highly-available, production-grade registry is necessary.
+
+The Docker Registry module comes with a dedicated Kubernetes operator for effortless installation and upgrades. It manages the lifecycle of the Docker Registry resources according to the desired specification expressed through a dedicated `Dockerregistry` custom resource (CR). Read more about configuration options in the [user documentation](./docs/user). 
 
 ## Install
 
@@ -28,6 +33,13 @@ kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest
 ```bash
 kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest/download/default-dockerregistry-cr.yaml
 ```
+
+## Usage
+
+Having installed the Docker Registry module, you can start pushing images to it using [kyma CLI (v3)](https://github.com/kyma-project/cli?tab=readme-ov-file#install) or, if you decide to expose the registry externally, using Docker CLI.
+Please find both variants described in the dedicated tutorials:
+ - [How to Use Non Exposed Registry](docs/user/tutorials/01-10-simple-usage.md)
+ - [How to Expose Registry](docs/user/tutorials/01-20-expose-registry.md)
 
 ## Development
 
