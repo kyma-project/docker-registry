@@ -145,7 +145,8 @@ func main() {
 	//TODO: get it from some configuration
 	configKubernetes := k8s.Config{
 		BaseNamespace:                 "kyma-system",
-		BaseDefaultSecretName:         registry.InternalAccessSecretName,
+		BaseInternalSecretName:        registry.InternalAccessSecretName,
+		BaseExternalSecretName:        registry.ExternalAccessSecretName,
 		ExcludedNamespaces:            []string{"kyma-system"},
 		ConfigMapRequeueDuration:      time.Minute,
 		SecretRequeueDuration:         time.Minute,
