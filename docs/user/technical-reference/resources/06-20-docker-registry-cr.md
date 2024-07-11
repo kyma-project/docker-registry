@@ -1,4 +1,4 @@
-# Docker Registry
+# Docker Registry Custom Resource
 
 The `dockerregistries.operator.kyma-project.io` CustomResourceDefinition (CRD) is a detailed description of the Docker Registry configuration that you want to install on your cluster. To get the up-to-date CRD and show the output in the YAML format, run this command:
 
