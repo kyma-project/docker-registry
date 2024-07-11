@@ -73,7 +73,7 @@ func (r *NamespaceReconciler) Reconcile(ctx context.Context, request ctrl.Reques
 	logger := r.Log.With("name", instance.GetName())
 
 	logger.Debug(fmt.Sprintf("Updating Secret in namespace '%s'", instance.GetName()))
-	errs := []error{}
+	var errs []error
 	secrets, err := r.secretSvc.GetBase(ctx)
 	if err != nil {
 		errs = append(errs, err)
@@ -85,9 +85,5 @@ func (r *NamespaceReconciler) Reconcile(ctx context.Context, request ctrl.Reques
 		}
 	}
 
-	err = goerrors.Join(errs...)
-	if err != nil {
-		logger.Error(err, "Updating base Secrets failed")
-	}
-	return ctrl.Result{}, err
+	return ctrl.Result{}, goerrors.Join(errs...)
 }
