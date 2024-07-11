@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	goerrors "errors"
 	"fmt"
 	"go.uber.org/zap"
 
@@ -22,7 +23,7 @@ const (
 
 type SecretService interface {
 	IsBase(secret *corev1.Secret) bool
-	GetBase(ctx context.Context) (*corev1.Secret, error)
+	GetBase(ctx context.Context) ([]corev1.Secret, error)
 	UpdateNamespace(ctx context.Context, logger *zap.SugaredLogger, namespace string, baseInstance *corev1.Secret) error
 	HandleFinalizer(ctx context.Context, logger *zap.SugaredLogger, secret *corev1.Secret, namespaces []string) error
 }
@@ -41,20 +42,31 @@ func NewSecretService(client resource.Client, config Config) SecretService {
 	}
 }
 
-func (r *secretService) GetBase(ctx context.Context) (*corev1.Secret, error) {
-	secret := &corev1.Secret{}
-	err := r.client.Get(ctx, types.NamespacedName{
-		Namespace: r.config.BaseNamespace,
-		Name:      r.config.BaseDefaultSecretName,
-	}, secret)
-
-	return secret, err
+func (r *secretService) GetBase(ctx context.Context) ([]corev1.Secret, error) {
+	var secrets []corev1.Secret
+	var errs []error
+	for _, secretName := range []string{r.config.BaseInternalSecretName, r.config.BaseExternalSecretName} {
+		secret := &corev1.Secret{}
+		err := r.client.Get(ctx, types.NamespacedName{
+			Namespace: r.config.BaseNamespace,
+			Name:      secretName,
+		}, secret)
+		if err == nil {
+			secrets = append(secrets, *secret)
+		}
+		if client.IgnoreNotFound(err) != nil {
+			errs = append(errs, err)
+		}
+	}
+	return secrets, goerrors.Join(errs...)
 }
 
 func (r *secretService) IsBase(secret *corev1.Secret) bool {
-	return secret.Namespace == r.config.BaseNamespace &&
-		secret.Name == r.config.BaseDefaultSecretName &&
+	result := secret.Namespace == r.config.BaseNamespace &&
+		(secret.Name == r.config.BaseInternalSecretName ||
+			secret.Name == r.config.BaseExternalSecretName) &&
 		secret.Labels[ConfigLabel] == CredentialsLabelValue
+	return result
 }
 
 func (r *secretService) UpdateNamespace(ctx context.Context, logger *zap.SugaredLogger, namespace string, baseInstance *corev1.Secret) error {

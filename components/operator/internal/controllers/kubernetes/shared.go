@@ -15,7 +15,8 @@ const (
 
 type Config struct {
 	BaseNamespace                 string        `envconfig:"default=kyma-system"`
-	BaseDefaultSecretName         string        `envconfig:"default=dockerregistry-config"`
+	BaseInternalSecretName        string        `envconfig:"default=dockerregistry-config"`
+	BaseExternalSecretName        string        `envconfig:"default=dockerregistry-config-external"`
 	ExcludedNamespaces            []string      `envconfig:"default=kyma-system"`
 	ConfigMapRequeueDuration      time.Duration `envconfig:"default=1m"`
 	SecretRequeueDuration         time.Duration `envconfig:"default=1m"`

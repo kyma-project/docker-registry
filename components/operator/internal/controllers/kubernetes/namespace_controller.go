@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	goerrors "errors"
 	"fmt"
 
 	"go.uber.org/zap"
@@ -72,19 +73,17 @@ func (r *NamespaceReconciler) Reconcile(ctx context.Context, request ctrl.Reques
 	logger := r.Log.With("name", instance.GetName())
 
 	logger.Debug(fmt.Sprintf("Updating Secret in namespace '%s'", instance.GetName()))
-	secret, err := r.secretSvc.GetBase(ctx)
-	if client.IgnoreNotFound(err) != nil {
-		logger.Error(err, "Getting base Secret failed")
-		return ctrl.Result{}, err
-	}
+	var errs []error
+	secrets, err := r.secretSvc.GetBase(ctx)
 	if err != nil {
-		logger.Debug(err, "Base Secret not found")
-		return ctrl.Result{}, nil
+		errs = append(errs, err)
+	}
+	for _, secret := range secrets {
+		err = r.secretSvc.UpdateNamespace(ctx, logger, instance.GetName(), &secret)
+		if err != nil {
+			errs = append(errs, err)
+		}
 	}
 
-	if err := r.secretSvc.UpdateNamespace(ctx, logger, instance.GetName(), secret); err != nil {
-		return ctrl.Result{}, err
-	}
-
-	return ctrl.Result{}, nil
+	return ctrl.Result{}, goerrors.Join(errs...)
 }
