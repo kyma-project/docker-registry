@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
@@ -107,5 +108,58 @@ func prepareGCSStorage(ctx context.Context, r *reconciler, s *systemState) error
 
 func prepareBTPStorage(ctx context.Context, r *reconciler, s *systemState) error {
 	// TODO: get secret, guess which hypersapler is used, call proper flafBuilder commad (withStorage())
+	btpSecret, err := registry.GetSecret(ctx, r.client, s.instance.Spec.Storage.BTPObjectStore.SecretName, s.instance.Namespace)
+	if err != nil {
+		return errors.Wrap(err, fmt.Sprintf("while fetching btp storage secret from %s", s.instance.Namespace))
+	}
+	storageType := getBTPStorageHyperscaler(btpSecret.Data)
+
+	switch storageType {
+	case "aws":
+		storage := &v1alpha1.StorageS3{
+			Bucket: string(btpSecret.Data["bucket"]),
+			Region: string(btpSecret.Data["region"]),
+		}
+		storageSecret := &v1alpha1.StorageS3Secrets{
+			AccessKey: string(btpSecret.Data["access_key_id"]),
+			SecretKey: string(btpSecret.Data["secret_access_key"]),
+		}
+		s.flagsBuilder.WithS3(storage, storageSecret)
+	case "azure":
+		storageSecret := &v1alpha1.StorageAzureSecrets{
+			AccountName: string(btpSecret.Data["account_name"]),
+			AccountKey:  string(btpSecret.Data["sas_token"]), // TODO: is this correct????
+			Container:   string(btpSecret.Data["container_name"]),
+		}
+		s.flagsBuilder.WithAzure(storageSecret)
+	case "gcp":
+		storage := &v1alpha1.StorageGCS{
+			Bucket: string(btpSecret.Data["bucket"]),
+		}
+		// the key is base64-encoded, we're expecting a JSON string
+		decodedKey, err := base64.StdEncoding.DecodeString(string(btpSecret.Data["base64EncodedPrivateKeyData"]))
+		if err != nil {
+			return errors.Wrap(err, "while decoding GCP private key")
+		}
+		storageSecret := &v1alpha1.StorageGCSSecrets{
+			AccountKey: string(decodedKey),
+		}
+		s.flagsBuilder.WithGCS(storage, storageSecret)
+	default:
+		return errors.New("unknown storage type")
+	}
 	return nil
+}
+
+// TODO: move this somewhere sane
+func getBTPStorageHyperscaler(secretData map[string][]byte) string {
+	storageType := "unknown"
+	if string(secretData["host"]) != "" {
+		storageType = "aws"
+	} else if string(secretData["sas_token"]) != "" {
+		storageType = "azure"
+	} else if string(secretData["base64EncodedPrivateKeyData"]) != "" {
+		storageType = "gcp"
+	}
+	return storageType
 }
