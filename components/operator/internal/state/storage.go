@@ -107,7 +107,6 @@ func prepareGCSStorage(ctx context.Context, r *reconciler, s *systemState) error
 }
 
 func prepareBTPStorage(ctx context.Context, r *reconciler, s *systemState) error {
-	// TODO: get secret, guess which hypersapler is used, call proper flafBuilder commad (withStorage())
 	btpSecret, err := registry.GetSecret(ctx, r.client, s.instance.Spec.Storage.BTPObjectStore.SecretName, s.instance.Namespace)
 	if err != nil {
 		return errors.Wrap(err, fmt.Sprintf("while fetching btp storage secret from %s", s.instance.Namespace))
@@ -128,7 +127,7 @@ func prepareBTPStorage(ctx context.Context, r *reconciler, s *systemState) error
 	case "azure":
 		storageSecret := &v1alpha1.StorageAzureSecrets{
 			AccountName: string(btpSecret.Data["account_name"]),
-			AccountKey:  string(btpSecret.Data["sas_token"]), // TODO: is this correct????
+			AccountKey:  string(btpSecret.Data["sas_token"]),
 			Container:   string(btpSecret.Data["container_name"]),
 		}
 		s.flagsBuilder.WithAzure(storageSecret)

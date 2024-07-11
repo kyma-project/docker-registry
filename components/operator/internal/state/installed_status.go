@@ -116,7 +116,6 @@ func getStorageField(ctx context.Context, storage *v1alpha1.Storage, instance *v
 		} else if storage.GCS != nil {
 			storageName = GCSStorageName
 		} else if storage.BTPObjectStore != nil {
-			// TODO: add info which underlying storage is used
 			btpSecret, err := registry.GetSecret(ctx, client, instance.Spec.Storage.BTPObjectStore.SecretName, instance.Namespace)
 			if err != nil {
 				return fieldToUpdate{}, errors.Wrap(err, fmt.Sprintf("while fetching btp storage secret from %s", instance.Namespace))
