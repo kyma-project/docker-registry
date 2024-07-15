@@ -149,16 +149,3 @@ func prepareBTPStorage(ctx context.Context, r *reconciler, s *systemState) error
 	}
 	return nil
 }
-
-// TODO: move this somewhere sane
-func getBTPStorageHyperscaler(secretData map[string][]byte) string {
-	storageType := "unknown"
-	if string(secretData["host"]) != "" {
-		storageType = "aws"
-	} else if string(secretData["sas_token"]) != "" {
-		storageType = "azure"
-	} else if string(secretData["base64EncodedPrivateKeyData"]) != "" {
-		storageType = "gcp"
-	}
-	return storageType
-}

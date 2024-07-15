@@ -61,3 +61,16 @@ func resolveRegistryHost(ctx context.Context, r *reconciler, s *systemState) (st
 
 	return s.externalAddressResolver.GetExternalAddress(ctx, r.client, hostPrefix)
 }
+
+// getBTPStorageHyperscaler returns the hyperscaler type of the BTP storage based on unique fields for each hyperscaler
+func getBTPStorageHyperscaler(secretData map[string][]byte) string {
+	storageType := "unknown"
+	if string(secretData["host"]) != "" {
+		storageType = "aws"
+	} else if string(secretData["sas_token"]) != "" {
+		storageType = "azure"
+	} else if string(secretData["base64EncodedPrivateKeyData"]) != "" {
+		storageType = "gcp"
+	}
+	return storageType
+}
