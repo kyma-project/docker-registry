@@ -118,6 +118,7 @@ func prepareBTPStorage(ctx context.Context, r *reconciler, s *systemState) error
 		storage := &v1alpha1.StorageS3{
 			Bucket: string(btpSecret.Data["bucket"]),
 			Region: string(btpSecret.Data["region"]),
+			Secure: true,
 		}
 		storageSecret := &v1alpha1.StorageS3Secrets{
 			AccessKey: string(btpSecret.Data["access_key_id"]),
