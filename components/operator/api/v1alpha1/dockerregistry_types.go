@@ -23,7 +23,7 @@ import (
 
 // DockerRegistrySpec defines the desired state of DockerRegistry
 type DockerRegistrySpec struct {
-	// Storage defines the storage configuration ( filesystem / s3 / azure... ).
+	// Storage defines the storage configuration ( filesystem / s3 / azure / gcs / btpObjectStore ).
 	Storage *Storage `json:"storage,omitempty"`
 
 	// ExternalAccess defines the external access configuration.
@@ -41,9 +41,10 @@ type ExternalAccess struct {
 }
 
 type Storage struct {
-	Azure *StorageAzure `json:"azure,omitempty"`
-	S3    *StorageS3    `json:"s3,omitempty"`
-	GCS   *StorageGCS   `json:"gcs,omitempty"`
+	Azure          *StorageAzure          `json:"azure,omitempty"`
+	S3             *StorageS3             `json:"s3,omitempty"`
+	GCS            *StorageGCS            `json:"gcs,omitempty"`
+	BTPObjectStore *StorageBTPObjectStore `json:"btpObjectStore,omitempty"`
 }
 
 type StorageAzure struct {
@@ -79,6 +80,10 @@ type StorageS3 struct {
 type StorageS3Secrets struct {
 	AccessKey string `json:"accessKey"`
 	SecretKey string `json:"secretKey"`
+}
+
+type StorageBTPObjectStore struct {
+	SecretName string `json:"secretName,omitempty"`
 }
 
 type State string

@@ -7,11 +7,14 @@ import (
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
+	"github.com/pkg/errors"
 	"k8s.io/client-go/tools/record"
 	controllerruntime "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
+	BTPStorageName        = "btp-objectstore"
 	AzureStorageName      = "azure"
 	GCSStorageName        = "gcs"
 	S3StorageName         = "s3"
@@ -46,7 +49,10 @@ func sFnUpdateFinalStatus(ctx context.Context, r *reconciler, s *systemState) (s
 
 func updateStatus(ctx context.Context, r *reconciler, s *systemState) error {
 	spec := s.instance.Spec
-	storageField := getStorageField(spec.Storage, &s.instance)
+	storageField, err := getStorageField(ctx, spec.Storage, &s.instance, r.client)
+	if err != nil {
+		return err
+	}
 
 	externalAddressFields, err := getExternalAccessFields(ctx, r, s)
 	if err != nil {
@@ -100,7 +106,7 @@ func getExternalAccessFields(ctx context.Context, r *reconciler, s *systemState)
 	}, nil
 }
 
-func getStorageField(storage *v1alpha1.Storage, instance *v1alpha1.DockerRegistry) fieldToUpdate {
+func getStorageField(ctx context.Context, storage *v1alpha1.Storage, instance *v1alpha1.DockerRegistry, client client.Client) (fieldToUpdate, error) {
 	storageName := FilesystemStorageName
 	if storage != nil {
 		if storage.Azure != nil {
@@ -109,10 +115,17 @@ func getStorageField(storage *v1alpha1.Storage, instance *v1alpha1.DockerRegistr
 			storageName = S3StorageName
 		} else if storage.GCS != nil {
 			storageName = GCSStorageName
+		} else if storage.BTPObjectStore != nil {
+			btpSecret, err := registry.GetSecret(ctx, client, instance.Spec.Storage.BTPObjectStore.SecretName, instance.Namespace)
+			if err != nil {
+				return fieldToUpdate{}, errors.Wrap(err, fmt.Sprintf("while fetching btp storage secret from %s", instance.Namespace))
+			}
+			storageType := getBTPStorageHyperscaler(btpSecret.Data)
+			storageName = fmt.Sprintf("%s-%s", BTPStorageName, storageType)
 		}
 
 	}
-	return fieldToUpdate{storageName, &instance.Status.Storage, "Storage type", ""}
+	return fieldToUpdate{storageName, &instance.Status.Storage, "Storage type", ""}, nil
 }
 
 type fieldsToUpdate []fieldToUpdate
