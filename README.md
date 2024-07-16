@@ -7,12 +7,12 @@
 
 ## Overview
 
-Docker Registry module aims to provide a lightweight, open-source Docker registry for storing and distributing container images in the Kubernetes environment. You can use it in self-contained development clusters or testing environments, which allows you to test deployments in an isolated system. 
+The Docker Registry module aims to provide a lightweight, open-source Docker registry for storing and distributing container images in the Kubernetes environment. You can use it in self-contained development clusters or testing environments, which allows you to test deployments in an isolated system.
 
 > [!WARNING]  
 > Do not use Docker Registry in production clusters, where a full-fledged, highly-available, production-grade registry is necessary.
 
-The Docker Registry module comes with a dedicated Kubernetes operator for effortless installation and upgrades. It manages the lifecycle of the Docker Registry resources according to the desired specification expressed through a dedicated `Dockerregistry` custom resource (CR). Read more about configuration options in the [user documentation](./docs/user). 
+The Docker Registry module comes with a dedicated Kubernetes operator for effortless installation and upgrades. It manages the lifecycle of the Docker Registry resources according to the desired specification expressed through a dedicated [`Dockerregistry` custom resource (CR)](docs/user/technical-reference/resources/06-20-docker-registry-cr.md). Read more about configuration options in the [user documentation](./docs/user).
 
 ## Install
 
@@ -36,21 +36,22 @@ kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest
 
 ## Usage
 
-Having installed the Docker Registry module, you can start pushing images to it using [kyma CLI (v3)](https://github.com/kyma-project/cli?tab=readme-ov-file#install) or, if you decide to expose the registry externally, using Docker CLI.
-Please find both variants described in the dedicated tutorials:
- - [How to Use Non Exposed Registry](docs/user/tutorials/01-10-simple-usage.md)
- - [How to Expose Registry](docs/user/tutorials/01-20-expose-registry.md)
+Having installed the Docker Registry module, you can start pushing images to it using [Kyma CLI (v3)](https://github.com/kyma-project/cli?tab=readme-ov-file#install) or, if you decide to expose the registry externally, using Docker CLI.
+Both variants are described in the following tutorials:
+
+* [How to Use Non Exposed Registry](docs/user/tutorials/01-10-simple-usage.md)
+* [How to Expose Registry](docs/user/tutorials/01-20-expose-registry.md)
 
 ## Development
 
 ### Prerequisites
 
-- Access to a Kubernetes (v1.24 or higher) cluster
-- [Go](https://go.dev/)
-- [k3d](https://k3d.io/)
-- [Docker](https://www.docker.com/)
-- [kubectl](https://kubernetes.io/docs/tasks/tools/)
-- [Kubebuilder](https://book.kubebuilder.io/)
+* Access to a Kubernetes (v1.24 or higher) cluster
+* [Go](https://go.dev/)
+* [k3d](https://k3d.io/)
+* [Docker](https://www.docker.com/)
+* [kubectl](https://kubernetes.io/docs/tasks/tools/)
+* [Kubebuilder](https://book.kubebuilder.io/)
 
 ## Installation in the k3d Cluster Using Make Targets
 
@@ -70,13 +71,13 @@ Please find both variants described in the dedicated tutorials:
 
 ## Using Docker Registry Operator
 
-- Create a Docker Registry instance.
+* Create a Docker Registry instance.
 
     ```bash
     kubectl apply -f config/samples/default-dockerregistry-cr.yaml
     ```
 
-- Delete a Docker Registry instance.
+* Delete a Docker Registry instance.
 
     ```bash
     kubectl delete -f config/samples/default-dockerregistry-cr.yaml
