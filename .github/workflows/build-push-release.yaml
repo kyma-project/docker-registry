@@ -29,16 +29,16 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
   build-operator:
-    needs: compute-tag
+    needs: compute-tags
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: dockerregistry-operator
       dockerfile: components/operator/Dockerfile
-      tags: ${{ needs.compute-tag.outputs.tag }}
+      tags: ${{ needs.compute-tags.outputs.tags }}
   build-registry-init:
-    needs: compute-tag
+    needs: compute-tags
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: registry-init
       dockerfile: components/registry-init/Dockerfile
-      tags: ${{ needs.compute-tag.outputs.tag }}
+      tags: ${{ needs.compute-tags.outputs.tags }}
