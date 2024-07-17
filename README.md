@@ -7,7 +7,7 @@
 
 ## Overview
 
-The Docker Registry module aims to provide a lightweight, open-source Docker registry for storing and distributing container images in the Kubernetes environment. You can use it in self-contained development clusters or testing environments, which allows you to test deployments in an isolated system.
+The Docker Registry module provides a lightweight, open-source Docker registry for storing and distributing container images in the Kubernetes environment. You can use it in self-contained development clusters or testing environments, so you can test deployments in an isolated system.
 
 > [!WARNING]  
 > Do not use Docker Registry in production clusters, where a full-fledged, highly-available, production-grade registry is necessary.
@@ -37,9 +37,9 @@ kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest
 ## Usage
 
 Having installed the Docker Registry module, you can start pushing images to it using [Kyma CLI (v3)](https://github.com/kyma-project/cli?tab=readme-ov-file#install) or, if you decide to expose the registry externally, using Docker CLI.
-Both variants are described in the following tutorials:
+For details, see the following tutorials:
 
-* [How to Use Non Exposed Registry](docs/user/tutorials/01-10-simple-usage.md)
+* [How to Use Non-Exposed Registry](docs/user/tutorials/01-10-simple-usage.md)
 * [How to Expose Registry](docs/user/tutorials/01-20-expose-registry.md)
 
 ## Development
