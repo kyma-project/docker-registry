@@ -1,4 +1,4 @@
-# Use Docker Registry
+# Use Non-Exposed Registry
 
 This tutorial shows how you can push an image to the Docker Registry and use it.
 
