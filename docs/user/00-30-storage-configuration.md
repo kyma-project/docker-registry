@@ -1,6 +1,6 @@
 # Registry Storage Configuration
 
-The DockerRegistry CR allows you to store images in three ways: filesystem, Azure, and s3. This document describes how to configure DockerRegistry CR to cooperate with all these storage types.
+The DockerRegistry CR allows you to store images in five ways: filesystem, Azure, s3, GCP, and BTP Object Store. This document describes how to configure DockerRegistry CR to cooperate with all these storage types.
 
 ## Filesystem
 
@@ -127,4 +127,23 @@ metadata:
   namespace: kyma-system
 data:
    accountkey: "Z3Njc2VjcmV0"
+```
+
+## BTP Object Store
+
+BTP Object Store can be configured using the **spec.storage.btpObjectStore** field. The only required field is the **secretName**, which contains the BTP Object Store secret name.
+The secret is provided by a service binding to an instance of BTP Object Store. The underlying object store depends on the hyperscaler used for the BTP subaccount, anc can be one of the following: Azure, AWS, or GCP.
+
+### Sample Custom Resource
+
+```yaml
+apiVersion: operator.kyma-project.io/v1alpha1
+kind: DockerRegistry
+metadata:
+  name: default
+  namespace: kyma-system
+spec:
+  storage:
+    btpObjectStore:
+      secretName: "btp-object-store-secret"
 ```

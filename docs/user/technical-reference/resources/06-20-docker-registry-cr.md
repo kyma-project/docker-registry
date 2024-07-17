@@ -77,6 +77,7 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 | **storage.gcs.secretName**              | string | A private service account key file in JSON format used for Service Account Authentication.                        |
 | **storage.gcs.rootdirectory**           | string | The root directory tree in which all registry files are stored. Defaults to the empty string (bucket root).       |
 | **storage.gcs.chunksize**               | string | This is the chunk size used for uploading large blobs, must be a multiple of 256*1024. Defaults to 5242880.       |
+| **storage.btpObjectStore.secretName**   | string | Specifies the name of the Secret that contains data needed to connect to the BTP Object Store.                    |
 
 
 **Status:**
