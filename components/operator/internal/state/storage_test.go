@@ -286,6 +286,46 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
 	})
 
+	t.Run("internal registry using btp azure storage", func(t *testing.T) {
+		gcsSecret := &corev1.Secret{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "btpSecret",
+				Namespace: "kyma-system",
+			},
+			Data: map[string][]byte{
+				"account_name":   []byte("accountName"),
+				"sas_token":      []byte("accountKey"),
+				"container_name": []byte("container"),
+			},
+		}
+
+		s := &systemState{
+			instance: v1alpha1.DockerRegistry{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "kyma-system",
+				},
+				Spec: v1alpha1.DockerRegistrySpec{
+					Storage: &v1alpha1.Storage{
+						BTPObjectStore: &v1alpha1.StorageBTPObjectStore{
+							SecretName: "btpSecret",
+						},
+					},
+				},
+			},
+			statusSnapshot: v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:   chart.NewFlagsBuilder(),
+		}
+		r := &reconciler{
+			k8s: k8s{client: fake.NewClientBuilder().WithObjects(gcsSecret).Build()},
+			log: zap.NewNop().Sugar(),
+		}
+
+		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
+		require.Error(t, err)
+		require.Nil(t, result)
+		require.Nil(t, next)
+	})
+
 	t.Run("internal registry using btp gcs storage", func(t *testing.T) {
 		gcsSecret := &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
