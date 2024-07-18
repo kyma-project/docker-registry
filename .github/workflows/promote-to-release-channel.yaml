@@ -25,7 +25,7 @@ env:
   BOT_USERNAME: kyma-otter-serviceuser
   BOT_EMAIL: dl_545734d8fd84a02c39000002@global.corp.sap
   GH_TOOLS_REPO_URL: ${{ secrets.GH_TOOLS_REPO_URL }}
-  SERVERLESS_REPO_URL: ${{ secrets.DOCKER_REGISTRY_REPO_URL }}
+  DOCKER_REGISTRY_REPO_URL: ${{ secrets.DOCKER_REGISTRY_REPO_URL }}
 
 jobs:
 
@@ -69,9 +69,9 @@ jobs:
           git checkout -B "${MODULE_VERSION}-${CHANNEL}" upstream/main
 
           mkdir -p modules/dockerregistry/${CHANNEL}
-          cp ../serverless-operator.yaml modules/serverless/${CHANNEL}/serverless-operator.yaml
-          cp ../default-serverless-cr.yaml modules/serverless/${CHANNEL}/default-serverless-cr.yaml
-          cp ../module-config.yaml modules/serverless/${CHANNEL}/module-config.yaml
+          cp ../dockerregistry-operator.yaml modules/dockerregistry/${CHANNEL}/dockerregistry-operator.yaml
+          cp ../default-dockerregistry-cr.yaml modules/dockerregistry/${CHANNEL}/default-dockerregistry-cr.yaml
+          cp ../module-config.yaml modules/dockerregistry/${CHANNEL}/module-config.yaml
           
           git add .
           git commit -m "promote docker registry ${MODULE_VERSION} to ${CHANNEL} channel"
@@ -90,5 +90,5 @@ jobs:
           gh pr create -B main --fill \
             -H "${BOT_USERNAME}:${MODULE_VERSION}-${CHANNEL}" \
             -R "https://${GH_TOOLS_REPO_URL}/kyma/module-manifests/" \
-            --title "Promote Serverless ${MODULE_VERSION} to ${CHANNEL} channel" \
-            --body "https://github.com/kyma-project/serverless/actions/${{github.run_id}}"
+            --title "Promote Docker Registry ${MODULE_VERSION} to ${CHANNEL} channel" \
+            --body "https://github.com/kyma-project/docker-registry/actions/${{github.run_id}}"
