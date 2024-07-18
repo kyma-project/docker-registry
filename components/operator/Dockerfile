@@ -4,7 +4,7 @@
 
 
 # Build the operator binary
-FROM golang:1.22.5 as builder
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.22.5-alpine as builder
 
 WORKDIR /workdir
 

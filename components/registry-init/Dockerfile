@@ -1,4 +1,4 @@
-FROM europe-docker.pkg.dev/kyma-project/prod/external/alpine:3.19.1
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.20.1
 
 RUN set -ex \
     && apk upgrade --no-cache \
