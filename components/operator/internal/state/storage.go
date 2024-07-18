@@ -126,12 +126,8 @@ func prepareBTPStorage(ctx context.Context, r *reconciler, s *systemState) error
 		}
 		s.flagsBuilder.WithS3(storage, storageSecret)
 	case "azure":
-		storageSecret := &v1alpha1.StorageAzureSecrets{
-			AccountName: string(btpSecret.Data["account_name"]),
-			AccountKey:  string(btpSecret.Data["sas_token"]),
-			Container:   string(btpSecret.Data["container_name"]),
-		}
-		s.flagsBuilder.WithAzure(storageSecret)
+		// Azure storage uses Azure DNS zone endpoints, which are not supported by distribution
+		return errors.New("Azure storage is not supported for BTPObjectStore")
 	case "gcp":
 		storage := &v1alpha1.StorageGCS{
 			Bucket: string(btpSecret.Data["bucket"]),
