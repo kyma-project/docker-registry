@@ -68,7 +68,7 @@ jobs:
           git fetch upstream
           git checkout -B "${MODULE_VERSION}-${CHANNEL}" upstream/main
 
-          mkdir -p modules/serverless/${CHANNEL}
+          mkdir -p modules/dockerregistry/${CHANNEL}
           cp ../serverless-operator.yaml modules/serverless/${CHANNEL}/serverless-operator.yaml
           cp ../default-serverless-cr.yaml modules/serverless/${CHANNEL}/default-serverless-cr.yaml
           cp ../module-config.yaml modules/serverless/${CHANNEL}/module-config.yaml

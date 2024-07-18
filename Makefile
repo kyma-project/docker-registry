@@ -29,3 +29,8 @@ run: create-k3d install-dockerregistry-main ## Create k3d cluster and install do
 
 check-var = $(if $(strip $($1)),,$(error "$1" is not defined))
 
+##@ Actions
+.PHONY: module-config
+module-config:
+	yq ".channel = \"${CHANNEL}\" | .version = \"${MODULE_VERSION}\""\
+    	module-config-template.yaml > module-config.yaml
