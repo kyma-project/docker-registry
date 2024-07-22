@@ -59,7 +59,7 @@ data:
 
 ## s3
 
-Similarly to Azure, the s3 storage can be configured in the DockerRegistry `spec.storage.s3` field. The only required field is `bucket` which contains the s3 bucket name and `region` which specifies where the bucket is located. This storage type allows you to provide additional optional configuration, which is described in [DockerRegistry CR](../resources/06-20-docker-registry-cr.md). One of the optional configurations is the `secretName` that contains the authentication method to the s3 storage in the following format:
+Similarly to Azure, the s3 storage can be configured in the DockerRegistry `spec.storage.s3` field. The only required field is `bucket` which contains the s3 bucket name and `region` which specifies where the bucket is located. This storage type allows you to provide additional optional configuration, which is described in [DockerRegistry CR](technical-reference/resources/06-20-docker-registry-cr.md). One of the optional configurations is the `secretName` that contains the authentication method to the s3 storage in the following format:
 
 * `accountKey` - contains the key used to authenticate to the s3 storage
 * `secretKey` - contains the name used to authenticate to the s3 storage
