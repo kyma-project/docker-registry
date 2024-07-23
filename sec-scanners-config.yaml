@@ -1,5 +1,5 @@
 module-name: docker-registry
-rc-tag: 1.4.0
+rc-tag: 0.1.0
 protecode:
   - europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:main
   - europe-docker.pkg.dev/kyma-project/prod/external/registry:2.8.3
