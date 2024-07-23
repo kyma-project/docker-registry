@@ -2,7 +2,6 @@ name: build (push)
 
 on:
   push:
-    branches: [ "main", "release-*" ]
     tags:
       - '^v?\d+\.\d+\.\d+(?:-.*)?$'
 

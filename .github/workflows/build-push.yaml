@@ -1,0 +1,42 @@
+name: build (push)
+
+on:
+  push:
+    branches: ["main", "release-*"]
+
+permissions:
+  id-token: write # This is required for requesting the JWT token
+  contents: read # This is required for actions/checkout
+
+jobs:
+  compute-tags:
+    runs-on: ubuntu-latest
+    outputs:
+      tags: ${{ steps.get_tag.outputs.TAGS }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get the latest tag
+        id: get_tag
+        run: |
+          {
+            echo 'TAGS<<EOF'
+            echo "${{ github.sha }}"
+            echo "${{ github.ref_name}}"
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+  build-operator:
+    needs: compute-tags
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: dockerregistry-operator
+      dockerfile: components/operator/Dockerfile
+      tags: ${{ needs.compute-tags.outputs.tags }}
+  build-registry-init:
+    needs: compute-tags
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: registry-init
+      dockerfile: components/registry-init/Dockerfile
+      tags: ${{ needs.compute-tags.outputs.tags }}
