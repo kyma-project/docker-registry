@@ -45,6 +45,7 @@ type Storage struct {
 	S3             *StorageS3             `json:"s3,omitempty"`
 	GCS            *StorageGCS            `json:"gcs,omitempty"`
 	BTPObjectStore *StorageBTPObjectStore `json:"btpObjectStore,omitempty"`
+	PVC            *StoragePVC            `json:"pvc,omitempty"`
 }
 
 type StorageAzure struct {
@@ -84,6 +85,10 @@ type StorageS3Secrets struct {
 
 type StorageBTPObjectStore struct {
 	SecretName string `json:"secretName,omitempty"`
+}
+
+type StoragePVC struct {
+	Name string `json:"name"`
 }
 
 type State string

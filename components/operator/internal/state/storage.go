@@ -40,6 +40,8 @@ func prepareStorage(ctx context.Context, r *reconciler, s *systemState) error {
 			return prepareGCSStorage(ctx, r, s)
 		} else if s.instance.Spec.Storage.BTPObjectStore != nil {
 			return prepareBTPStorage(ctx, r, s)
+		} else if s.instance.Spec.Storage.PVC != nil {
+			return preparePVCStorage(s)
 		}
 	}
 	s.flagsBuilder.WithFilesystem()
@@ -59,6 +61,9 @@ func prepareStorageUnique(s *systemState) error {
 		storages++
 	}
 	if s.instance.Spec.Storage.BTPObjectStore != nil {
+		storages++
+	}
+	if s.instance.Spec.Storage.PVC != nil {
 		storages++
 	}
 	if storages > 1 {
@@ -144,5 +149,11 @@ func prepareBTPStorage(ctx context.Context, r *reconciler, s *systemState) error
 	default:
 		return errors.New("unknown storage type")
 	}
+	return nil
+}
+
+func preparePVCStorage(s *systemState) error {
+	s.flagsBuilder.WithFilesystem()
+	s.flagsBuilder.WithPVC(s.instance.Spec.Storage.PVC)
 	return nil
 }

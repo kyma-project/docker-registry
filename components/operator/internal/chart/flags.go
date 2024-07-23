@@ -19,6 +19,7 @@ type FlagsBuilder interface {
 	WithAzure(secret *v1alpha1.StorageAzureSecrets) *flagsBuilder
 	WithS3(config *v1alpha1.StorageS3, secret *v1alpha1.StorageS3Secrets) *flagsBuilder
 	WithFilesystem() *flagsBuilder
+	WithPVC(config *v1alpha1.StoragePVC) *flagsBuilder
 	WithGCS(config *v1alpha1.StorageGCS, secret *v1alpha1.StorageGCSSecrets) *flagsBuilder
 }
 
@@ -138,6 +139,12 @@ func (fb *flagsBuilder) WithS3(config *v1alpha1.StorageS3, secret *v1alpha1.Stor
 func (fb *flagsBuilder) WithFilesystem() *flagsBuilder {
 	fb.flags["storage"] = "filesystem"
 	fb.flags["configData.storage.filesystem.rootdirectory"] = "/var/lib/registry"
+	return fb
+}
+
+func (fb *flagsBuilder) WithPVC(config *v1alpha1.StoragePVC) *flagsBuilder {
+	fb.flags["persistence.enabled"] = true
+	fb.flags["persistence.existingClaim"] = config.Name
 	return fb
 }
 
