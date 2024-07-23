@@ -320,26 +320,10 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 		}
 
-		expectedFlags := map[string]interface{}{
-			"storage": "azure",
-			"persistence": map[string]interface{}{
-				"enabled": false,
-			},
-			"secrets": map[string]interface{}{
-				"azure": map[string]interface{}{
-					"accountName": "accountName",
-					"accountKey":  "accountKey",
-					"container":   "container",
-				},
-			},
-		}
-
 		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
-		require.NoError(t, err)
+		require.Error(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnUpdateConfigurationStatus, next)
-
-		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		require.Nil(t, next)
 	})
 
 	t.Run("internal registry using btp gcs storage", func(t *testing.T) {

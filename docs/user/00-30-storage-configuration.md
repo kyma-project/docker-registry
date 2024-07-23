@@ -132,7 +132,8 @@ data:
 ## BTP Object Store
 
 BTP Object Store can be configured using the **spec.storage.btpObjectStore** field. The only required field is the **secretName**, which contains the BTP Object Store Secret name.
-The Secret is provided by Service Binding to an instance of BTP Object Store. The underlying object store depends on the hyperscaler used for the BTP subaccount and can be one of the following: Azure, AWS, or GCP.
+The Secret is provided by Service Binding to an instance of BTP Object Store. The underlying object store depends on the hyperscaler used for the BTP subaccount and can be one of the following: AWS, or GCP.
+Azure hyperscaler is not supported.
 
 ### Sample Custom Resource
 
