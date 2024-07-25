@@ -144,9 +144,26 @@ jobs:
     outputs:
       release_id: ${{ steps.create-draft.outputs.release_id }}
 
+  run-integration-test:
+    name: Run integration test
+    needs: create-draft
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-go
+      - uses: ./.github/actions/create-k3d-cluster
+      - name: run test
+        run: |
+          make -C components/operator deploy
+          make -C tests/operator test
+        env:
+          IMG: europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:${{ github.event.inputs.name }}
+      - if: ${{ always() }}
+        uses: ./.github/actions/collect-cluster-info
+
   publish-release:
     name: Publish release
-    needs: create-draft
+    needs: run-integration-test
     runs-on: ubuntu-latest
 
     steps:
