@@ -382,4 +382,87 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
 	})
 
+	t.Run("internal registry using btp pvc storage", func(t *testing.T) {
+		gcsSecret := &corev1.Secret{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "btpSecret",
+				Namespace: "kyma-system",
+			},
+			Data: map[string][]byte{
+				"base64EncodedPrivateKeyData": []byte("YWNjb3VudGtleQ=="),
+				"bucket":                      []byte("gcsBucket"),
+			},
+		}
+
+		s := &systemState{
+			instance: v1alpha1.DockerRegistry{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "kyma-system",
+				},
+				Spec: v1alpha1.DockerRegistrySpec{
+					Storage: &v1alpha1.Storage{
+						PVC: &v1alpha1.StoragePVC{
+							Name: "pvc",
+						},
+					},
+				},
+			},
+			statusSnapshot: v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:   chart.NewFlagsBuilder(),
+		}
+		r := &reconciler{
+			k8s: k8s{client: fake.NewClientBuilder().WithObjects(gcsSecret).Build()},
+			log: zap.NewNop().Sugar(),
+		}
+
+		expectedFlags := map[string]interface{}{
+			"configData": map[string]interface{}{
+				"storage": map[string]interface{}{
+					"filesystem": map[string]interface{}{
+						"rootdirectory": "/var/lib/registry",
+					},
+				},
+			},
+			"storage": "filesystem",
+			"persistence": map[string]interface{}{
+				"enabled":       true,
+				"existingClaim": "pvc",
+			},
+		}
+
+		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
+		require.NoError(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnUpdateConfigurationStatus, next)
+
+		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+	})
+
+	t.Run("internal registry using multiple storages", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.DockerRegistry{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "kyma-system",
+				},
+				Spec: v1alpha1.DockerRegistrySpec{
+					Storage: &v1alpha1.Storage{
+						BTPObjectStore: &v1alpha1.StorageBTPObjectStore{},
+						Azure:          &v1alpha1.StorageAzure{},
+					},
+				},
+			},
+			statusSnapshot: v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:   chart.NewFlagsBuilder(),
+		}
+		r := &reconciler{
+			k8s: k8s{client: fake.NewClientBuilder().Build()},
+			log: zap.NewNop().Sugar(),
+		}
+
+		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
+		require.Error(t, err)
+		require.Nil(t, result)
+		require.Nil(t, next)
+	})
+
 }

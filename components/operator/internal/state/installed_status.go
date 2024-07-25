@@ -19,6 +19,7 @@ const (
 	GCSStorageName        = "gcs"
 	S3StorageName         = "s3"
 	FilesystemStorageName = "filesystem"
+	PVCStorageName        = "pvc"
 )
 
 func sFnUpdateFinalStatus(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
@@ -122,8 +123,9 @@ func getStorageField(ctx context.Context, storage *v1alpha1.Storage, instance *v
 			}
 			storageType := getBTPStorageHyperscaler(btpSecret.Data)
 			storageName = fmt.Sprintf("%s-%s", BTPStorageName, storageType)
+		} else if storage.PVC != nil {
+			storageName = PVCStorageName
 		}
-
 	}
 	return fieldToUpdate{storageName, &instance.Status.Storage, "Storage type", ""}, nil
 }

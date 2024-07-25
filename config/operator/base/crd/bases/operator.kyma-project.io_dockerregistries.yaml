@@ -98,6 +98,13 @@ spec:
                     required:
                     - bucket
                     type: object
+                  pvc:
+                    properties:
+                      name:
+                        type: string
+                    required:
+                    - name
+                    type: object
                   s3:
                     properties:
                       bucket:
