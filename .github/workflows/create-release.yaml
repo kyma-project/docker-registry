@@ -12,6 +12,11 @@ on:
         type: boolean
         default: false
 
+permissions: # used by build images steps
+  id-token: write # This is required for requesting the JWT token
+  contents: read # This is required for actions/checkout
+
+
 jobs:
   verify-head-status:
     name: Verify HEAD
@@ -52,9 +57,59 @@ jobs:
           git commit --allow-empty -m "upgrade dependencies"
           git push origin ${{ github.ref_name }}
 
+  create-tag:
+    name: Create tag
+    needs: upgrade-images
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}  # Checkout to latest branch changes
+
+      - name: Create tag
+        run: |
+          git tag ${{ github.event.inputs.name }}
+          git push origin ${{ github.event.inputs.name }}
+
+  compute-tags:
+    needs: create-tag
+    runs-on: ubuntu-latest
+    outputs:
+      tags: ${{ steps.get_tag.outputs.TAGS }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get the latest tag
+        id: get_tag
+        run: |
+          {
+            echo 'TAGS<<EOF'
+            echo "${{ github.sha }}"
+            echo "${{ github.event.inputs.name }}"
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+  build-operator:
+    needs: compute-tags
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: dockerregistry-operator
+      dockerfile: components/operator/Dockerfile
+      tags: ${{ needs.compute-tags.outputs.tags }}
+  build-registry-init:
+    needs: compute-tags
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: registry-init
+      dockerfile: components/registry-init/Dockerfile
+      tags: ${{ needs.compute-tags.outputs.tags }}
+
   create-draft:
     name: Create draft release
-    needs: upgrade-images
+    needs: [build-operator, build-registry-init]
     runs-on: ubuntu-latest
 
     steps:
@@ -77,11 +132,6 @@ jobs:
         run: |
           RELEASE_ID=$(./.github/scripts/create_draft_release.sh ${{ github.event.inputs.name }})
           echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
-
-      - name: Create lightweight tag
-        run: |
-          git tag ${{ github.event.inputs.name }}
-          git push origin ${{ github.event.inputs.name }}
 
       - name: Create release assets
         id: create-assets
