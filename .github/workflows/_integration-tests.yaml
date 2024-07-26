@@ -1,13 +1,21 @@
-name: integration tests (push)
+name: integration tests
 
 on:
   workflow_call:
+    inputs:
+      image:
+        description: 'The image to test'
+        required: true
+        type: string
+
 
 jobs:
   operator-integration-test:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/rebase
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-k3d-cluster
       - name: run test
@@ -15,14 +23,16 @@ jobs:
           make -C components/operator deploy
           make -C tests/operator test
         env:
-          IMG: europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:${{ github.sha }}
+          IMG: ${{ inputs.image }}
       - if: ${{ always() }}
         uses: ./.github/actions/collect-cluster-info
 
   gardener-integration-test:
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/rebase
       - uses: ./.github/actions/setup-go
       - name: save service-account
         shell: bash
@@ -40,7 +50,7 @@ jobs:
           make -C components/operator deploy
           make -C tests/operator test
         env:
-          IMG: europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:${{ github.sha }}
+          IMG: ${{ inputs.image }}
       - name: deprovision gardener
         if: ${{ always() }}
         run: make -C hack deprovision-gardener

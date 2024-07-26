@@ -10,9 +10,9 @@ jobs:
 
   integrations:
     needs: builds
-    uses: ./.github/workflows/_integration-tests-push.yaml
-    # with:
-    #   image: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+    uses: ./.github/workflows/_integration-tests.yaml
+    with:
+      image: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
 
   upgrades:
     needs: builds
