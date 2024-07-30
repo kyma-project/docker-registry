@@ -1,4 +1,4 @@
-name: {{.Name}}
+name: kyma-project.io/module/docker-registry
 channel: {{.Channel}}
 version: {{.Version}}
 defaultCR: config/samples/default-dockerregistry-cr.yaml
