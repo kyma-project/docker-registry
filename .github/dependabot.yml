@@ -35,4 +35,13 @@ updates:
     commit-message:
       prefix: "operator"
       include: "scope"
-
+  - package-ecosystem: "docker"
+    directory: "/components/registry-init"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "registry-init"
+      include: "scope"
