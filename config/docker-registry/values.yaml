@@ -8,8 +8,8 @@ containerRegistry:
 images:
   registry:
     name: "registry"
-    version: "2.8.3"
-    directory: "prod/external"
+    version: "2.8.3-v1"
+    directory: "prod/external/library"
   registry_init:
     name: "registry-init"
     version: "v20240506-57d31b1d"
