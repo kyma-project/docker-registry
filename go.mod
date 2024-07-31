@@ -22,7 +22,7 @@ require (
 	k8s.io/apimachinery v0.30.0
 	k8s.io/client-go v0.30.0
 	k8s.io/utils v0.0.0-20230726121419-3b25d923346b
-	sigs.k8s.io/controller-runtime v0.17.5
+	sigs.k8s.io/controller-runtime v0.18.2
 )
 
 require (
@@ -52,7 +52,7 @@ require (
 	github.com/docker/go-metrics v0.0.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
 	github.com/evanphx/json-patch v5.7.0+incompatible // indirect
-	github.com/evanphx/json-patch/v5 v5.8.0 // indirect
+	github.com/evanphx/json-patch/v5 v5.9.0 // indirect
 	github.com/exponent-io/jsonpath v0.0.0-20151013193312-d6023ce2651d // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
