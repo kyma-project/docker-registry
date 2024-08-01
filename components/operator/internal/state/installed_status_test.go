@@ -114,6 +114,44 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		)
 	})
 
+	t.Run("update status pvc storage configuration", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.DockerRegistry{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "test-namespace",
+				},
+				Spec: v1alpha1.DockerRegistrySpec{
+					Storage: &v1alpha1.Storage{
+						PVC: &v1alpha1.StoragePVC{
+							Name: "test-pvc",
+						},
+					},
+				},
+			},
+			flagsBuilder:            chart.NewFlagsBuilder(),
+			nodePortResolver:        registry.NewNodePortResolver(registry.RandomNodePort),
+			externalAddressResolver: &testExternalAddressResolver{expectedError: errors.New("test-error")},
+			warningBuilder:          warning.NewBuilder(),
+		}
+
+		c := fake.NewClientBuilder().Build()
+		eventRecorder := record.NewFakeRecorder(10)
+		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
+		next, result, err := sFnUpdateFinalStatus(context.TODO(), r, s)
+		require.NoError(t, err)
+		require.Nil(t, result)
+		require.Nil(t, next)
+
+		status := s.instance.Status
+		require.Equal(t, "True", status.InternalAccess.Enabled)
+		require.Equal(t, "localhost:32137", status.InternalAccess.PullAddress)
+		require.Equal(t, "dockerregistry.test-namespace.svc.cluster.local:5000", status.InternalAccess.PushAddress)
+		require.Equal(t, "False", status.ExternalAccess.Enabled)
+
+		require.Equal(t, PVCStorageName, status.Storage)
+		require.Equal(t, "test-pvc", status.PVC)
+	})
+
 	t.Run("reconcile from configurationError", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{

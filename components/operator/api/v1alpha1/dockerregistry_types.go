@@ -156,6 +156,8 @@ type DockerRegistryStatus struct {
 	// Storage signifies the storage type of DockerRegistry.
 	Storage string `json:"storage,omitempty"`
 
+	PVC string `json:"pvc,omitempty"`
+
 	// State signifies current state of DockerRegistry.
 	// Value can be one of ("Ready", "Processing", "Error", "Deleting").
 	// +kubebuilder:validation:Required

@@ -55,6 +55,11 @@ func updateStatus(ctx context.Context, r *reconciler, s *systemState) error {
 		return err
 	}
 
+	pvcField, err := getPVCField(spec.Storage, &s.instance)
+	if err != nil {
+		return err
+	}
+
 	externalAddressFields, err := getExternalAccessFields(ctx, r, s)
 	if err != nil {
 		return err
@@ -74,6 +79,7 @@ func updateStatus(ctx context.Context, r *reconciler, s *systemState) error {
 		{pushAddress, &s.instance.Status.InternalAccess.PushAddress, "Internal push address", ""},
 		{registry.InternalAccessSecretName, &s.instance.Status.InternalAccess.SecretName, "Name of secret with registry access data", ""},
 		storageField,
+		pvcField,
 	}...)
 
 	updateStatusFields(r.k8s, &s.instance, fields)
@@ -128,6 +134,13 @@ func getStorageField(ctx context.Context, storage *v1alpha1.Storage, instance *v
 		}
 	}
 	return fieldToUpdate{storageName, &instance.Status.Storage, "Storage type", ""}, nil
+}
+
+func getPVCField(storage *v1alpha1.Storage, instance *v1alpha1.DockerRegistry) (fieldToUpdate, error) {
+	if storage != nil && storage.PVC != nil {
+		return fieldToUpdate{storage.PVC.Name, &instance.Status.PVC, "PVC name", ""}, nil
+	}
+	return fieldToUpdate{"", &instance.Status.PVC, "PVC name", ""}, nil
 }
 
 type fieldsToUpdate []fieldToUpdate
