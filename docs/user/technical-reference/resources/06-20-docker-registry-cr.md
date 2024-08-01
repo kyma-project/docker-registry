@@ -78,6 +78,7 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 | **storage.gcs.rootdirectory**           | string | The root directory tree in which all registry files are stored. Defaults to the empty string (bucket root).       |
 | **storage.gcs.chunksize**               | string | This is the chunk size used for uploading large blobs, must be a multiple of 256*1024. Defaults to 5242880.       |
 | **storage.btpObjectStore.secretName**   | string | Specifies the name of the Secret that contains data needed to connect to BTP Object Store.                        |
+| **storage.pvc.name** (required)         | string | Specifies the name of the Persistent Volume Claim.                                                                |
 
 
 **Status:**
