@@ -237,6 +237,8 @@ spec:
                       addresses and auth methods.
                     type: string
                 type: object
+              pvc:
+                type: string
               served:
                 description: |-
                   Served signifies that current DockerRegistry is managed.
