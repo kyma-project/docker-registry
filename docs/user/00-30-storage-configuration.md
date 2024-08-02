@@ -126,7 +126,7 @@ metadata:
   name: gcs-secret
   namespace: kyma-system
 data:
-   accountkey: "Z3Njc2VjcmV0"
+  accountkey: "Z3Njc2VjcmV0"
 ```
 
 ## BTP Object Store
@@ -147,4 +147,22 @@ spec:
   storage:
     btpObjectStore:
       secretName: "btp-object-store-secret"
+```
+
+## PVC storage
+
+PVC storage can be configured using the **spec.storage.pvc** field. The only required field is the **name**, which contains the PersistentVolumeClaim name.
+
+### Sample Custom Resource
+
+```yaml
+apiVersion: operator.kyma-project.io/v1alpha1
+kind: DockerRegistry
+metadata:
+  name: default
+  namespace: kyma-system
+spec:
+  storage:
+    pvc:
+      name: "existing-pvc"
 ```
