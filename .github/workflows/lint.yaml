@@ -2,9 +2,6 @@ name: lint
 
 on:
   pull_request:
-    paths:
-      - 'components/operator/**'
-      - '.github/**'
     types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
 
 jobs:
@@ -17,4 +14,4 @@ jobs:
       - uses: golangci/golangci-lint-action@v3
         with:
           version: latest
-          working-directory: 'components/operator'
+          working-directory: "components/operator"
