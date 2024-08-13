@@ -22,6 +22,7 @@
   widget: FormGroup
   defaultExpanded: true
   subscribe:
+    # we want to only have up to one storage field at all times
     storage: spec.storage = null
   # dynamic
   children:
