@@ -1,25 +1,120 @@
-- path: spec.dockerRegistry.enableInternal
-  simple: true
-  name: Enable Internal Docker Registry
-- simple: true
-  widget: Alert
-  severity: warning
-  alert: "'Internal Docker Registry is not recommended for production grade installations'"
-  visibility: "$root.spec.dockerRegistry.enableInternal = true"
-- path: spec.dockerRegistry.secretName
-  visibility: $root.spec.dockerRegistry.enableInternal != true
-  simple: true
-  widget: Resource
-  name: External Docker Registry Configuration
-  resource:
-    kind: Secret
-    version: v1
-    scope: namespace
-- path: spec.tracing.endpoint
-  name: OTLP Trace Endpoint
-  simple: true
-  required: false
-- path: spec.eventing.endpoint
-  name: Eventing Endpoint
-  simple: true
-  required: false
+- name: details.storage.title
+  var: storageType
+  type: string
+  reuired: true
+  dynamicValue: >-
+    $exists(spec.storage.azure) ? 'azure' :
+    $exists(spec.storage.s3) ? 's3' :
+    $exists(spec.storage.gcs) ? 'gcs' :
+    $exists(spec.storage.btpObjectStore) ? 'btpObjectStore' :
+    $exists(spec.storage.pvc) ? 'pvc' :
+    'filesystem'
+  trigger: [storage]
+  enum:
+    - filesystem
+    - azure
+    - s3
+    - gcs
+    - btpObjectStore
+    - pvc
+- name: details.storage.title
+  path: spec.storage
+  widget: FormGroup
+  defaultExpanded: true
+  subscribe:
+    storage: spec.storage = null
+  # dynamic
+  children:
+    # Azure
+    - name: details.storage.azureSecret
+      path: azure.secretName
+      visibility: "$storageType = 'azure'"
+      widget: Resource
+      resource:
+        kind: Secret
+        version: v1
+        scope: namespace
+      filter: >-
+        $exists($item.data.accountKey) and
+        $exists($item.data.accountName) and
+        $exists($item.data.container)
+    # s3
+    - name: details.storage.bucket
+      path: s3.bucket
+      visibility: "$storageType = 's3'"
+    - name: details.storage.region
+      path: s3.region
+      visibility: "$storageType = 's3'"
+    - name: details.storage.regionEndpoint
+      path: s3.regionEndpoint
+      visibility: "$storageType = 's3'"
+    - name: details.storage.encrypt
+      path: s3.encrypt
+      visibility: "$storageType = 's3'"
+    - name: details.storage.secure
+      path: s3.secure
+      visibility: "$storageType = 's3'"
+    - name: details.storage.s3Secret
+      path: s3.secretName
+      visibility: "$storageType = 's3'"
+      widget: Resource
+      resource:
+        kind: Secret
+        version: v1
+        scope: namespace
+      filter: >-
+        $exists($item.data.accessKey) and
+        $exists($item.data.secretKey)
+    # gcs
+    - name: details.storage.bucket
+      path: gcs.bucket
+      visibility: "$storageType = 'gcs'"
+    - name: details.storage.rootdirectory
+      path: gcs.rootdirectory
+      visibility: "$storageType = 'gcs'"
+    - name: details.storage.chunksize
+      path: gcs.chunksize
+      visibility: "$storageType = 'gcs'"
+    - name: details.storage.gcsSecret
+      path: gcs.secretName
+      visibility: "$storageType = 'gcs'"
+      widget: Resource
+      required: true
+      resource:
+        kind: Secret
+        version: v1
+        scope: namespace
+      filter: >-
+        $exists($item.data.accountkey)
+    # btp
+    - name: details.storage.btpObjectStoreSecret
+      path: btpObjectStore.secretName
+      visibility: "$storageType = 'btpObjectStore'"
+      widget: Resource
+      required: true
+      resource:
+        kind: Secret
+        version: v1
+        scope: namespace
+      filter: >-
+        $exists($item.data.tags) and
+        $exists($item.data.type) and
+        $exists($item.data.label)
+    # pvc
+    - name: details.storage.pvc
+      path: pvc.name
+      visibility: "$storageType = 'pvc'"
+      widget: Resource
+      resource:
+        kind: PersistentVolumeClaim
+        version: v1
+        scope: namespace
+- name: details.externalAccess
+  path: spec.externalAccess
+  widget: FormGroup
+  defaultExpanded: true
+  children:
+    - name: details.enabled
+      path: enabled
+    - name: form.hostPrefix
+      path: hostPrefix

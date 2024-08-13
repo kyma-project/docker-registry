@@ -1,91 +1,136 @@
 header:
-  - name: Ready  
+  - name: header.ready
     source: status.state
     widget: Badge
     highlights:
       positive:
-        - 'Ready'
+        - "Ready"
+      informative:
+        - "Processing"
+      warning:
+        - "Warning"
+      critical:
+        - "Error"
 body:
-  - name: Desired Specification
+  - name: details.storage.title
     widget: Panel
     children:
-      - name: Docker Registry
-        visibility: $root.spec.dockerRegistry.enableInternal = true
-        source: spec.dockerRegistry.enableInternal?"INTERNAL":""
-      - name: Docker Registry
-        visibility: '$exists($value)'
-        source: spec.dockerRegistry.secretName
+      - name: details.storage.title
+        source: status.storage
+      - name: details.storage.pvc
+        visibility: $exists(spec.storage.pvc)
+        source: status.pvc
         widget: ResourceLink
         resource:
-          name: spec.dockerRegistry.secretName
+          name: status.pvc
+          namespace: $root.metadata.namespace
+          kind: "'PersistentVolumeClaim'"
+      # Azure
+      - name: details.secret
+        visibility: $exists($value)
+        source: spec.storage.azure.secretName
+        widget: ResourceLink
+        resource:
+          name: spec.storage.azure.secretName
           namespace: $root.metadata.namespace
           kind: "'Secret'"
-      - name: Eventing Endpoint
-        source: spec.eventing.endpoint
-        visibility: '$exists($value)'
-      - name: OTLP Trace Endpoint
-        source: spec.tracing.endpoint
-        visibility: '$exists($value)'
-      - name: Default Resources Preset (Build-time)
-        source: spec.defaultBuildJobPreset
-        visibility: '$exists($value)'
-      - name: Default Resources Preset (Runtime)
-        source: spec.defaultRuntimePodPreset
-        visibility: '$exists($value)'
-      - name: Custom Build Execution Args
-        source: spec.functionBuildExecutorArgs
-        visibility: '$exists($value)'
-      - name: Max Simultaneous Builds 
-        source: spec.functionBuildMaxSimultaneousJobs
-        visibility: '$exists($value)'
-      - name: Function Request Body Limit [Mb]
-        source: spec.functionRequestBodyLimitMb
-        visibility: '$exists($value)'
-      - name: Function Timeout [Sec]
-        source: spec.functionTimeoutSec
-        visibility: '$exists($value)'
-      - name: Function Requeue Duration
-        source: spec.functionRequeueDuration
-        visibility: '$exists($value)'
-      - name: Controller Liveness Timeout
-        source: spec.healthzLivenessTimeout
-        visibility: '$exists($value)'
-      - name: Target CPU utilisation for HPA
-        source: spec.targetCPUUtilizationPercentage
-        visibility: '$exists($value)'
-  - name: Status
+      # s3
+      - name: details.storage.bucket
+        visibility: $exists($value)
+        source: spec.storage.s3.bucket
+      - name: details.secret
+        visibility: $exists($value)
+        source: spec.storage.s3.secretName
+        widget: ResourceLink
+        resource:
+          name: spec.storage.s3.secretName
+          namespace: $root.metadata.namespace
+          kind: "'Secret'"
+      - name: details.storage.region
+        visibility: $exists($value)
+        source: spec.storage.s3.region
+      - name: details.storage.regionEndpoint
+        visibility: $exists($value)
+        source: spec.storage.s3.regionEndpoint
+      - name: details.storage.encrypt
+        visibility: $exists($value)
+        source: spec.storage.s3.encrypt
+      - name: details.storage.secure
+        visibility: $exists($value)
+        source: spec.storage.s3.secure
+      # GCS
+      - name: details.storage.bucket
+        visibility: $exists($value)
+        source: spec.storage.gcs.bucket
+      - name: details.secret
+        visibility: $exists($value)
+        source: spec.storage.gcs.secretName
+        widget: ResourceLink
+        resource:
+          name: spec.storage.gcs.secretName
+          namespace: $root.metadata.namespace
+          kind: "'Secret'"
+      - name: details.storage.rootdirectory
+        visibility: $exists($value)
+        source: spec.storage.gcs.rootdirectory
+      - name: details.storage.chunksize
+        visibility: $exists($value)
+        source: spec.storage.gcs.chunksize
+      # BTP
+      - name: details.secret
+        visibility: $exists($value)
+        source: spec.storage.btpObjectStore.secretName
+        widget: ResourceLink
+        resource:
+          name: spec.storage.btpObjectStore.secretName
+          namespace: $root.metadata.namespace
+          kind: "'Secret'"
+  - name: details.internalAccess
     widget: Panel
+    visibility: "$exists(status.internalAccess.enabled)"
     children:
-    - name: Docker Registry
-      source: status.dockerRegistry
-    - name: Eventing Endpoint
-      source: status.eventingEndpoint
-    - name: OTLP Trace Endpoint
-      source: status.tracingEndpoint
-
-  - source: status.conditions
-    widget: Table
-    name: Reconciliation Conditions
+      - name: details.enabled
+        visibility: "$exists($value)"
+        source: status.internalAccess.enabled
+      - name: details.access.pullAddress
+        visibility: "$exists($value)"
+        source: status.internalAccess.pullAddress
+      - name: details.access.pushAddress
+        visibility: "$exists($value)"
+        source: status.internalAccess.pushAddress
+      - name: details.secret
+        visibility: "$exists($value)"
+        source: status.internalAccess.secretName
+        widget: ResourceLink
+        resource:
+          name: status.internalAccess.secretName
+          namespace: $root.metadata.namespace
+          kind: "'Secret'"
+  - name: details.externalAccess
+    widget: Panel
+    visibility: "$exists(status.externalStorage.enabled)"
     children:
-      - source: type
-        name: Type
-      - source: status
-        name: Status
-        widget: Badge
-        highlights:
-          positive:
-            - 'True'
-          negative:
-            - 'False'
-      - source: reason
-        name: Reason
-      - source: message
-        name: Message
-      - source: '$readableTimestamp(lastTransitionTime)'
-        name: Last transition
-        sort: true
-
-  - widget: EventList
-    filter: '$matchEvents($$, $root.kind, $root.metadata.name)'
-    name: events
+      - name: details.enabled
+        visibility: "$exists($value)"
+        source: status.externalStorage.enabled
+      - name: details.access.pullAddress
+        visibility: "$exists($value)"
+        source: status.externalStorage.pullAddress
+      - name: details.access.pushAddress
+        visibility: "$exists($value)"
+        source: status.externalStorage.pushAddress
+      - name: details.secret
+        visibility: "$exists($value)"
+        source: status.externalStorage.secretName
+        widget: ResourceLink
+        resource:
+          name: status.externalStorage.secretName
+          namespace: $root.metadata.namespace
+          kind: "'Secret'"
+  - name: details.status.title
+    source: status.conditions
+    widget: ConditionList
+  - name: details.events
+    widget: EventList
+    filter: "$matchEvents($$, $root.kind, $root.metadata.name)"
     defaultType: information

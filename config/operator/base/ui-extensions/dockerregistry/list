@@ -1,6 +1,18 @@
-- name: Ready  
+- name: header.storage
+  source: status.storage
+- name: header.externalAccess
+  source: status.externalAccess.enabled
+- name: header.status
   source: status.state
   widget: Badge
   highlights:
     positive:
-      - 'Ready'
+      - "Ready"
+    informative:
+      - "Processing"
+    warning:
+      - "Warning"
+    critical:
+      - "Error"
+      # deleting is none of the above, so it should default to a gray badge
+      # - "Deleting"
