@@ -22,6 +22,10 @@ en:
     events: Events
     storage:
       title: Storage
+      actual:
+        title: Storage Type (actual)
+      desired:
+        title: Storage Type (desired)
       pvc: PersistentVolumeClaim
       bucket: Bucket
       rootdirectory: Root Directory

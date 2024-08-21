@@ -14,9 +14,31 @@ header:
 body:
   - name: details.storage.title
     widget: Panel
+    visibility: $not($exists(spec.storage))
     children:
-      - name: details.storage.title
+      - name: details.storage.actual.title
         source: status.storage
+  - name: details.storage.title
+    widget: Panel
+    visibility: $exists(spec.storage)
+    children:
+      - name: details.storage.actual.title
+        source: status.storage
+      - name: details.storage.desired.title
+        source: "'S3 bucket'"
+        visibility: $exists(spec.storage.s3)
+      - name: details.storage.desired.title
+        source: "'pvc'"
+        visibility: $exists(spec.storage.pvc)
+      - name: details.storage.desired.title
+        source: "'azure'"
+        visibility: $exists(spec.storage.azure)
+      - name: details.storage.desired.title
+        source: "'gcs'"
+        visibility: $exists(spec.storage.gcs)
+      - name: details.storage.desired.title
+        source: "'SAP BTP Object Store'"
+        visibility: $exists(spec.storage.btpObjectStore)
       - name: details.storage.pvc
         visibility: $exists(spec.storage.pvc)
         source: status.pvc
@@ -108,28 +130,48 @@ body:
           kind: "'Secret'"
   - name: details.externalAccess
     widget: Panel
-    visibility: "$exists(status.externalStorage.enabled)"
+    visibility: "$exists(status.externalAccess.enabled)"
     children:
       - name: details.enabled
         visibility: "$exists($value)"
-        source: status.externalStorage.enabled
+        source: status.externalAccess.enabled
       - name: details.access.pullAddress
         visibility: "$exists($value)"
-        source: status.externalStorage.pullAddress
+        source: status.externalAccess.pullAddress
       - name: details.access.pushAddress
         visibility: "$exists($value)"
-        source: status.externalStorage.pushAddress
+        source: status.externalAccess.pushAddress
       - name: details.secret
         visibility: "$exists($value)"
-        source: status.externalStorage.secretName
+        source: status.externalAccess.secretName
         widget: ResourceLink
         resource:
-          name: status.externalStorage.secretName
+          name: status.externalAccess.secretName
           namespace: $root.metadata.namespace
           kind: "'Secret'"
-  - name: details.status.title
-    source: status.conditions
-    widget: ConditionList
+
+  - source: status.conditions
+    widget: Table
+    name: Reconciliation Conditions
+    children:
+      - source: type
+        name: Type
+      - source: status
+        name: Status
+        widget: Badge
+        highlights:
+          positive:
+            - 'True'
+          negative:
+            - 'False'
+      - source: reason
+        name: Reason
+      - source: message
+        name: Message
+      - source: '$readableTimestamp(lastTransitionTime)'
+        name: Last transition
+        sort: true
+
   - name: details.events
     widget: EventList
     filter: "$matchEvents($$, $root.kind, $root.metadata.name)"
