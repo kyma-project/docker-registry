@@ -1,0 +1,42 @@
+en:
+  header:
+    ready: Ready
+    storage: Storage
+    externalAccess: External Access
+    status: Status
+  details:
+    desired:
+      secret: Docker Registry Secret
+      externalAccess:
+        enabled: External Access
+        hostPrefix: External Access Host Prefix
+    status:
+      title: Reconciliation Conditions
+    internalAccess: Internal Access
+    externalAccess: External Access
+    enabled: Enabled
+    access:
+      pullAddress: Pull Address
+      pushAddress: Push Address
+    secret: Secret
+    events: Events
+    storage:
+      title: Storage
+      actual:
+        title: Storage Type (actual)
+      desired:
+        title: Storage Type (desired)
+      pvc: PersistentVolumeClaim
+      bucket: Bucket
+      rootdirectory: Root Directory
+      chunksize: Chunk Size
+      region: Region
+      regionEndpoint: Region Endpoint
+      encrypt: Encrypt
+      secure: Secure
+      azureSecret: Azure Secret
+      s3Secret: S3 Secret
+      gcsSecret: GCS Secret
+      btpObjectStoreSecret: BTP Object Store Secret
+  form:
+    hostPrefix: Host Prefix
