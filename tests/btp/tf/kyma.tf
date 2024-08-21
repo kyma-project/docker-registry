@@ -45,7 +45,7 @@ resource "btp_subaccount_environment_instance" "kyma" {
     ]
   })
   timeouts = {
-    create = "30m"
+    create = "40m"
     update = "30m"
     delete = "60m"
   }

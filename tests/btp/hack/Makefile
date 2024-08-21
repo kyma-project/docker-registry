@@ -24,12 +24,12 @@ service-account-kubeconfig:
 
 .PHONY: docker_build
 docker_build:
-	docker buildx build -t bookstore:0.0.1 ..  
+	docker buildx build -t simple-app:0.0.1 ..
 
 .PHONY: docker_push
 docker_push:
-	docker tag bookstore:0.0.1 $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})/bookstore:0.0.1
-	docker push $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})/bookstore:0.0.1
+	docker tag simple-app:0.0.1 $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})/simple-app:0.0.1
+	docker push $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})/simple-app:0.0.1
 
 .PHONY: enable_docker_registry
 enable_docker_registry:
@@ -52,17 +52,17 @@ docker_registry_login:
 	@docker login -u $$(kubectl get secrets -n kyma-system dockerregistry-config-external -o jsonpath={.data.username} --kubeconfig ${KUBECONFIG} | base64 -d) -p $$(kubectl get secrets -n kyma-system dockerregistry-config-external -o jsonpath={.data.password} --kubeconfig ${KUBECONFIG} | base64 -d) $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})
 
 #TODO: change it to another app, e.g python demo
-.PHONY: deploy_bookstore_app
-deploy_bookstore_app:
-	@echo "Deploying bookstore service..."
-	@kubectl apply -k ../k8s-resources/bookstore --kubeconfig ${KUBECONFIG}
-	@kubectl set image deployment bookstore-service bookstore-service=$$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.internalAccess.pullAddress} --kubeconfig ${KUBECONFIG})/bookstore:0.0.1 --kubeconfig ${KUBECONFIG} 
-	@echo "Waiting for bookstore service..."
-	@kubectl wait --for condition=Available deployment/bookstore-service --kubeconfig ${KUBECONFIG}
-	@echo "Bookstore service available." 
+.PHONY: deploy_simple_app
+deploy_simple_app:
+	@echo "Deploying simple app service..."
+	@kubectl apply -k ../k8s-resources/simple-app --kubeconfig ${KUBECONFIG}
+	@kubectl set image deployment simple-app-service simple-app-service=$$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.internalAccess.pullAddress} --kubeconfig ${KUBECONFIG})/simple-app:0.0.1 --kubeconfig ${KUBECONFIG}
+	@echo "Waiting for simple app service..."
+	@kubectl wait --for condition=Available deployment/simple-app-service --kubeconfig ${KUBECONFIG} --timeout=180s
+	@echo "Simple app service available."
 
-.PHONY: bookstore-integration-test
-bookstore-integration-test:
+.PHONY: simple-app-integration-test
+simple-app-integration-test:
 	../tests/smoke-test.sh ${KUBECONFIG}
 
 
@@ -75,10 +75,11 @@ share-sm-service-operator-access: ## update a secret used for service manager ac
 .PHONY: create-object-store-reference
 create-object-store-reference:
 # create reference instance (and binding) to an existing btp object store service instance that is shared from the "provider" subaccount
-	@sleep 30
+	@echo "Waiting for CRD btp operator"
+	@while ! kubectl get crd btpoperators.operator.kyma-project.io --kubeconfig ${KUBECONFIG}; do echo "Waiting for CRD btp operator..."; sleep 1; done
 	@kubectl wait --for condition=established crd/btpoperators.operator.kyma-project.io
 	@while ! kubectl get btpoperators.operator.kyma-project.io btpoperator --namespace kyma-system --kubeconfig ${KUBECONFIG}; do echo "Waiting for btpoperator..."; sleep 1; done
-	@kubectl wait --for condition=Ready btpoperators.operator.kyma-project.io/btpoperator -n kyma-system --timeout=60s
+	@kubectl wait --for condition=Ready btpoperators.operator.kyma-project.io/btpoperator -n kyma-system --timeout=180s
 	@../bin/kyma alpha reference-instance --btp-secret-name sm-provider-access --namespace kyma-system --offering-name objectstore --name-selector provider-object-store --reference-name object-store-reference --kubeconfig ${KUBECONFIG}
 	@kubectl apply -n kyma-system -f ../k8s-resources/dependencies/object-store-binding.yaml --kubeconfig ${KUBECONFIG}
 	@while ! kubectl get secret object-store-reference-binding --namespace kyma-system --kubeconfig ${KUBECONFIG}; do echo "Waiting for object-store-reference-binding secret..."; sleep 1; done
