@@ -34,10 +34,6 @@ type ExternalAccess struct {
 	// Enable indicates whether the external access is enabled.
 	// default: false
 	Enabled *bool `json:"enabled,omitempty"`
-
-	// HostPrefix is the prefix for the host.
-	// default: registry-<cr_name>.<cr_namespace>
-	HostPrefix *string `json:"hostPrefix,omitempty"`
 }
 
 type Storage struct {

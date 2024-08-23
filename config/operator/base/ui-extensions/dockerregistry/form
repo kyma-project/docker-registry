@@ -117,5 +117,3 @@
   children:
     - name: details.enabled
       path: enabled
-    - name: form.hostPrefix
-      path: hostPrefix

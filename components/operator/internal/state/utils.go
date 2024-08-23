@@ -54,11 +54,6 @@ func GetServedDockerRegistry(ctx context.Context, c client.Client) (*v1alpha1.Do
 func resolveRegistryHost(ctx context.Context, r *reconciler, s *systemState) (string, error) {
 	hostPrefix := fmt.Sprintf("registry-%s-%s", s.instance.GetName(), s.instance.GetNamespace())
 
-	externalAccess := s.instance.Spec.ExternalAccess
-	if externalAccess != nil && externalAccess.HostPrefix != nil {
-		hostPrefix = *externalAccess.HostPrefix
-	}
-
 	return s.externalAddressResolver.GetExternalAddress(ctx, r.client, hostPrefix)
 }
 

@@ -62,7 +62,6 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 |-----------------------------------------|--------|-------------------------------------------------------------------------------------------------------------------|
 | **externalAccess**                      | object | Contains configuration of the registry external access through the `kyma-gateway` Istio Gateway with TLS enabled. |
 | **externalAccess.enabled**              | string | Specifies if registry is exposed.                                                                                 |
-| **externalAccess.hostPrefix**           | string | Specifies prefix for the host address. (default "registry-<cr_name>-<cr_namespace>").                             |
 | **storage**                             | object | Contains configuration of the registry images storage.                                                            |
 | **storage.azure**                       | object | Contains configuration of the Azure storage.                                                                      |
 | **storage.azure.secretName** (required) | string | Specifies the name of the Secret that contains data needed to connect to the Azure storage.                       |
