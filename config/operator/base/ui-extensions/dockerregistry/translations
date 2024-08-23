@@ -9,7 +9,6 @@ en:
       secret: Docker Registry Secret
       externalAccess:
         enabled: External Access
-        hostPrefix: External Access Host Prefix
     status:
       title: Reconciliation Conditions
     internalAccess: Internal Access
@@ -36,5 +35,3 @@ en:
       s3Secret: S3 Secret
       gcsSecret: GCS Secret
       btpObjectStoreSecret: BTP Object Store Secret
-  form:
-    hostPrefix: Host Prefix

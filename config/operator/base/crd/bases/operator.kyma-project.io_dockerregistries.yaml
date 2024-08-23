@@ -63,11 +63,6 @@ spec:
                       Enable indicates whether the external access is enabled.
                       default: false
                     type: boolean
-                  hostPrefix:
-                    description: |-
-                      HostPrefix is the prefix for the host.
-                      default: registry-<cr_name>.<cr_namespace>
-                    type: string
                 type: object
               storage:
                 description: Storage defines the storage configuration ( filesystem

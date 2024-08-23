@@ -18,7 +18,7 @@ This tutorial shows how you can expose the registry to the outside of the cluste
     >[!NOTE] 
     > You can find your cluster address in the `kyma-system/kyma-gateway` gateway resource.
 
-1. Expose the registry service by changing the **spec.externalAccess.enabled** flag to `true`. Optionally, you can also change the host name:
+1. Expose the registry service by changing the **spec.externalAccess.enabled** flag to `true`:
 
     ```bash
     kubectl apply -n kyma-system -f - <<EOF
@@ -30,7 +30,6 @@ This tutorial shows how you can expose the registry to the outside of the cluste
     spec:
       externalAccess:
         enabled: true
-        hostPrefix: my-registry
     EOF
     ```
    
