@@ -164,10 +164,10 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 					},
 				},
 			},
-			statusSnapshot:          v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:            chart.NewFlagsBuilder(),
-			nodePortResolver:        registry.NewNodePortResolver(registry.RandomNodePort),
-			externalAddressResolver: registry.NewExternalAccessResolver(),
+			statusSnapshot:      v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:        chart.NewFlagsBuilder(),
+			nodePortResolver:    registry.NewNodePortResolver(registry.RandomNodePort),
+			gatewayHostResolver: registry.NewExternalAccessResolver("registry-test-name-test-namespace"),
 		}
 		r := &reconciler{
 			k8s: k8s{client: fake.NewClientBuilder().WithScheme(testScheme).WithObjects(testGateway).Build()},
@@ -212,11 +212,11 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 					},
 				},
 			},
-			statusSnapshot:          v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:            chart.NewFlagsBuilder(),
-			nodePortResolver:        registry.NewNodePortResolver(registry.RandomNodePort),
-			externalAddressResolver: registry.NewExternalAccessResolver(),
-			warningBuilder:          warning.NewBuilder(),
+			statusSnapshot:      v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:        chart.NewFlagsBuilder(),
+			nodePortResolver:    registry.NewNodePortResolver(registry.RandomNodePort),
+			gatewayHostResolver: registry.NewExternalAccessResolver(""),
+			warningBuilder:      warning.NewBuilder(),
 		}
 
 		r := &reconciler{

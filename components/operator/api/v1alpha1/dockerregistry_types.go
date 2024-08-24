@@ -34,6 +34,14 @@ type ExternalAccess struct {
 	// Enable indicates whether the external access is enabled.
 	// default: false
 	Enabled *bool `json:"enabled,omitempty"`
+
+	// Gateway defines gateway name (in format: <namespace>/<name>)
+	// default: kyma-system/kyma-gateway
+	Gateway *string `json:"gateway,omitempty"`
+
+	// Host defines address under which registry will be exposed
+	// should fit to at least one server defined in the gateway
+	Host *string `json:"host,omitempty"`
 }
 
 type Storage struct {

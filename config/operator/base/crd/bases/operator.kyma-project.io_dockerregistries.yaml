@@ -63,6 +63,16 @@ spec:
                       Enable indicates whether the external access is enabled.
                       default: false
                     type: boolean
+                  gateway:
+                    description: |-
+                      Gateway defines gateway name (in format: <namespace>/<name>)
+                      default: kyma-system/kyma-gateway
+                    type: string
+                  host:
+                    description: |-
+                      Host defines address under which registry will be exposed
+                      should fit to at least one server defined in the gateway
+                    type: string
                 type: object
               storage:
                 description: Storage defines the storage configuration ( filesystem

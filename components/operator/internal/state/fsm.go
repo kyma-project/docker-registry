@@ -36,13 +36,13 @@ type cfg struct {
 }
 
 type systemState struct {
-	instance                v1alpha1.DockerRegistry
-	statusSnapshot          v1alpha1.DockerRegistryStatus
-	chartConfig             *chart.Config
-	warningBuilder          *warning.Builder
-	flagsBuilder            chart.FlagsBuilder
-	nodePortResolver        *registry.NodePortResolver
-	externalAddressResolver registry.ExternalAccessResolver
+	instance            v1alpha1.DockerRegistry
+	statusSnapshot      v1alpha1.DockerRegistryStatus
+	chartConfig         *chart.Config
+	warningBuilder      *warning.Builder
+	flagsBuilder        chart.FlagsBuilder
+	nodePortResolver    *registry.NodePortResolver
+	gatewayHostResolver registry.ExternalAccessResolver
 }
 
 func (s *systemState) saveStatusSnapshot() {
@@ -109,12 +109,14 @@ func (m *reconciler) stateFnName() string {
 
 func (m *reconciler) Reconcile(ctx context.Context, v v1alpha1.DockerRegistry) (ctrl.Result, error) {
 	state := systemState{
-		instance:                v,
-		warningBuilder:          warning.NewBuilder(),
-		flagsBuilder:            chart.NewFlagsBuilder(),
-		chartConfig:             chartConfig(ctx, m, v.Namespace),
-		nodePortResolver:        registry.NewNodePortResolver(registry.RandomNodePort),
-		externalAddressResolver: registry.NewExternalAccessResolver(),
+		instance:         v,
+		warningBuilder:   warning.NewBuilder(),
+		flagsBuilder:     chart.NewFlagsBuilder(),
+		chartConfig:      chartConfig(ctx, m, v.Namespace),
+		nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
+		gatewayHostResolver: registry.NewExternalAccessResolver(
+			fmt.Sprintf("registry-%s-%s", v.GetName(), v.GetNamespace()),
+		),
 	}
 	state.saveStatusSnapshot()
 	var err error

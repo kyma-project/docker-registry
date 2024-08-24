@@ -2,7 +2,6 @@ package state
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
@@ -76,8 +75,7 @@ func setExternalAccessConfig(ctx context.Context, r *reconciler, s *systemState)
 		return nil
 	}
 
-	gateway := fmt.Sprintf("%s/%s", istio.GatewayNamespace, istio.GatewayName)
-	host, err := resolveRegistryHost(ctx, r, s)
+	resolvedAccess, err := s.gatewayHostResolver.Do(ctx, r.client, *spec.ExternalAccess)
 	if err != nil {
 		// set warning and continue reconciliation because external access is optional
 		s.warningBuilder.With(".spec.externalAccess.enabled is true but the kyma-gateway Gateway in the kyma-system namespace is not found")
@@ -86,8 +84,8 @@ func setExternalAccessConfig(ctx context.Context, r *reconciler, s *systemState)
 	}
 
 	s.flagsBuilder.WithVirtualService(
-		host,
-		gateway,
+		resolvedAccess.Host,
+		resolvedAccess.Gateway,
 	)
 
 	return nil
