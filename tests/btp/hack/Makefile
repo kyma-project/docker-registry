@@ -24,11 +24,15 @@ service-account-kubeconfig:
 
 .PHONY: docker_build
 docker_build:
-	docker buildx build -t simple-app:0.0.1 ..
+#	docker buildx build -t simple-app:0.0.1 ..
+	# TODO: get multiplatform nginx; now we get nginx for amd64
+	docker pull nginx@sha256:f05d105face814474acc5538160bd3f29309d9398dd895a4e71f676a4fd9a3fc
 
 .PHONY: docker_push
 docker_push:
-	docker tag simple-app:0.0.1 $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})/simple-app:0.0.1
+#	docker tag simple-app:0.0.1 $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})/simple-app:0.0.1
+#	docker push $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})/simple-app:0.0.1
+	docker tag nginx@sha256:f05d105face814474acc5538160bd3f29309d9398dd895a4e71f676a4fd9a3fc $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})/simple-app:0.0.1
 	docker push $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})/simple-app:0.0.1
 
 .PHONY: enable_docker_registry
@@ -60,6 +64,11 @@ deploy_simple_app:
 	@echo "Waiting for simple app service..."
 	@kubectl wait --for condition=Available deployment/simple-app-service --kubeconfig ${KUBECONFIG} --timeout=180s
 	@echo "Simple app service available."
+	@echo "Waiting for simple app pod..."
+	# TODO: remove this line
+	@kubectl get pods -l app=simple-app-service --kubeconfig ${KUBECONFIG}
+	@kubectl wait --for condition=Ready=True pod -l app=simple-app-service --kubeconfig ${KUBECONFIG} --timeout=180s
+	@echo "Simple app pod ready."
 
 .PHONY: simple-app-integration-test
 simple-app-integration-test:

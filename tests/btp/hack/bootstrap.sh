@@ -66,11 +66,11 @@ KUBECONFIG=tmp/sa-kubeconfig.yaml make enable_docker_registry
 KUBECONFIG=tmp/sa-kubeconfig.yaml make docker_registry_login
 make docker_build
 KUBECONFIG=tmp/sa-kubeconfig.yaml make docker_push
-KUBECONFIG=tmp/sa-kubeconfig.yaml make deploy_bookstore_app
+KUBECONFIG=tmp/sa-kubeconfig.yaml make deploy_simple_app
 
 
 # TEST
-KUBECONFIG=tmp/sa-kubeconfig.yaml make bookstore-integration-test
+#KUBECONFIG=tmp/sa-kubeconfig.yaml make simple-app-integration-test
 
 # CLEANUP
 
