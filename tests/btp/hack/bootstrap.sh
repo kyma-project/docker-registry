@@ -64,15 +64,10 @@ KUBECONFIG=tmp/sa-kubeconfig.yaml make enable_docker_registry
 
 # TODO: the following is sort of "kyma push app" equivalent for "cf push"
 KUBECONFIG=tmp/sa-kubeconfig.yaml make docker_registry_login
-make docker_build
-KUBECONFIG=tmp/sa-kubeconfig.yaml make docker_push
+KUBECONFIG=tmp/sa-kubeconfig.yaml make docker_push_simple_app
 KUBECONFIG=tmp/sa-kubeconfig.yaml make deploy_simple_app
 
 
-# TEST
-#KUBECONFIG=tmp/sa-kubeconfig.yaml make simple-app-integration-test
-
 # CLEANUP
-
-tofu -chdir=../tf destroy -auto-approve 
+tofu -chdir=../tf destroy -auto-approve
 rm -rf tmp

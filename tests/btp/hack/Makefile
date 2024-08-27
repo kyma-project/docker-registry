@@ -22,16 +22,11 @@ service-account-kubeconfig:
 	../bin/kyma alpha access --clusterrole ${CLUSTERROLE} --kubeconfig tmp/headless-kubeconfig.yaml --name ci-workflow-sa --time 1h --output tmp/sa-kubeconfig.yaml
 	@echo "Service-account based kubeconfig generated"
 
-.PHONY: docker_build
-docker_build:
-#	docker buildx build -t simple-app:0.0.1 ..
+.PHONY: docker_push_simple_app
+docker_push_simple_app:
 	# TODO: get multiplatform nginx; now we get nginx for amd64
 	docker pull nginx@sha256:f05d105face814474acc5538160bd3f29309d9398dd895a4e71f676a4fd9a3fc
-
-.PHONY: docker_push
-docker_push:
 #	docker tag simple-app:0.0.1 $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})/simple-app:0.0.1
-#	docker push $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})/simple-app:0.0.1
 	docker tag nginx@sha256:f05d105face814474acc5538160bd3f29309d9398dd895a4e71f676a4fd9a3fc $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})/simple-app:0.0.1
 	docker push $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})/simple-app:0.0.1
 
@@ -55,7 +50,6 @@ docker_registry_login:
 	@echo "Loging Docker CLI into kyma internal docker registry..."
 	@docker login -u $$(kubectl get secrets -n kyma-system dockerregistry-config-external -o jsonpath={.data.username} --kubeconfig ${KUBECONFIG} | base64 -d) -p $$(kubectl get secrets -n kyma-system dockerregistry-config-external -o jsonpath={.data.password} --kubeconfig ${KUBECONFIG} | base64 -d) $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})
 
-#TODO: change it to another app, e.g python demo
 .PHONY: deploy_simple_app
 deploy_simple_app:
 	@echo "Deploying simple app service..."
@@ -64,10 +58,6 @@ deploy_simple_app:
 	@echo "Waiting for simple app service..."
 	@kubectl wait --for condition=Available deployment/simple-app-service --kubeconfig ${KUBECONFIG} --timeout=180s
 	@echo "Simple app service available."
-
-.PHONY: simple-app-integration-test
-simple-app-integration-test:
-	../tests/smoke-test.sh ${KUBECONFIG}
 
 
 .PHONY: share-sm-service-operator-access

@@ -16,13 +16,6 @@ spec:
         app: simple-app-service
         example: simple-app-service
     spec:
-      # volumes:
-      #   - name: hana
-      #     secret:
-      #       secretName: hana
-      #   - name: hana-url
-      #     secret:
-      #       secretName: hana-url
       containers:
         - name: simple-app-service
           image: foo #This will be set dynamically
@@ -35,12 +28,6 @@ spec:
               cpu: 20m
               memory: 32Mi
           volumeMounts:
-          # - name: hana
-          #   readOnly: true
-          #   mountPath: /bindings/hana
-          # - name: hana-url
-          #   readOnly: true
-          #   mountPath: /bindings/hana-url
           env:
             - name: HANA_SCHEMA
               value: DKOM
