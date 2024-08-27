@@ -31,7 +31,7 @@ func NewExternalAccessResolver(defaultKymaGatewayHostPrefix string) ExternalAcce
 	}
 }
 
-// GetHost returns host that can be used to access registry from outside of the cluster of error if host is not operational
+// Do returns host that can be used to access registry from outside of the cluster of error if host is not operational
 func (ear *externalAccessResolver) Do(ctx context.Context, client client.Client, externalAccess v1alpha1.ExternalAccess) (*ResolvedAccess, error) {
 	if ear.resolvedAccess != nil || ear.resolvedError != nil {
 		return ear.resolvedAccess, ear.resolvedError
