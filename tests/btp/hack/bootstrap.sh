@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+# Operating system architecture
+OS_ARCH=$(uname -m)
+# Operating system type
+OS_TYPE=$(uname | tr '[:upper:]' '[:lower:]')
 
 if [ -z "$1" ]
   then
@@ -18,6 +22,17 @@ if [ ! -f ../bin/kyma ]; then
     echo "Kyma binary downloaded into /bin/kyma"
 fi
 
+if [ ! -f ../bin/btp ]; then
+    BTP_FILE=btp-cli-${OS_TYPE}-${OS_ARCH}-latest.tar.gz
+    echo "BTP CLI not found!"
+    mkdir -p ../bin
+    curl -LJO https://tools.hana.ondemand.com/additional/${BTP_FILE} --cookie "eula_3_2_agreed=tools.hana.ondemand.com/developer-license-3_2.txt"
+    tar -zxf ${BTP_FILE} --strip-components=1 -C ../bin
+    rm -f ${BTP_FILE}
+    echo "BTP CLI downloaded into /bin/btp"
+fi
+
+
 export $(cat ../env/.env | xargs)
 
 
@@ -25,16 +40,16 @@ export $(cat ../env/.env | xargs)
 
 echo $TF_VAR_BTP_BACKEND_URL
 
-btp login --url $TF_VAR_BTP_BACKEND_URL --user $TF_VAR_BTP_BOT_USER --password $TF_VAR_BTP_BOT_PASSWORD --idp $TF_VAR_BTP_CUSTOM_IAS_TENANT --subdomain $TF_VAR_BTP_GLOBAL_ACCOUNT
+../bin/btp login --url $TF_VAR_BTP_BACKEND_URL --user $TF_VAR_BTP_BOT_USER --password $TF_VAR_BTP_BOT_PASSWORD --idp $TF_VAR_BTP_CUSTOM_IAS_TENANT --subdomain $TF_VAR_BTP_GLOBAL_ACCOUNT
 
-btp set config --format json
+../bin/btp set config --format json
 
 export TF_VAR_BTP_SUBACCOUNT=$1
 
 # Create a new subaccount with Kyma instance and OIDC
 tofu -chdir=../tf init
 tofu -chdir=../tf apply -auto-approve
-btp target -sa $(cat ../tf/subaccount_id.txt)
+../bin/btp  target -sa $(cat ../tf/subaccount_id.txt)
 
 ##### ---------------------------------------------------------------------------------
 
