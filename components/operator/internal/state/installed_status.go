@@ -99,7 +99,7 @@ func getExternalAccessFields(ctx context.Context, r *reconciler, s *systemState)
 		}, nil
 	}
 
-	externalPushAddress, err := resolveRegistryHost(ctx, r, s)
+	resolvedAccess, err := s.gatewayHostResolver.Do(ctx, r.client, *s.instance.Spec.ExternalAccess)
 	if err != nil {
 		// gateway is not operational but we should continue the reconciliation with old status configuration
 		return nil, nil
@@ -107,8 +107,8 @@ func getExternalAccessFields(ctx context.Context, r *reconciler, s *systemState)
 
 	return fieldsToUpdate{
 		{"True", &s.instance.Status.ExternalAccess.Enabled, "External access enabled", ""},
-		{externalPushAddress, &s.instance.Status.ExternalAccess.PullAddress, "External pull address", ""},
-		{externalPushAddress, &s.instance.Status.ExternalAccess.PushAddress, "External push address", ""},
+		{resolvedAccess.Host, &s.instance.Status.ExternalAccess.PullAddress, "External pull address", ""},
+		{resolvedAccess.Host, &s.instance.Status.ExternalAccess.PushAddress, "External push address", ""},
 		{registry.ExternalAccessSecretName, &s.instance.Status.ExternalAccess.SecretName, "Name of secret with registry external access data", ""},
 	}, nil
 }

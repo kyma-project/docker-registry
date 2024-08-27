@@ -34,10 +34,12 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 					},
 				},
 			},
-			flagsBuilder:            chart.NewFlagsBuilder(),
-			nodePortResolver:        registry.NewNodePortResolver(registry.RandomNodePort),
-			externalAddressResolver: &testExternalAddressResolver{expectedAddress: "registry-test-name-test-namespace.cluster.local"},
-			warningBuilder:          warning.NewBuilder(),
+			flagsBuilder:     chart.NewFlagsBuilder(),
+			nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
+			gatewayHostResolver: &testExternalAddressResolver{expectedAccess: &registry.ResolvedAccess{
+				Host: "registry-test-name-test-namespace.cluster.local",
+			}},
+			warningBuilder: warning.NewBuilder(),
 		}
 
 		c := fake.NewClientBuilder().Build()
@@ -82,10 +84,10 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 					},
 				},
 			},
-			flagsBuilder:            chart.NewFlagsBuilder(),
-			nodePortResolver:        registry.NewNodePortResolver(registry.RandomNodePort),
-			externalAddressResolver: &testExternalAddressResolver{expectedError: errors.New("test-error")},
-			warningBuilder:          warning.NewBuilder(),
+			flagsBuilder:        chart.NewFlagsBuilder(),
+			nodePortResolver:    registry.NewNodePortResolver(registry.RandomNodePort),
+			gatewayHostResolver: &testExternalAddressResolver{expectedError: errors.New("test-error")},
+			warningBuilder:      warning.NewBuilder(),
 		}
 
 		s.warningBuilder.With("test warning")
@@ -128,10 +130,10 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 					},
 				},
 			},
-			flagsBuilder:            chart.NewFlagsBuilder(),
-			nodePortResolver:        registry.NewNodePortResolver(registry.RandomNodePort),
-			externalAddressResolver: &testExternalAddressResolver{expectedError: errors.New("test-error")},
-			warningBuilder:          warning.NewBuilder(),
+			flagsBuilder:        chart.NewFlagsBuilder(),
+			nodePortResolver:    registry.NewNodePortResolver(registry.RandomNodePort),
+			gatewayHostResolver: &testExternalAddressResolver{expectedError: errors.New("test-error")},
+			warningBuilder:      warning.NewBuilder(),
 		}
 
 		c := fake.NewClientBuilder().Build()
@@ -207,10 +209,10 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 }
 
 type testExternalAddressResolver struct {
-	expectedAddress string
-	expectedError   error
+	expectedAccess *registry.ResolvedAccess
+	expectedError  error
 }
 
-func (r *testExternalAddressResolver) GetExternalAddress(_ context.Context, _ client.Client, _ string) (string, error) {
-	return r.expectedAddress, r.expectedError
+func (r *testExternalAddressResolver) Do(_ context.Context, _ client.Client, _ v1alpha1.ExternalAccess) (*registry.ResolvedAccess, error) {
+	return r.expectedAccess, r.expectedError
 }
