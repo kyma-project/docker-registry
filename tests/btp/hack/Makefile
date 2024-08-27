@@ -64,11 +64,6 @@ deploy_simple_app:
 	@echo "Waiting for simple app service..."
 	@kubectl wait --for condition=Available deployment/simple-app-service --kubeconfig ${KUBECONFIG} --timeout=180s
 	@echo "Simple app service available."
-	@echo "Waiting for simple app pod..."
-	# TODO: remove this line
-	@kubectl get pods -l app=simple-app-service --kubeconfig ${KUBECONFIG}
-	@kubectl wait --for condition=Ready=True pod -l app=simple-app-service --kubeconfig ${KUBECONFIG} --timeout=180s
-	@echo "Simple app pod ready."
 
 .PHONY: simple-app-integration-test
 simple-app-integration-test:

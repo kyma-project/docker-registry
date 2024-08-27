@@ -46,6 +46,15 @@ spec:
               value: DKOM
             - name: SERVICE_BINDING_ROOT
               value: /bindings
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 5
+            failureThreshold: 1
       imagePullSecrets:
         - name: dockerregistry-config
 
