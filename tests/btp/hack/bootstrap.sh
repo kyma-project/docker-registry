@@ -38,8 +38,6 @@ export $(cat ../env/.env | xargs)
 
 ### TODO refactor to fetching btp Access Token manually via curl towards trusted IAS tenant.
 
-echo $TF_VAR_BTP_BACKEND_URL
-
 ../bin/btp login --url $TF_VAR_BTP_BACKEND_URL --user $TF_VAR_BTP_BOT_USER --password $TF_VAR_BTP_BOT_PASSWORD --idp $TF_VAR_BTP_CUSTOM_IAS_TENANT --subdomain $TF_VAR_BTP_GLOBAL_ACCOUNT
 
 ../bin/btp set config --format json
