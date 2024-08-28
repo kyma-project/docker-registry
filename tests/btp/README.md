@@ -1,4 +1,10 @@
-How to use.
+# BTP integration test
+
+## Overview
+
+This integration test verify if the Docker Registry works on semi production environment.
+
+## How to use.
 
 Export the following environment variables:
 ```bash
@@ -14,7 +20,7 @@ TF_VAR_BTP_KYMA_REGION=us-central1
 TF_VAR_BTP_PROVIDER_SUBACCOUNT_ID=
 ```
 
-You can use the following command to export variables from `.env` file:
+You can use the following command to export variables from `.env` file which contains the above variables:
 ```bash
 export $(cat .env | xargs)
 ```
