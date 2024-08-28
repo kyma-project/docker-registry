@@ -1,0 +1,80 @@
+name: btp integration tests
+
+on:
+  workflow_call:
+
+jobs:
+  btp-integration-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tests/btp/hack
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-kyma
+        with:
+          path: "tests/btp/bin"
+      - name: Create btp account with kyma enable
+        run: |
+          . ./set-tf-envs.sh
+          terraform -chdir=../tf init
+          terraform -chdir=../tf apply -auto-approve
+          echo "SUBACC_ID=$(cat ../tf/subaccount_id.txt)" >> $GITHUB_ENV
+        env:
+          BTP_ENV: ${{ secrets.BTP_INTEGRATION_TEST }}
+          TF_VAR_BTP_SUBACCOUNT: btp-test-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Generate access
+        run: |
+          sudo ln -sf bash /bin/sh
+          . ./set-tf-envs.sh
+          mkdir -p tmp
+          make headless-kubeconfig
+          CLUSTERROLE=cluster-admin make service-account-kubeconfig
+        env:
+          BTP_ENV: ${{ secrets.BTP_INTEGRATION_TEST }}
+          TF_VAR_BTP_SUBACCOUNT: btp-test-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Add bindings
+        run: |
+          . ./set-tf-envs.sh
+          KUBECONFIG=tmp/sa-kubeconfig.yaml BTP_PROVIDER_SUBACCOUNT_ID=$TF_VAR_BTP_PROVIDER_SUBACCOUNT_ID make share-sm-service-operator-access
+          KUBECONFIG=tmp/sa-kubeconfig.yaml make create-object-store-reference
+          IMG="europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:${{ github.sha }}" make -C ../../../components/operator/ render-manifest
+          KUBECONFIG=tmp/sa-kubeconfig.yaml OPERATOR_MANIFEST=../../../dockerregistry-operator.yaml make enable_docker_registry
+        env:
+          BTP_ENV: ${{ secrets.BTP_INTEGRATION_TEST }}
+          TF_VAR_BTP_SUBACCOUNT: btp-test-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Test if docker registry is working
+        shell: bash
+        run: |
+          KUBECONFIG=tmp/sa-kubeconfig.yaml make docker_registry_login
+          KUBECONFIG=tmp/sa-kubeconfig.yaml make docker_push_simple_app
+          KUBECONFIG=tmp/sa-kubeconfig.yaml make deploy_simple_app
+
+      - name: Delete btp account
+        if: always()
+        run: |
+          . ./set-tf-envs.sh
+          kubectl delete -n kyma-system -f ../k8s-resources/dependencies/object-store-binding.yaml --kubeconfig tmp/sa-kubeconfig.yaml
+          kubectl delete serviceinstances.services.cloud.sap.com -n kyma-system object-store-reference --kubeconfig tmp/sa-kubeconfig.yaml
+          terraform -chdir=../tf init
+          terraform -chdir=../tf destroy -auto-approve
+        env:
+          BTP_ENV: ${{ secrets.BTP_INTEGRATION_TEST }}
+          TF_VAR_BTP_SUBACCOUNT: btp-test-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - uses: ./.github/actions/setup-btp
+        if: always()
+        with:
+          path: "tests/btp/bin"
+
+      - name: Force delete btp account
+        if: always()
+        run: |
+          . ./set-tf-envs.sh
+          ../bin/btp login --url $TF_VAR_BTP_BACKEND_URL --user $TF_VAR_BTP_BOT_USER --password $TF_VAR_BTP_BOT_PASSWORD --idp $TF_VAR_BTP_CUSTOM_IAS_TENANT --subdomain $TF_VAR_BTP_GLOBAL_ACCOUNT
+          ../bin/btp delete accounts/subaccount ${SUBACC_ID} --global-account ${TF_VAR_BTP_GLOBAL_ACCOUNT} --force-delete true --confirm true
+        env:
+          BTP_ENV: ${{ secrets.BTP_INTEGRATION_TEST }}
