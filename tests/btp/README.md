@@ -1,3 +1,7 @@
+How to use.
+
+Export the following environment variables:
+```bash
 TF_VAR_BTP_BOT_USER=
 TF_VAR_BTP_BOT_PASSWORD=
 TF_VAR_BTP_GLOBAL_ACCOUNT=
@@ -8,3 +12,10 @@ TF_VAR_BTP_KYMA_PLAN=gcp
 TF_VAR_BTP_SA_REGION=us31
 TF_VAR_BTP_KYMA_REGION=us-central1
 TF_VAR_BTP_PROVIDER_SUBACCOUNT_ID=
+```
+
+You can use the following command to export variables from `.env` file:
+```bash
+export $(cat .env | xargs)
+```
+
