@@ -42,3 +42,17 @@ dockerregistry-operator.yaml
 dockerregistry.yaml
 
 examples/python-text2img/resources/secrets/deepai.env
+
+#opentofu
+.terraform
+.terraform.lock.hcl
+
+*.tfstate
+*.tfstate.*
+
+tests/btp/tf/*.txt
+tests/btp/tf/*.json
+tests/btp/tf/*.env
+
+tests/btp/env/.env
+tests/btp/hack/tmp/

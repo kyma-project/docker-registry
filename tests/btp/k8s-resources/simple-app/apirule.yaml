@@ -1,0 +1,20 @@
+apiVersion: gateway.kyma-project.io/v1beta1
+kind: APIRule
+metadata:
+  name: simple-app-api
+spec:
+  gateway: kyma-gateway.kyma-system.svc.cluster.local
+  host: simple-app
+  service:
+    name: simple-app-service
+    namespace: default
+    port: 80
+  rules:
+    - path: /.*
+      methods: ["GET"] 
+      accessStrategies:
+      - handler: noop
+    - path: /.*
+      methods: ["POST"]
+      accessStrategies:
+      - handler: noop
