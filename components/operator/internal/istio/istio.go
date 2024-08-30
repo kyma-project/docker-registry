@@ -35,3 +35,12 @@ func GetClusterAddressFromGateway(ctx context.Context, c client.Client) (string,
 	// host is always in format '*.<address>' so we need to remove the first two characters
 	return host[2:], nil
 }
+
+func IsGatewayAvailable(ctx context.Context, c client.Client, namespace, name string) bool {
+	err := c.Get(ctx, client.ObjectKey{
+		Name:      name,
+		Namespace: namespace,
+	}, &v1beta1.Gateway{})
+
+	return err == nil
+}

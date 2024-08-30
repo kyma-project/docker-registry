@@ -3,6 +3,7 @@ package registry
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/istio"
@@ -50,12 +51,12 @@ func (ear *externalAccessResolver) Do(ctx context.Context, client client.Client,
 func (ear *externalAccessResolver) resolveAccess(ctx context.Context, client client.Client, gateway, customHost *string) (*ResolvedAccess, error) {
 	if gateway != nil {
 		// resolve host for custom gateway - not kyma gateway
-		return resolveAccessWithCustomGateway(gateway, customHost)
+		return resolveAccessWithCustomGateway(ctx, client, gateway, customHost)
 	}
 
 	clusterAddress, err := istio.GetClusterAddressFromGateway(ctx, client)
 	if err != nil {
-		return nil, errors.Wrap(err, "while fetching cluster address from Istio Gateway")
+		return nil, err
 	}
 
 	registryHost := fmt.Sprintf("%s.%s", ear.defaultKymaGatewayHostPrefix, clusterAddress)
@@ -69,9 +70,19 @@ func (ear *externalAccessResolver) resolveAccess(ctx context.Context, client cli
 	}, nil
 }
 
-func resolveAccessWithCustomGateway(gateway, host *string) (*ResolvedAccess, error) {
+func resolveAccessWithCustomGateway(ctx context.Context, client client.Client, gateway, host *string) (*ResolvedAccess, error) {
 	if host == nil {
 		return nil, errors.New("failed to resolve custom gateway because host is empty")
+	}
+
+	namespacedName := strings.Split(*gateway, "/")
+	if len(namespacedName) != 2 {
+		return nil, errors.Errorf("gateway '%s' is in wrong format", *gateway)
+	}
+
+	isavailable := istio.IsGatewayAvailable(ctx, client, namespacedName[0], namespacedName[1])
+	if !isavailable {
+		return nil, errors.Errorf("gateway '%s' not found", *gateway)
 	}
 
 	return &ResolvedAccess{

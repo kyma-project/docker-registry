@@ -76,9 +76,23 @@ func TestExternalAccessResolver_Do(t *testing.T) {
 	})
 
 	t.Run("return resolved access based on custom gateway and host", func(t *testing.T) {
+		client := fake.NewClientBuilder().WithScheme(testScheme).WithObjects(&v1beta1.Gateway{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "custom-gateway",
+				Namespace: "kyma-system",
+			},
+			Spec: networkingv1beta1.Gateway{
+				Servers: []*networkingv1beta1.Server{
+					{
+						Hosts: []string{"*.cluster.local"},
+					},
+				},
+			},
+		}).Build()
+
 		ear := &externalAccessResolver{}
 
-		got, err := ear.Do(context.Background(), nil, v1alpha1.ExternalAccess{
+		got, err := ear.Do(context.Background(), client, v1alpha1.ExternalAccess{
 			Gateway: ptr.To("kyma-system/custom-gateway"),
 			Host:    ptr.To("registry.cluster.custom"),
 		})
@@ -121,7 +135,31 @@ func TestExternalAccessResolver_Do(t *testing.T) {
 		ear := &externalAccessResolver{}
 
 		got, err := ear.Do(context.Background(), client, v1alpha1.ExternalAccess{})
-		require.ErrorContains(t, err, "while fetching cluster address from Istio Gateway")
+		require.ErrorContains(t, err, "gatewaies.networking.istio.io \"kyma-gateway\" not found")
+		require.Nil(t, got)
+	})
+
+	t.Run("return error when custom gateway not found", func(t *testing.T) {
+		client := fake.NewClientBuilder().WithScheme(testScheme).Build()
+		ear := &externalAccessResolver{}
+
+		got, err := ear.Do(context.Background(), client, v1alpha1.ExternalAccess{
+			Gateway: ptr.To("default/gateway"),
+			Host:    ptr.To("test-resolved-address"),
+		})
+		require.ErrorContains(t, err, "gateway 'default/gateway' not found")
+		require.Nil(t, got)
+	})
+
+	t.Run("return error when gateway is in wrong format", func(t *testing.T) {
+		client := fake.NewClientBuilder().WithScheme(testScheme).Build()
+		ear := &externalAccessResolver{}
+
+		got, err := ear.Do(context.Background(), client, v1alpha1.ExternalAccess{
+			Gateway: ptr.To("g/gateway/gateway/s"),
+			Host:    ptr.To("test-resolved-address"),
+		})
+		require.ErrorContains(t, err, "gateway 'g/gateway/gateway/s' is in wrong format")
 		require.Nil(t, got)
 	})
 
