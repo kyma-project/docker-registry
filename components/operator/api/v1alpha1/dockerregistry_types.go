@@ -136,6 +136,13 @@ const (
 	Finalizer = "dockerregistry-operator.kyma-project.io/deletion-hook"
 )
 
+type ExternalNetworkAccess struct {
+	NetworkAccess `json:""`
+
+	// Gateway indicates which gateway is used.
+	Gateway string `json:"gateway,omitempty"`
+}
+
 type NetworkAccess struct {
 	// Enabled indicates whether the network access is enabled.
 	Enabled string `json:"enabled,omitempty"`
@@ -155,7 +162,7 @@ type DockerRegistryStatus struct {
 	InternalAccess NetworkAccess `json:"internalAccess,omitempty"`
 
 	// ExternalAccess contains the external access configuration of the DockerRegistry.
-	ExternalAccess NetworkAccess `json:"externalAccess,omitempty"`
+	ExternalAccess ExternalNetworkAccess `json:"externalAccess,omitempty"`
 
 	// Storage signifies the storage type of DockerRegistry.
 	Storage string `json:"storage,omitempty"`

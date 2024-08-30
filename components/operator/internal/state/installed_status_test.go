@@ -37,7 +37,8 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 			flagsBuilder:     chart.NewFlagsBuilder(),
 			nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
 			gatewayHostResolver: &testExternalAddressResolver{expectedAccess: &registry.ResolvedAccess{
-				Host: "registry-test-name-test-namespace.cluster.local",
+				Host:    "registry-test-name-test-namespace.cluster.local",
+				Gateway: "kyma-system/kyma-gateway",
 			}},
 			warningBuilder: warning.NewBuilder(),
 		}
@@ -58,6 +59,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		require.Equal(t, "True", status.ExternalAccess.Enabled)
 		require.Equal(t, registry.ExternalAccessSecretName, status.ExternalAccess.SecretName)
 		require.Equal(t, "registry-test-name-test-namespace.cluster.local", status.ExternalAccess.PushAddress)
+		require.Equal(t, "kyma-system/kyma-gateway", status.ExternalAccess.Gateway)
 
 		require.Equal(t, FilesystemStorageName, status.Storage)
 

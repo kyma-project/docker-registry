@@ -95,6 +95,7 @@ func getExternalAccessFields(ctx context.Context, r *reconciler, s *systemState)
 			{"False", &s.instance.Status.ExternalAccess.Enabled, "External access disabled", ""},
 			{"", &s.instance.Status.ExternalAccess.PullAddress, "Internal pull address", ""},
 			{"", &s.instance.Status.ExternalAccess.PushAddress, "External push address", ""},
+			{"", &s.instance.Status.ExternalAccess.Gateway, "External gateway namespaced name", ""},
 			{"", &s.instance.Status.ExternalAccess.SecretName, "Name of secret with registry external access data", ""},
 		}, nil
 	}
@@ -109,6 +110,7 @@ func getExternalAccessFields(ctx context.Context, r *reconciler, s *systemState)
 		{"True", &s.instance.Status.ExternalAccess.Enabled, "External access enabled", ""},
 		{resolvedAccess.Host, &s.instance.Status.ExternalAccess.PullAddress, "External pull address", ""},
 		{resolvedAccess.Host, &s.instance.Status.ExternalAccess.PushAddress, "External push address", ""},
+		{resolvedAccess.Gateway, &s.instance.Status.ExternalAccess.Gateway, "External gateway namespaced name", ""},
 		{registry.ExternalAccessSecretName, &s.instance.Status.ExternalAccess.SecretName, "Name of secret with registry external access data", ""},
 	}, nil
 }

@@ -209,6 +209,9 @@ spec:
                   enabled:
                     description: Enabled indicates whether the network access is enabled.
                     type: string
+                  gateway:
+                    description: Gateway indicates which gateway is used.
+                    type: string
                   pullAddress:
                     description: PullAddress contains address kubernetes can use to
                       pull images from the registry.
