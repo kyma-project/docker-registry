@@ -243,6 +243,6 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
 
-		require.Equal(t, "Warning: .spec.externalAccess.enabled is true but the kyma-gateway Gateway in the kyma-system namespace is not found", s.warningBuilder.Build())
+		require.Equal(t, "Warning: .spec.externalAccess.enabled is true but got error: while getting Gateway kyma-gateway in namespace kyma-system: gatewaies.networking.istio.io \"kyma-gateway\" not found", s.warningBuilder.Build())
 	})
 }
