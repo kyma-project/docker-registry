@@ -22,7 +22,6 @@ if [ $RESPONSE_CODE == '200' ]; then
 fi
 until [[ $COUNTER -gt 10  ||  $RESPONSE_CODE == "200" ]] ;
 do
-    sleep 10
     let COUNTER=COUNTER+1 
     RESPONSE_CODE=$(curl -s -o /dev/null -u $USERNAME:$PASSWORD -L -w ''%{http_code}'' --connect-timeout 5 \
     --max-time 10 \
