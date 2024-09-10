@@ -74,7 +74,7 @@ create-object-store-reference:
 	@kubectl wait --for condition=established crd/btpoperators.operator.kyma-project.io
 	@while ! kubectl get btpoperators.operator.kyma-project.io btpoperator --namespace kyma-system --kubeconfig ${KUBECONFIG}; do echo "Waiting for btpoperator..."; sleep 1; done
 	@kubectl wait --for condition=Ready btpoperators.operator.kyma-project.io/btpoperator -n kyma-system --timeout=180s
-	@../bin/kyma alpha reference-instance --btp-secret-name sm-provider-access --namespace kyma-system --offering-name objectstore --name-selector provider-object-store --reference-name object-store-reference --kubeconfig ${KUBECONFIG}
+	@../bin/kyma alpha reference-instance --btp-secret-name sm-provider-access --namespace kyma-system --offering-name objectstore --plan-selector standard --reference-name object-store-reference --kubeconfig ${KUBECONFIG}
 	@kubectl apply -n kyma-system -f ../k8s-resources/dependencies/object-store-binding.yaml --kubeconfig ${KUBECONFIG}
 	@while ! kubectl get secret object-store-reference-binding --namespace kyma-system --kubeconfig ${KUBECONFIG}; do echo "Waiting for object-store-reference-binding secret..."; sleep 1; done
 
