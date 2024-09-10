@@ -53,7 +53,7 @@ docker_registry_login:
 .PHONY: deploy_simple_app
 deploy_simple_app:
 	@echo "Deploying simple app service..."
-	@kubectl apply -k ../k8s-resources/simple-app --kubeconfig ${KUBECONFIG}
+	@kubectl apply -f ../k8s-resources/simple-app --kubeconfig ${KUBECONFIG}
 	@kubectl set image deployment simple-app-service simple-app-service=$$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.internalAccess.pullAddress} --kubeconfig ${KUBECONFIG})/simple-app:0.0.1 --kubeconfig ${KUBECONFIG}
 	@echo "Waiting for simple app service..."
 	@kubectl wait --for condition=Available deployment/simple-app-service --kubeconfig ${KUBECONFIG} --timeout=180s
