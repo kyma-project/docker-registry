@@ -43,6 +43,13 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           fetch-depth: 0
 
+      - name: Bump version
+        run: ./hack/replace_docker_registry_version.sh
+        env:
+          IMG_VERSION: ${{ github.event.inputs.name }}
+          PROJECT_ROOT: "."
+
+
       - name: Bump sec-scanners-config.yaml based on values.yaml
         run: ./.github/scripts/upgrade-sec-scanners-config.sh
         env:
