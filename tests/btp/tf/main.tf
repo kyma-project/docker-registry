@@ -34,6 +34,18 @@ module "kyma" {
   BTP_PROVIDER_SUBACCOUNT_ID = var.BTP_PROVIDER_SUBACCOUNT_ID
 }
 
+resource "local_file" "provider_sm" {
+  content  = <<EOT
+clientid=${module.kyma.custom_service_manager_credentials.clientid}
+clientsecret=${module.kyma.custom_service_manager_credentials.clientsecret}
+sm_url=${module.kyma.custom_service_manager_credentials.sm_url}
+tokenurl=${module.kyma.custom_service_manager_credentials.url}
+tokenurlsuffix=/oauth/token
+EOT
+  filename = "provider-sm-decoded.env"
+}
+
+
 output "subaccount_id" {
   value = module.kyma.subaccount_id
 }
