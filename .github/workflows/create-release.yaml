@@ -49,7 +49,6 @@ jobs:
           IMG_VERSION: ${{ github.event.inputs.name }}
           PROJECT_ROOT: "."
 
-
       - name: Bump sec-scanners-config.yaml based on values.yaml
         run: ./.github/scripts/upgrade-sec-scanners-config.sh
         env:
