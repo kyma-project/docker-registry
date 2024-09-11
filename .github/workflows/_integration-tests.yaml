@@ -57,6 +57,7 @@ jobs:
           GARDENER_SA_PATH: /tmp/gardener-sa.yaml
 
   btp-integration-tests:
+    if: ${{ !startsWith(github.event_name, 'pull_request') }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -105,18 +106,6 @@ jobs:
           KUBECONFIG=tmp/sa-kubeconfig.yaml make docker_registry_login
           KUBECONFIG=tmp/sa-kubeconfig.yaml make docker_push_simple_app
           KUBECONFIG=tmp/sa-kubeconfig.yaml make deploy_simple_app
-
-      - name: Delete btp account
-        if: always()
-        run: |
-          . ./set-tf-envs.sh
-          kubectl delete -n kyma-system -f ../k8s-resources/dependencies/object-store-binding.yaml --kubeconfig tmp/sa-kubeconfig.yaml
-          kubectl delete serviceinstances.services.cloud.sap.com -n kyma-system object-store-reference --kubeconfig tmp/sa-kubeconfig.yaml
-          terraform -chdir=../tf init
-          terraform -chdir=../tf destroy -auto-approve
-        env:
-          BTP_ENV: ${{ secrets.BTP_INTEGRATION_TEST }}
-          TF_VAR_BTP_SUBACCOUNT: btp-test-${{ github.run_id }}-${{ github.run_attempt }}
 
       - uses: ./.github/actions/setup-btp
         if: always()
