@@ -72,21 +72,19 @@ jobs:
           . ./set-tf-envs.sh
           terraform -chdir=../tf init
           terraform -chdir=../tf apply -auto-approve
-          echo "SUBACC_ID=$(cat ../tf/subaccount_id.txt)" >> $GITHUB_ENV
+          echo "SUBACC_ID=$(terraform -chdir=../tf output -raw subaccount_id)" >> $GITHUB_ENV
         env:
           BTP_ENV: ${{ secrets.BTP_INTEGRATION_TEST }}
-          TF_VAR_BTP_SUBACCOUNT: docker-registry-test-${{ github.run_id }}-${{ github.run_attempt }}
+          TF_VAR_BTP_NEW_SUBACCOUNT_NAME: docker-registry-test-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Generate access
         run: |
           sudo ln -sf bash /bin/sh
           . ./set-tf-envs.sh
           mkdir -p tmp
-          make headless-kubeconfig
           CLUSTERROLE=cluster-admin make service-account-kubeconfig
         env:
           BTP_ENV: ${{ secrets.BTP_INTEGRATION_TEST }}
-          TF_VAR_BTP_SUBACCOUNT: btp-test-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Add bindings
         run: |
@@ -97,7 +95,6 @@ jobs:
           KUBECONFIG=tmp/sa-kubeconfig.yaml OPERATOR_MANIFEST=../../../dockerregistry-operator.yaml make enable_docker_registry
         env:
           BTP_ENV: ${{ secrets.BTP_INTEGRATION_TEST }}
-          TF_VAR_BTP_SUBACCOUNT: btp-test-${{ github.run_id }}-${{ github.run_attempt }}
           IMG: ${{ inputs.image }}
 
       - name: Test if docker registry is working
