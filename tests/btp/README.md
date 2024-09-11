@@ -11,12 +11,8 @@ Export the following environment variables:
 TF_VAR_BTP_BOT_USER=
 TF_VAR_BTP_BOT_PASSWORD=
 TF_VAR_BTP_GLOBAL_ACCOUNT=
-TF_VAR_BTP_BACKEND_URL=https://cpcli.cf.sap.hana.ondemand.com
 TF_VAR_BTP_CUSTOM_IAS_TENANT=
-TF_VAR_BTP_CUSTOM_IAS_DOMAIN=accounts400.ondemand.com
-TF_VAR_BTP_KYMA_PLAN=gcp
-TF_VAR_BTP_SA_REGION=us31
-TF_VAR_BTP_KYMA_REGION=us-central1
+
 TF_VAR_BTP_PROVIDER_SUBACCOUNT_ID=
 ```
 
