@@ -1,27 +1,7 @@
-.PHONY: headless-kubeconfig
-headless-kubeconfig:
-	pwd
-	ls -la
-	( \
-	set -e -o pipefail ;\
-	curl -s -o tmp/kubeconfig.yaml $$(cat ../tf/kubeconfig_url.txt) ;\
-	ISSUER=$$(cat ../tf/binding_credentials.json | jq  -r '. | { clientid, url: (.url+ "/oauth2/token")  }' ) ;\
-	TOKEN=$$(curl -X POST  $$(jq -r '. | .url' <<< $$ISSUER) \
-	-H 'Content-Type: application/x-www-form-urlencoded' \
-	-d 'grant_type=password' \
-	-d 'username='"$$TF_VAR_BTP_BOT_USER" \
-	-d 'password='"$$TF_VAR_BTP_BOT_PASSWORD" \
-	-d 'client_id='$$(jq -r '. | .clientid' <<< $$ISSUER) \
-	-d 'scope=groups, email' \
-	| jq -r '.id_token' ) ;\
-	echo "i got $$(jq -r '. | .clientid' <<< $$ISSUER)" ;\
-	../bin/kyma alpha oidc --kubeconfig=tmp/kubeconfig.yaml --output=tmp/headless-kubeconfig.yaml --token=$$TOKEN ;\
-	)
-
 .PHONY: service-account-kubeconfig
 service-account-kubeconfig:
 	@echo "Generating expiring service-account based kubeconfig..."
-	../bin/kyma alpha access --clusterrole ${CLUSTERROLE} --kubeconfig tmp/headless-kubeconfig.yaml --name ci-workflow-sa --time 1h --output tmp/sa-kubeconfig.yaml
+	../bin/kyma alpha access --clusterrole ${CLUSTERROLE} --kubeconfig ../tf/kubeconfig.yaml --name ci-workflow-sa --time 1h --output tmp/sa-kubeconfig.yaml
 	@echo "Service-account based kubeconfig generated"
 
 .PHONY: docker_push_simple_app

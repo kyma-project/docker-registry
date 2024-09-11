@@ -82,7 +82,6 @@ jobs:
           sudo ln -sf bash /bin/sh
           . ./set-tf-envs.sh
           mkdir -p tmp
-          make headless-kubeconfig
           CLUSTERROLE=cluster-admin make service-account-kubeconfig
         env:
           BTP_ENV: ${{ secrets.BTP_INTEGRATION_TEST }}
