@@ -57,6 +57,7 @@ jobs:
           GARDENER_SA_PATH: /tmp/gardener-sa.yaml
 
   btp-integration-tests:
+    if: ${{ !startsWith(github.event_name, 'pull_request') }}
     runs-on: ubuntu-latest
     defaults:
       run:
