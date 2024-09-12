@@ -55,9 +55,15 @@ func updateStatus(ctx context.Context, r *reconciler, s *systemState) error {
 		return err
 	}
 
-	pvcField := getPVCField(spec.Storage, &s.instance)
+	pvcField, err := getPVCField(spec.Storage, &s.instance)
+	if err != nil {
+		return err
+	}
 
-	externalAddressFields := getExternalAccessFields(ctx, r, s)
+	externalAddressFields, err := getExternalAccessFields(ctx, r, s)
+	if err != nil {
+		return err
+	}
 
 	nodeport, err := s.nodePortResolver.GetNodePort(ctx, r.client, s.instance.GetNamespace())
 	if err != nil {
@@ -80,7 +86,7 @@ func updateStatus(ctx context.Context, r *reconciler, s *systemState) error {
 	return nil
 }
 
-func getExternalAccessFields(ctx context.Context, r *reconciler, s *systemState) fieldsToUpdate {
+func getExternalAccessFields(ctx context.Context, r *reconciler, s *systemState) (fieldsToUpdate, error) {
 	externalConfigured := s.instance.Spec.ExternalAccess != nil && s.instance.Spec.ExternalAccess.Enabled != nil
 
 	if !externalConfigured || !*s.instance.Spec.ExternalAccess.Enabled {
@@ -91,13 +97,13 @@ func getExternalAccessFields(ctx context.Context, r *reconciler, s *systemState)
 			{"", &s.instance.Status.ExternalAccess.PushAddress, "External push address", ""},
 			{"", &s.instance.Status.ExternalAccess.Gateway, "External gateway namespaced name", ""},
 			{"", &s.instance.Status.ExternalAccess.SecretName, "Name of secret with registry external access data", ""},
-		}
+		}, nil
 	}
 
 	resolvedAccess, err := s.gatewayHostResolver.Do(ctx, r.client, *s.instance.Spec.ExternalAccess)
 	if err != nil {
 		// gateway is not operational but we should continue the reconciliation with old status configuration
-		return nil
+		return nil, nil
 	}
 
 	return fieldsToUpdate{
@@ -106,7 +112,7 @@ func getExternalAccessFields(ctx context.Context, r *reconciler, s *systemState)
 		{resolvedAccess.Host, &s.instance.Status.ExternalAccess.PushAddress, "External push address", ""},
 		{resolvedAccess.Gateway, &s.instance.Status.ExternalAccess.Gateway, "External gateway namespaced name", ""},
 		{registry.ExternalAccessSecretName, &s.instance.Status.ExternalAccess.SecretName, "Name of secret with registry external access data", ""},
-	}
+	}, nil
 }
 
 func getStorageField(ctx context.Context, storage *v1alpha1.Storage, instance *v1alpha1.DockerRegistry, client client.Client) (fieldToUpdate, error) {
@@ -132,11 +138,11 @@ func getStorageField(ctx context.Context, storage *v1alpha1.Storage, instance *v
 	return fieldToUpdate{storageName, &instance.Status.Storage, "Storage type", ""}, nil
 }
 
-func getPVCField(storage *v1alpha1.Storage, instance *v1alpha1.DockerRegistry) fieldToUpdate {
+func getPVCField(storage *v1alpha1.Storage, instance *v1alpha1.DockerRegistry) (fieldToUpdate, error) {
 	if storage != nil && storage.PVC != nil {
-		return fieldToUpdate{storage.PVC.Name, &instance.Status.PVC, "PVC name", ""}
+		return fieldToUpdate{storage.PVC.Name, &instance.Status.PVC, "PVC name", ""}, nil
 	}
-	return fieldToUpdate{"", &instance.Status.PVC, "PVC name", ""}
+	return fieldToUpdate{"", &instance.Status.PVC, "PVC name", ""}, nil
 }
 
 type fieldsToUpdate []fieldToUpdate
