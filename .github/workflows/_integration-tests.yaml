@@ -75,7 +75,7 @@ jobs:
           echo "SUBACC_ID=$(terraform -chdir=../tf output -raw subaccount_id)" >> $GITHUB_ENV
         env:
           BTP_ENV: ${{ secrets.BTP_INTEGRATION_TEST }}
-          TF_VAR_BTP_NEW_SUBACCOUNT_NAME: docker-registry-test-${{ github.run_id }}-${{ github.run_attempt }}
+          TF_VAR_BTP_NEW_SUBACCOUNT_NAME: docker-registry-test-${{ github.sha }}-${{ github.run_attempt }}
 
       - name: Generate access
         run: |
