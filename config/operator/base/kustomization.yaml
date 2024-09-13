@@ -11,7 +11,7 @@ labels:
   - pairs:
       kyma-project.io/module: dockerregistry-operator
       app.kubernetes.io/name: dockerregistry-operator
-      app.kubernetes.io/version: main
+      app.kubernetes.io/version: 0.2.0
       app.kubernetes.io/part-of: dockerregistry-operator
       app.kubernetes.io/managed-by: kustomize
     includeSelectors: false
