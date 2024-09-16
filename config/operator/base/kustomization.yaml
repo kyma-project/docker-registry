@@ -15,6 +15,7 @@ labels:
       app.kubernetes.io/part-of: dockerregistry-operator
       app.kubernetes.io/managed-by: kustomize
     includeSelectors: false
+    includeTemplates: true
 resources:
   - ./crd
   - ./deployment
