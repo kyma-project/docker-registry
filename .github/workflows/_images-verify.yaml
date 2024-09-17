@@ -28,7 +28,6 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       
       - name: Verify sec-scanners-config.yaml images
-        if: github.event.pull_request.base.ref == 'main'
         run: |
           PR_NOT_MAIN_IMAGES=$(yq '.protecode[] | select(contains(":main") | not ) | sub(":.*", "")' sec-scanners-config.yaml) \
             .github/scripts/verify-image-changes.sh
@@ -36,7 +35,6 @@ jobs:
           MAIN_IMAGES: ${{ env.SSC_MAIN_IMAGES }}
       
       - name: Verify values.yaml images
-        if: github.event.pull_request.base.ref == 'main'
         run: |
           PR_NOT_MAIN_IMAGES=$(yq '.global.images[] | select(.version != "main") | .name' config/docker-registry/values.yaml) \
             .github/scripts/verify-image-changes.sh
