@@ -16,8 +16,3 @@ linters:
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
-  exclude:
-    # function for future usage
-    - "^func `stopWithErrorOrRequeue` is unused$"
-    - 'secretContainsRequired - result 0 \(bool\) is always false'
-    - 'secretContainsSameValues - result 0 \(bool\) is always false'

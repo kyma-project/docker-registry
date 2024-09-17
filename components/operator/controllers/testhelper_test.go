@@ -250,36 +250,36 @@ func (h *testHelper) createCheckRegistrySecretFunc(registrySecret string, expect
 			registrySecret, &configurationSecret); !ok || err != nil {
 			return ok, err
 		}
-		if ok, err := secretContainsSameValues(
+		if err := secretContainsSameValues(
 			expected.toMap(), configurationSecret); err != nil {
-			return ok, err
+			return false, err
 		}
-		if ok, err := secretContainsRequired(configurationSecret); err != nil {
-			return ok, err
+		if err := secretContainsRequired(configurationSecret); err != nil {
+			return false, err
 		}
 		return true, nil
 	}
 }
 
-func secretContainsRequired(configurationSecret corev1.Secret) (bool, error) {
+func secretContainsRequired(configurationSecret corev1.Secret) error {
 	for _, k := range []string{"username", "password", "pullRegAddr", "pushRegAddr", ".dockerconfigjson"} {
 		_, ok := configurationSecret.Data[k]
 		if !ok {
-			return false, fmt.Errorf("values not propagated (%s is required)", k)
+			return fmt.Errorf("values not propagated (%s is required)", k)
 		}
 	}
-	return false, nil
+	return nil
 }
 
-func secretContainsSameValues(expected map[string]string, configurationSecret corev1.Secret) (bool, error) {
+func secretContainsSameValues(expected map[string]string, configurationSecret corev1.Secret) error {
 	for k, expectedV := range expected {
 		v, okV := configurationSecret.Data[k]
 		if okV == false {
-			return false, fmt.Errorf("values not propagated (%s: nil != %s )", k, expectedV)
+			return fmt.Errorf("values not propagated (%s: nil != %s )", k, expectedV)
 		}
 		if expectedV != string(v) {
-			return false, fmt.Errorf("values not propagated (%s: %s != %s )", k, string(v), expectedV)
+			return fmt.Errorf("values not propagated (%s: %s != %s )", k, string(v), expectedV)
 		}
 	}
-	return false, nil
+	return nil
 }
