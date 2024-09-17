@@ -5,9 +5,12 @@ resources:
 - bases/operator.kyma-project.io_dockerregistries.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 
-commonLabels:
-  app.kubernetes.io/component: dockerregistry-operator.kyma-project.io
-  app.kubernetes.io/instance: dockerregistries.operator.kyma-project.io
+labels:
+  - pairs:
+      app.kubernetes.io/component: dockerregistry-operator.kyma-project.io
+      app.kubernetes.io/instance: dockerregistries.operator.kyma-project.io
+    includeSelectors: false
+    includeTemplates: true
 
 # the following config is for teaching kustomize how to do kustomization for CRDs.
 configurations:
