@@ -7,8 +7,6 @@ jobs:
   # check if developer doesn't change `main` images in the values.yaml and sec-scanners-config.yaml files
   check-main-tags:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.base.ref == 'main'
-
     steps:
       - name: Checkout to main
         uses: actions/checkout@v4
