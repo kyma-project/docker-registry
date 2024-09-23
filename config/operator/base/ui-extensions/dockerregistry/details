@@ -45,6 +45,9 @@ body:
       - name: details.enabled
         visibility: "$exists($value)"
         source: status.externalAccess.enabled
+      - name: details.gateway
+        visibility: "$exists($value)"
+        source: status.externalAccess.gateway
       - name: details.access.pullAddress
         visibility: "$exists($value)"
         source: status.externalAccess.pullAddress
