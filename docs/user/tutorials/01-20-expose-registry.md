@@ -15,10 +15,10 @@ This tutorial shows how you can expose the registry to the outside of the cluste
     export CLUSTER_ADDRESS={YOUR_CLUSTER_ADDRESS}
     ```
 
-    >[!NOTE] 
+    > [!NOTE]
     > You can find your cluster address in the `kyma-system/kyma-gateway` gateway resource.
 
-1. Expose the registry service by changing the **spec.externalAccess.enabled** flag to `true`:
+2. Expose the registry service by changing the **spec.externalAccess.enabled** flag to `true`:
 
     ```bash
     kubectl apply -n kyma-system -f - <<EOF
@@ -32,8 +32,9 @@ This tutorial shows how you can expose the registry to the outside of the cluste
         enabled: true
     EOF
     ```
-   
-   Once the DockerRegistry CR becomes `Ready`, you see a Secret name that is used as `ImagePullSecret` when scheduling workloads in the cluster.
+
+   Once the DockerRegistry CR becomes `Ready`, you see a Secret name used as `ImagePullSecret` when scheduling workloads in the cluster.
+
     ```yaml
     ...
     status:
@@ -43,7 +44,7 @@ This tutorial shows how you can expose the registry to the outside of the cluste
         secretName: dockerregistry-config-external
     ```
 
-2. Log in to the registry using the docker-cli:
+3. Log in to the registry using the docker-cli:
 
     ```bash
     export REGISTRY_USERNAME=$(kubectl get secrets -n kyma-system dockerregistry-config-external -o jsonpath={.data.username} | base64 -d)
@@ -52,14 +53,14 @@ This tutorial shows how you can expose the registry to the outside of the cluste
     docker login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} ${REGISTRY_ADDRESS}
     ```
 
-3. Rename the image to contain the registry address:
+4. Rename the image to contain the registry address:
 
     ```bash
     export IMAGE_NAME=<IMAGE_NAME> # put your image name here
     docker tag ${IMAGE_NAME} ${REGISTRY_ADDRESS}/${IMAGE_NAME}
     ```
 
-4. Push the image to the registry:
+5. Push the image to the registry:
 
     ```bash
     docker push ${REGISTRY_ADDRESS}/${IMAGE_NAME}

@@ -8,7 +8,7 @@ The `dockerregistries.operator.kyma-project.io` CustomResourceDefinition (CRD) i
 
 ## Sample Custom Resource
 
-The following Docker Registry custom resource (CR) shows configuration of Docker Registry.
+The following Docker Registry custom resource (CR) shows the configuration of the Docker Registry.
 
    ```yaml
    apiVersion: operator.kyma-project.io/v1alpha1
@@ -61,12 +61,12 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 | Parameter                               | Type   | Description                                                                                                                |
 |-----------------------------------------|--------|----------------------------------------------------------------------------------------------------------------------------|
 | **externalAccess**                      | object | Contains configuration of the registry external access through the Istio Gateway.                                          |
-| **externalAccess.enabled**              | string | Specifies if registry is exposed.                                                                                          |
+| **externalAccess.enabled**              | string | Specifies if the registry is exposed.                                                                                          |
 | **externalAccess.gateway**              | string | Specifies the name of the Istio Gateway CR in the `NAMESPACE/NAME` format. Defaults to the `kyma-system/kyma-gateway`.           |
 | **externalAccess.host**                 | string | Specifies the host on which the registry will be exposed. It must fit into at least one server defined in the Gateway. |
 | **storage**                             | object | Contains configuration of the registry images storage.                                                                     |
-| **storage.azure**                       | object | Contains configuration of the Azure storage.                                                                               |
-| **storage.azure.secretName** (required) | string | Specifies the name of the Secret that contains data needed to connect to the Azure storage.                                |
+| **storage.azure**                       | object | Contains configuration of the Azure Storage.                                                                               |
+| **storage.azure.secretName** (required) | string | Specifies the name of the Secret that contains data needed to connect to the Azure Storage.                                |
 | **storage.s3**                          | object | Contains configuration of the s3 storage.                                                                                  |
 | **storage.s3.bucket** (required)        | string | Specifies the name of the s3 bucket.                                                                                       |
 | **storage.s3.region** (required)        | string | Specifies the region of the s3 bucket.                                                                                     |
@@ -105,8 +105,8 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 | **externalAccess.secretName**                        | string     | Name of the Secret with data needed for external connection to Docker Registry.                                                                                                                                                                                                                                                                                |
 | **externalAccess.pushAddress**                       | string     | Address that can be used to push images from outside the cluster.                                                                                                                                                                                                                                                                                              |
 | **externalAccess.pullAddress**                       | string     | Address that can be used by Kubernetes to make a communication with the registry.                                                                                                                                                                                                                                                                              |
-| **served** (required)                                | string     | Signifies if the current Serverless is managed. Value can be one of `True`, or `False`.                                                                                                                                                                                                                                                                        |
-| **state**                                            | string     | Signifies the current state of Serverless. Value can be one of `Ready`, `Processing`, `Error`, or `Deleting`.                                                                                                                                                                                                                                                  |
+| **served** (required)                                | string     | Signifies if the current Docker Registry is managed. Value can be `True` or `False`.                                                                                                                                                                                                                                                                        |
+| **state**                                            | string     | Signifies the current state of Docker Registry. Value can be one of `Ready`, `Processing`, `Error`, or `Deleting`.                                                                                                                                                                                                                                                  |
 
 <!-- TABLE-END -->
 

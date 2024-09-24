@@ -6,7 +6,7 @@ The DockerRegistry CR allows you to store images in five ways: filesystem, Azure
 
 The filesystem storage is a built-in storage type based on the PersistentVolumeClaim CR, which is part of the Kubernetes functionality. This is a default DockerRegistry CR configuration, and no additional configuration is needed.
 
-All images pushed to this storage are removed when the Docker Registry is uninstalled or the cluster is removed. Stored images can't be shared between clusters.
+All images pushed to this storage are removed when the Docker Registry is uninstalled, or the cluster is removed. Stored images can't be shared between clusters.
 
 ### Sample CR
 
@@ -21,13 +21,13 @@ spec: {}
 
 ## Azure
 
-The Azure storage can be configured in the DockerRegistry `spec.storage.azure` field. The only thing that is required is the `secretName` field that must contain the name of the Secret with Azure configuration located in the same namespace. The following Secret must have three values inside:
+The Azure Storage can be configured in the DockerRegistry **spec.storage.azure** field. The only thing that is required is the **secretName** field, which must contain the name of the Secret with Azure configuration located in the same namespace. The Secret must have the following values:
 
-* `container` - contains the name of the storage container
-* `accountKey` - contains the key used to authenticate to the Azure Storage
-* `accountName` - contains the name used to authenticate to the Azure Storage
+* **accountKey** - contains the key used to authenticate to the Azure Storage
+* **accountName** - contains the name used to authenticate to the Azure Storage
+* **container** - contains the name of the storage container
 
-The images can be stored centrally and shared between clusters so that different registries can reuse specific layers or whole images. After deleting the cluster or uninstalling the registry module, images will not be removed.
+The images can be stored centrally and shared between clusters so that different registries can reuse specific layers or whole images. Images will not be removed after deleting the cluster or uninstalling the Docker Registry module.
 
 ### Sample CR
 
@@ -59,10 +59,10 @@ data:
 
 ## s3
 
-Similarly to Azure, the s3 storage can be configured in the DockerRegistry `spec.storage.s3` field. The only required field is `bucket` which contains the s3 bucket name and `region` which specifies where the bucket is located. This storage type allows you to provide additional optional configuration, which is described in [DockerRegistry CR](technical-reference/resources/06-20-docker-registry-cr.md). One of the optional configurations is the `secretName` that contains the authentication method to the s3 storage in the following format:
+Similarly to Azure, the s3 storage can be configured in the DockerRegistry **spec.storage.s3** field. The only required fields are **bucket**, which contains the s3 bucket name, and **region**, which specifies the bucket location. This storage type allows you to provide additional optional configuration, described in [DockerRegistry CR](technical-reference/resources/06-20-docker-registry-cr.md). One of the optional configurations is the **secretName** that contains the authentication method to the s3 storage in the following format:
 
-* `accountKey` - contains the key used to authenticate to the s3 storage
-* `secretKey` - contains the name used to authenticate to the s3 storage
+* **accountKey** - contains the key used to authenticate to the s3 storage
+* **secretKey** - contains the name used to authenticate to the s3 storage
 
 ### Sample CR
 
@@ -132,7 +132,7 @@ data:
 ## BTP Object Store
 
 BTP Object Store can be configured using the **spec.storage.btpObjectStore** field. The only required field is the **secretName**, which contains the BTP Object Store Secret name.
-The Secret is provided by Service Binding to an instance of BTP Object Store. The underlying object store depends on the hyperscaler used for the BTP subaccount and can be one of the following: AWS, or GCP.
+The Secret is provided to an instance of BTP Object Store by a service binding. The underlying object store depends on the hyperscaler used for the BTP subaccount, AWS or GCP.
 Azure hyperscaler is not supported.
 
 ### Sample Custom Resource
