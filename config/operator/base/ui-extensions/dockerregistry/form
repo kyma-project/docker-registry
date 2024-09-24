@@ -117,3 +117,7 @@
   children:
     - name: details.enabled
       path: enabled
+    - name: details.gateway
+      path: gateway
+    - name: details.host
+      path: host

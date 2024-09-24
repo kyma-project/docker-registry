@@ -15,8 +15,8 @@ require (
 	go.uber.org/zap v1.27.0
 	gopkg.in/yaml.v3 v3.0.1
 	helm.sh/helm/v3 v3.15.4
-	istio.io/api v1.23.1
-	istio.io/client-go v1.23.1
+	istio.io/api v1.23.2
+	istio.io/client-go v1.23.2
 	k8s.io/api v0.30.5
 	k8s.io/apiextensions-apiserver v0.30.5
 	k8s.io/apimachinery v0.30.5

@@ -14,6 +14,8 @@ en:
     internalAccess: Internal Access
     externalAccess: External Access
     enabled: Enabled
+    gateway: Gateway
+    host: Host
     access:
       pullAddress: Pull Address
       pushAddress: Push Address
