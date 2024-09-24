@@ -59,7 +59,7 @@ data:
 
 ## s3
 
-Similarly to Azure, the s3 storage can be configured in the DockerRegistry **spec.storage.s3** field. The only required field is **bucket** which contains the s3 bucket name and **region** which specifies where the bucket is located. This storage type allows you to provide additional optional configuration, which is described in [DockerRegistry CR](technical-reference/resources/06-20-docker-registry-cr.md). One of the optional configurations is the **secretName** that contains the authentication method to the s3 storage in the following format:
+Similarly to Azure, the s3 storage can be configured in the DockerRegistry **spec.storage.s3** field. The only required fields are **bucket**, which contains the s3 bucket name, and **region**, which specifies the bucket location. This storage type allows you to provide additional optional configuration, described in [DockerRegistry CR](technical-reference/resources/06-20-docker-registry-cr.md). One of the optional configurations is the **secretName** that contains the authentication method to the s3 storage in the following format:
 
 * **accountKey** - contains the key used to authenticate to the s3 storage
 * **secretKey** - contains the name used to authenticate to the s3 storage
@@ -132,7 +132,7 @@ data:
 ## BTP Object Store
 
 BTP Object Store can be configured using the **spec.storage.btpObjectStore** field. The only required field is the **secretName**, which contains the BTP Object Store Secret name.
-The Secret is provided by a service binding to an instance of BTP Object Store. The underlying object store depends on the hyperscaler used for the BTP subaccount, AWS or GCP.
+The Secret is provided to an instance of BTP Object Store by a service binding. The underlying object store depends on the hyperscaler used for the BTP subaccount, AWS or GCP.
 Azure hyperscaler is not supported.
 
 ### Sample Custom Resource
