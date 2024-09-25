@@ -116,8 +116,13 @@
   defaultExpanded: true
   children:
     - name: details.enabled
+      dynamicValue: "$exists(spec.externalAccess.gateway) or $exists(spec.externalAccess.host)"
       path: enabled
     - name: details.gateway
       path: gateway
+      overwrite: false
+      visibility: "$boolean(spec.externalAccess.enabled)"
     - name: details.host
       path: host
+      overwrite: false
+      visibility: "$boolean(spec.externalAccess.enabled)"

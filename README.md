@@ -39,8 +39,8 @@ kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest
 Having installed the Docker Registry module, you can start pushing images to it using [Kyma CLI (v3)](https://github.com/kyma-project/cli?tab=readme-ov-file#install) or, if you decide to expose the registry externally, using Docker CLI.
 For details, see the following tutorials:
 
-* [How to Use Non-Exposed Registry](docs/user/tutorials/01-10-use-registry.md)
-* [How to Expose Registry](docs/user/tutorials/01-20-expose-registry.md)
+* [Use Registry Internally](docs/user/tutorials/01-10-use-registry-internally.md)
+* [Expose Registry](docs/user/tutorials/01-20-expose-registry.md)
 
 ## Development
 
