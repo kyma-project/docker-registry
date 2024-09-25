@@ -382,15 +382,11 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
 	})
 
-	t.Run("internal registry using btp pvc storage", func(t *testing.T) {
-		gcsSecret := &corev1.Secret{
+	t.Run("internal registry using pvc storage", func(t *testing.T) {
+		pvc := &corev1.PersistentVolumeClaim{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "btpSecret",
+				Name:      "pvc",
 				Namespace: "kyma-system",
-			},
-			Data: map[string][]byte{
-				"base64EncodedPrivateKeyData": []byte("YWNjb3VudGtleQ=="),
-				"bucket":                      []byte("gcsBucket"),
 			},
 		}
 
@@ -411,7 +407,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			flagsBuilder:   chart.NewFlagsBuilder(),
 		}
 		r := &reconciler{
-			k8s: k8s{client: fake.NewClientBuilder().WithObjects(gcsSecret).Build()},
+			k8s: k8s{client: fake.NewClientBuilder().WithObjects(pvc).Build()},
 			log: zap.NewNop().Sugar(),
 		}
 
@@ -436,6 +432,34 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnUpdateConfigurationStatus, next)
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+	})
+
+	t.Run("error when pvc does not exist", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.DockerRegistry{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "kyma-system",
+				},
+				Spec: v1alpha1.DockerRegistrySpec{
+					Storage: &v1alpha1.Storage{
+						PVC: &v1alpha1.StoragePVC{
+							Name: "not-existing-pvc",
+						},
+					},
+				},
+			},
+			statusSnapshot: v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:   chart.NewFlagsBuilder(),
+		}
+		r := &reconciler{
+			k8s: k8s{client: fake.NewClientBuilder().Build()},
+			log: zap.NewNop().Sugar(),
+		}
+
+		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
+		require.ErrorContains(t, err, "pvc specified to store images can't be reached because of the error")
+		require.Nil(t, result)
+		require.Nil(t, next)
 	})
 
 	t.Run("internal registry using multiple storages", func(t *testing.T) {
