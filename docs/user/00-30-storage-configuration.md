@@ -1,4 +1,4 @@
-# Registry Storage Configuration
+# Docker Registry Storage Configuration
 
 The DockerRegistry CR allows you to store images in five ways: filesystem, Azure, s3, GCP, and BTP Object Store. This document describes how to configure DockerRegistry CR to cooperate with all these storage types.
 

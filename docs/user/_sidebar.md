@@ -1,0 +1,10 @@
+- [Back to Kyma Home](/)
+- [Docker Registry Module](/docker-registry/user/README.md)
+- [Docker Registry Module Configuration](/docker-registry/user/00-20-configure-docker-registry.md)
+- [Docker Registry Storage Configuration](/docker-registry/user/00-30-storage-configuration.md)
+- [Tutorials](/docker-registry/user/tutorials/README.md)
+  - [Docker Registry Configuration](/docker-registry/user/tutorials/00-20-configure-docker-registry.md)
+  - [Registry Storage Configuration](/docker-registry/user/tutorials/00-30-storage-configuration.md)
+- [Resources](/docker-registry/user/resources/README.md)
+  - [Docker Registry Custom Resource](/docker-registry/user/resources/06-20-docker-registry-cr.md)
+-

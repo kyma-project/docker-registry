@@ -1,4 +1,4 @@
-# Docker Registry Configuration
+# Docker Registry Module Configuration
 
 ## Overview
 
