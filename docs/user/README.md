@@ -2,6 +2,9 @@
 
 ## What is the Docker Registry Module?
 
+> [!WARNING]  
+> Do not use Docker Registry in production clusters, where a full-fledged, highly-available, production-grade registry is necessary.
+
 The Docker Registry module is a Kubernetes operator that adds the Docker Registry capability to a Kubernetes cluster. It installs packaged distribution images and configures them to be easily used in Kyma runtime.
 
 ## What is Docker Registry in Kyma?
