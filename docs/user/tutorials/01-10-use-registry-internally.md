@@ -1,4 +1,4 @@
-# Use Registry Internally
+# Use Docker Registry Internally
 
 This tutorial shows how you can push an image to the Docker Registry and use it.
 

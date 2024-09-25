@@ -1,4 +1,4 @@
-# Expose Registry
+# Expose Docker Registry
 
 This tutorial shows how you can expose the registry to the outside of the cluster with Istio.
 
