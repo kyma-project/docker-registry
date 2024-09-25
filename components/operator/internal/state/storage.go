@@ -8,6 +8,8 @@ import (
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"github.com/pkg/errors"
+	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
@@ -41,7 +43,7 @@ func prepareStorage(ctx context.Context, r *reconciler, s *systemState) error {
 		} else if s.instance.Spec.Storage.BTPObjectStore != nil {
 			return prepareBTPStorage(ctx, r, s)
 		} else if s.instance.Spec.Storage.PVC != nil {
-			return preparePVCStorage(s)
+			return preparePVCStorage(ctx, r, s)
 		}
 	}
 	s.flagsBuilder.WithFilesystem()
@@ -152,8 +154,18 @@ func prepareBTPStorage(ctx context.Context, r *reconciler, s *systemState) error
 	return nil
 }
 
-func preparePVCStorage(s *systemState) error {
+func preparePVCStorage(ctx context.Context, r *reconciler, s *systemState) error {
 	s.flagsBuilder.WithFilesystem()
 	s.flagsBuilder.WithPVC(s.instance.Spec.Storage.PVC)
+
+	pvc := v1.PersistentVolumeClaim{}
+	err := r.client.Get(ctx, types.NamespacedName{
+		Name:      s.instance.Spec.Storage.PVC.Name,
+		Namespace: s.instance.GetNamespace(),
+	}, &pvc)
+	if err != nil {
+		return errors.Wrap(err, "pvc specified to store images can't be reached because of the error")
+	}
+
 	return nil
 }
