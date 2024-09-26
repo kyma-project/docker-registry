@@ -1,23 +1,4 @@
 - name: details.storage.title
-  var: storageType
-  type: string
-  reuired: true
-  dynamicValue: >-
-    $exists(spec.storage.azure) ? 'azure' :
-    $exists(spec.storage.s3) ? 's3' :
-    $exists(spec.storage.gcs) ? 'gcs' :
-    $exists(spec.storage.btpObjectStore) ? 'btpObjectStore' :
-    $exists(spec.storage.pvc) ? 'pvc' :
-    'filesystem'
-  trigger: [storage]
-  enum:
-    - filesystem
-    - azure
-    - s3
-    - gcs
-    - btpObjectStore
-    - pvc
-- name: details.storage.title
   path: spec.storage
   widget: FormGroup
   defaultExpanded: true
@@ -26,6 +7,25 @@
     storage: undefined
   # dynamic
   children:
+    - name: details.storage.type.title
+      var: storageType
+      type: string
+      reuired: true
+      dynamicValue: >-
+        $exists(spec.storage.azure) ? 'azure' :
+        $exists(spec.storage.s3) ? 's3' :
+        $exists(spec.storage.gcs) ? 'gcs' :
+        $exists(spec.storage.btpObjectStore) ? 'btpObjectStore' :
+        $exists(spec.storage.pvc) ? 'pvc' :
+        'filesystem'
+      trigger: [storage]
+      enum:
+        - filesystem
+        - azure
+        - s3
+        - gcs
+        - btpObjectStore
+        - pvc
     # Azure
     - name: details.storage.azureSecret
       path: azure.secretName
