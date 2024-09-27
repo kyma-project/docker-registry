@@ -12,7 +12,7 @@ The Docker Registry module provides a lightweight, open-source Docker registry f
 > [!WARNING]  
 > Do not use Docker Registry in production clusters, where a full-fledged, highly-available, production-grade registry is necessary.
 
-The Docker Registry module comes with a dedicated Kubernetes operator for effortless installation and upgrades. It manages the lifecycle of the Docker Registry resources according to the desired specification expressed through a dedicated [`Dockerregistry` custom resource (CR)](docs/user/technical-reference/resources/06-20-docker-registry-cr.md). Read more about configuration options in the [user documentation](./docs/user).
+The Docker Registry module comes with a dedicated Kubernetes operator for effortless installation and upgrades. It manages the lifecycle of the Docker Registry resources according to the desired specification expressed through a dedicated [`Dockerregistry` custom resource (CR)](docs/user/resources/06-20-docker-registry-cr.md). Read more about configuration options in the [user documentation](./docs/user).
 
 ## Install
 
