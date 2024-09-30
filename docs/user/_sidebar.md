@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 - [Back to Kyma Home](/)
 - [Docker Registry Module](/docker-registry/user/README.md)
 - [Docker Registry Module Configuration](/docker-registry/user/00-20-configure-docker-registry.md)
@@ -7,4 +8,4 @@
   - [Expose Docker Registry](/docker-registry/user/tutorials/01-20-expose-registry.md)
 - [Resources](/docker-registry/user/resources/README.md)
   - [Docker Registry Custom Resource](/docker-registry/user/resources/06-20-docker-registry-cr.md)
--
+<!-- markdown-link-check-enable -->
