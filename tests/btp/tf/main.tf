@@ -2,7 +2,7 @@ terraform {
   required_providers {
     btp = {
       source  = "SAP/btp"
-      version = "1.6.0"
+      version = "1.7.0"
     }
     jq = {
       source  = "massdriver-cloud/jq"
@@ -26,7 +26,7 @@ provider "btp" {
 }
 
 module "kyma" {
-  source = "github.com/kyma-project/terraform-module"
+  source = "git::https://github.com/kyma-project/terraform-module.git?ref=v0.2.0"
   BTP_NEW_SUBACCOUNT_NAME = var.BTP_NEW_SUBACCOUNT_NAME
   BTP_CUSTOM_IAS_TENANT = var.BTP_CUSTOM_IAS_TENANT
   BTP_BOT_USER = var.BTP_BOT_USER
