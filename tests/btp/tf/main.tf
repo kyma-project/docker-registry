@@ -31,15 +31,26 @@ module "kyma" {
   BTP_CUSTOM_IAS_TENANT = var.BTP_CUSTOM_IAS_TENANT
   BTP_BOT_USER = var.BTP_BOT_USER
   BTP_BOT_PASSWORD = var.BTP_BOT_PASSWORD
-  BTP_PROVIDER_SUBACCOUNT_ID = var.BTP_PROVIDER_SUBACCOUNT_ID
 }
 
+data "btp_subaccount_service_binding" "provider_sm" {
+  count = var.BTP_PROVIDER_SUBACCOUNT_ID == null ? 0 : 1
+  subaccount_id = var.BTP_PROVIDER_SUBACCOUNT_ID
+  name          = "provider-sm-binding"
+}
+
+locals {
+  providerServiceManagerCredentials = var.BTP_PROVIDER_SUBACCOUNT_ID == null ? null : jsondecode(one(data.btp_subaccount_service_binding.provider_sm).credentials)
+}
+
+
 resource "local_file" "provider_sm" {
+  count = var.BTP_PROVIDER_SUBACCOUNT_ID == null ? 0 : 1
   content  = <<EOT
-clientid=${module.kyma.custom_service_manager_credentials.clientid}
-clientsecret=${module.kyma.custom_service_manager_credentials.clientsecret}
-sm_url=${module.kyma.custom_service_manager_credentials.sm_url}
-tokenurl=${module.kyma.custom_service_manager_credentials.url}
+clientid=${local.providerServiceManagerCredentials.clientid}
+clientsecret=${local.providerServiceManagerCredentials.clientsecret}
+sm_url=${local.providerServiceManagerCredentials.sm_url}
+tokenurl=${local.providerServiceManagerCredentials.url}
 tokenurlsuffix=/oauth/token
 EOT
   filename = "provider-sm-decoded.env"
