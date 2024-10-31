@@ -1,0 +1,3 @@
+name: registry
+description: Set of commands for Kyma registry
+descriptionLong: Use this command manage resources related to Kyma registry

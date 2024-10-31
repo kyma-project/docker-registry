@@ -1,0 +1,13 @@
+configMapGenerator:
+- name: operator.cli
+  namespace: kube-public
+  files:
+  - rootCommand
+  - coreCommands
+  options:
+    disableNameSuffixHash: true
+    labels:
+      app.kubernetes.io/component: configmap
+      app.kubernetes.io/instance: dockerregistry-operator-configmap
+      app.kubernetes.io/name: dockerregistry-operator
+      kyma-cli/extension: resource
