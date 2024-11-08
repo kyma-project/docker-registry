@@ -21,3 +21,4 @@ resources:
   - ./deployment
   - ./rbac
   - ./ui-extensions
+  - ./cli-extensions
