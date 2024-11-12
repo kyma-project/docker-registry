@@ -58,6 +58,13 @@ create-object-store-reference:
 	@kubectl apply -n kyma-system -f ../k8s-resources/dependencies/object-store-binding.yaml --kubeconfig ${KUBECONFIG}
 	@while ! kubectl get secret object-store-reference-binding --namespace kyma-system --kubeconfig ${KUBECONFIG}; do echo "Waiting for object-store-reference-binding secret..."; sleep 1; done
 
+.PHONY cleanup-kyma:
+cleanup-kyma:
+	@echo "Deleting resources from kyma..."
+	@kubectl delete -f ../k8s-resources/simple-app --kubeconfig ${KUBECONFIG}
+	@kubectl delete -n kyma-system servicebindings.services.cloud.sap.com --all
+	@kubectl delete -n kyma-system serviceinstances.services.cloud.sap.com --all
+
 .PHONY cleanup-tf-force:
 cleanup-tf-force:
 	rm -rf ../tf/*.txt

@@ -115,6 +115,11 @@ jobs:
         with:
           path: "tests/btp/bin"
 
+      - name: Cleanup Kyma
+        shell: bash
+        run: |
+          KUBECONFIG=tmp/sa-kubeconfig.yaml make cleanup-kyma
+
       - name: Force delete btp account
         if: always()
         run: |
