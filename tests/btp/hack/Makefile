@@ -17,13 +17,15 @@ enable_docker_registry:
 	@while ! kubectl get gateway kyma-gateway -n kyma-system --kubeconfig ${KUBECONFIG}; do echo "Waiting for kyma-gateway..."; sleep 1; done
 	@echo "Enabling docker registry"
 	@kubectl apply -f ${OPERATOR_MANIFEST} --kubeconfig ${KUBECONFIG}
+	@while ! kubectl get crd dockerregistries.operator.kyma-project.io --kubeconfig ${KUBECONFIG}; do echo "Waiting for docker-registry CRD..."; sleep 1; done
+	@kubectl wait --for condition=established crd/dockerregistries.operator.kyma-project.io --kubeconfig ${KUBECONFIG}
 	@kubectl apply -f ../k8s-resources/dependencies/exposed-docker-registry-with-btp-storage.yaml -n kyma-system --kubeconfig ${KUBECONFIG}
 	@echo "..waiting for docker registry"
 	@kubectl wait --for condition=Installed dockerregistries.operator.kyma-project.io/default -n kyma-system --timeout=300s --kubeconfig ${KUBECONFIG}
 	@echo "Docker registry installed"
 	@while ! kubectl get secret dockerregistry-config-external --kubeconfig ${KUBECONFIG}; do echo "Waiting for dockerregistry-config-external secret..."; sleep 1; done
 	@echo "Waiting for docker registry external address availibility"
-	./registry-availibility-check.sh ${KUBECONFIG}
+	@for i in 1 2 3 4 5; do ./registry-availibility-check.sh ${KUBECONFIG} && break || sleep 5; done
 
 .PHONY: docker_registry_login
 docker_registry_login:
