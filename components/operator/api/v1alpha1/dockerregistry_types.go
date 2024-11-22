@@ -171,7 +171,6 @@ type DockerRegistryStatus struct {
 
 	// State signifies current state of DockerRegistry.
 	// Value can be one of ("Ready", "Processing", "Error", "Deleting").
-	// +kubebuilder:validation:Required
 	// +kubebuilder:validation:Enum=Processing;Deleting;Ready;Error;Warning
 	State State `json:"state,omitempty"`
 
