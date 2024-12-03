@@ -16,7 +16,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 	helm.sh/helm/v3 v3.16.3
 	istio.io/api v1.24.0
-	istio.io/client-go v1.24.0
+	istio.io/client-go v1.24.1
 	k8s.io/api v0.31.3
 	k8s.io/apiextensions-apiserver v0.31.3
 	k8s.io/apimachinery v0.31.3
