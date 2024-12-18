@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 USERNAME=$(kubectl get secrets -n kyma-system dockerregistry-config-external -o jsonpath={.data.username} --kubeconfig ${KUBECONFIG} | base64 -d)
 PASSWORD=$(kubectl get secrets -n kyma-system dockerregistry-config-external -o jsonpath={.data.password} --kubeconfig ${KUBECONFIG} | base64 -d)
@@ -17,7 +17,7 @@ RESPONSE_CODE=$(curl -o /dev/null -u $USERNAME:$PASSWORD -L -w ''%{http_code}'' 
     --retry-delay 5 \
     --retry-max-time 40 $REGISTRY_URL 2>/dev/null)
 echo Response from registry: $RESPONSE_CODE
-if [ "$RESPONSE_CODE" == "200" ]; then
+if [ "${RESPONSE_CODE}" == "200" ]; then
     exit 0
 fi
 

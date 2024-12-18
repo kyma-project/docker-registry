@@ -56,3 +56,4 @@ tests/btp/tf/*.env
 
 tests/btp/env/.env
 tests/btp/hack/tmp/
+tests/btp/tf/canary-azure.tfvars

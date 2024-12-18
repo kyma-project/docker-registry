@@ -65,66 +65,45 @@ jobs:
   btp-integration-tests:
     if: ${{ inputs.trigger_btp }}
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: tests/btp/hack
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-kyma
         with:
-          path: "tests/btp/bin"
-      - name: Create btp account with kyma enable
-        run: |
-          . ./set-tf-envs.sh
-          terraform -chdir=../tf init
-          terraform -chdir=../tf apply -auto-approve
-          echo "SUBACC_ID=$(terraform -chdir=../tf output -raw subaccount_id)" >> $GITHUB_ENV
-        env:
-          BTP_ENV: ${{ secrets.BTP_INTEGRATION_TEST }}
-          TF_VAR_BTP_NEW_SUBACCOUNT_NAME: docker-registry-test-${{ github.sha }}-${{ github.run_attempt }}
+          path: "/usr/local/bin"
+      - name: compute github commit sha
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - uses: kyma-project/terraform-module/.github/actions/create-sap-btp-kyma@d1af98a8816f11d994f9d2f2cff4bf2338f9444f
+        id: create-btp-resources
+        with:
+          btp_subaccount_name: dockerregistry-test-${{ steps.vars.outputs.sha_short }}-${{ github.run_attempt }}
+          btp_backend_url: '${{ secrets.BTP_BACKEND_URL}}'
+          btp_user: '${{ secrets.BTP_BOT_USER}}'
+          btp_password: '${{ secrets.BTP_BOT_PASSWORD}}'
+          btp_global_account: '${{ secrets.BTP_GLOBAL_ACCOUNT }}'
+          btp_idp_tenant: '${{ secrets.BTP_CUSTOM_IAS_TENANT }}'
+          btp_subaccount_region: '${{ secrets.BTP_SUBACCOUNT_REGION }}'
+          btp_kyma_region: '${{ secrets.BTP_KYMA_REGION }}'
+          btp_kyma_plan: '${{ secrets.BTP_KYMA_PLAN }}'
 
-      - name: Generate access
+      - name: install exposed docker registry with remote btp object store backend
         run: |
-          sudo ln -sf bash /bin/sh
-          . ./set-tf-envs.sh
-          mkdir -p tmp
-          CLUSTERROLE=cluster-admin make service-account-kubeconfig
-        env:
-          BTP_ENV: ${{ secrets.BTP_INTEGRATION_TEST }}
-
-      - name: Add bindings
-        run: |
-          . ./set-tf-envs.sh
-          KUBECONFIG=tmp/sa-kubeconfig.yaml BTP_PROVIDER_SUBACCOUNT_ID=$TF_VAR_BTP_PROVIDER_SUBACCOUNT_ID make share-sm-service-operator-access
-          KUBECONFIG=tmp/sa-kubeconfig.yaml make create-object-store-reference
-          make -C ../../../components/operator/ render-manifest
-          KUBECONFIG=tmp/sa-kubeconfig.yaml OPERATOR_MANIFEST=../../../dockerregistry-operator.yaml make enable_docker_registry
-        env:
-          BTP_ENV: ${{ secrets.BTP_INTEGRATION_TEST }}
-          IMG: ${{ inputs.image }}
-
-      - name: Test if docker registry is working
+          echo '${{ secrets.BTP_REMOTE_SERVICE_MANAGER_BINDING }}' > tests/btp/sm.env
+          KUBECONFIG=$KUBECONFIG make -C tests/btp ensure-btp-object-store-backend
+          make -C components/operator render-manifest
+          KUBECONFIG=$KUBECONFIG OPERATOR_MANIFEST=../../dockerregistry-operator.yaml make -C tests/btp enable_docker_registry
+      
+      - name: Test
         shell: bash
         run: |
-          KUBECONFIG=tmp/sa-kubeconfig.yaml make docker_registry_login
-          KUBECONFIG=tmp/sa-kubeconfig.yaml make docker_push_simple_app
-          KUBECONFIG=tmp/sa-kubeconfig.yaml make deploy_simple_app
+          KUBECONFIG=$KUBECONFIG make -C tests/btp test
 
-      - uses: ./.github/actions/setup-btp
+      - uses: kyma-project/terraform-module/.github/actions/force-delete-sap-btp-subaccount@d1af98a8816f11d994f9d2f2cff4bf2338f9444f
         if: always()
         with:
-          path: "tests/btp/bin"
-
-      - name: Cleanup Kyma
-        shell: bash
-        run: |
-          KUBECONFIG=tmp/sa-kubeconfig.yaml make cleanup-kyma
-
-      - name: Force delete btp account
-        if: always()
-        run: |
-          . ./set-tf-envs.sh
-          ../bin/btp login --url $TF_VAR_BTP_BACKEND_URL --user $TF_VAR_BTP_BOT_USER --password $TF_VAR_BTP_BOT_PASSWORD --idp $TF_VAR_BTP_CUSTOM_IAS_TENANT --subdomain $TF_VAR_BTP_GLOBAL_ACCOUNT
-          ../bin/btp delete accounts/subaccount ${SUBACC_ID} --global-account ${TF_VAR_BTP_GLOBAL_ACCOUNT} --force-delete true --confirm true
-        env:
-          BTP_ENV: ${{ secrets.BTP_INTEGRATION_TEST }}
+          btp_subaccount_id: ${{ steps.create-btp-resources.outputs.subaccount_id }}
+          btp_backend_url: ${{ secrets.BTP_BACKEND_URL}}
+          btp_user: ${{ secrets.BTP_BOT_USER}}
+          btp_password: ${{ secrets.BTP_BOT_PASSWORD}}
+          btp_global_account: ${{ secrets.BTP_GLOBAL_ACCOUNT }}
+          btp_idp_tenant: ${{ secrets.BTP_CUSTOM_IAS_TENANT }}
