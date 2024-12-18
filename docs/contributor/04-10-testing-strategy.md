@@ -16,7 +16,7 @@ Each pull request to the repository triggers the following CI/CD jobs that verif
 
 ## CI/CD Jobs Running before Publishing Release
 
-- `push / integrations / btp-integration-tests` - Checks the installation of the Docker Registry module in the SAP BTP, Kyma Runtime and runs integration tests of extrenally exposed Docker Registry using SAP BTP Object Store service as a backend storage. For the configuration, see the [_integration-tests-push.yaml](https://github.com/kyma-project/docker-registry/blob/main/.github/workflows/_integration-tests.yaml) file.
+- `push / integrations / btp-integration-tests` - Checks the installation of the Docker Registry module in SAP BTP, Kyma Runtime, and runs integration tests of externally exposed Docker Registry using the SAP BTP Object Store service as a backend storage. For the configuration, see the [_integration-tests-push.yaml](https://github.com/kyma-project/docker-registry/blob/main/.github/workflows/_integration-tests.yaml) file.
 
 
 ## CI/CD Jobs Running on a Schedule
