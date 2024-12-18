@@ -11,9 +11,13 @@ Each pull request to the repository triggers the following CI/CD jobs that verif
 ## CI/CD Jobs Running on the Main Branch
 
 - `push / integrations / operator-integration-test` - Runs the create/update/delete Docker Registry integration tests in k3d cluster. For the configuration, see the [_integration-tests-push.yaml](https://github.com/kyma-project/docker-registry/blob/main/.github/workflows/_integration-tests.yaml) file.
-- `push / integrations / gardener-integration-test` - Checks the installation of the Docker Registry module in the Gardener shoot cluster and runs basic integration tests of Docker Registry. For the configuration, see the [_integration-tests-push.yaml](https://github.com/kyma-project/docker-registry/blob/main/.github/workflows/_integration-tests.yaml) file.
 - `push / upgrades / operator-upgrade-test` - Runs the upgrade integration test suite and verifies if the latest release can be successfully upgraded to the new (`main`) revision. For the configuration, see the [_upgrade-tests.yaml](https://github.com/kyma-project/docker-registry/blob/main/.github/workflows/_upgrade-tests.yaml) file.
 - `markdown / link-check` - Checks if there are no broken links in `.md` files. For the configuration, see the [mlc.config.json](https://github.com/kyma-project/docker-registry/blob/main/.mlc.config.json) and the [markdown.yaml](https://github.com/kyma-project/docker-registry/blob/main/.github/workflows/markdown.yaml) files.
+
+## CI/CD Jobs Running before Publishing Release
+
+- `push / integrations / btp-integration-tests` - Checks the installation of the Docker Registry module in SAP BTP, Kyma Runtime, and runs integration tests of externally exposed Docker Registry using the SAP BTP Object Store service as a backend storage. For the configuration, see the [_integration-tests-push.yaml](https://github.com/kyma-project/docker-registry/blob/main/.github/workflows/_integration-tests.yaml) file.
+
 
 ## CI/CD Jobs Running on a Schedule
 
