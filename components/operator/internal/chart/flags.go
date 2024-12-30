@@ -19,6 +19,7 @@ type FlagsBuilder interface {
 	WithAzure(secret *v1alpha1.StorageAzureSecrets) *flagsBuilder
 	WithS3(config *v1alpha1.StorageS3, secret *v1alpha1.StorageS3Secrets) *flagsBuilder
 	WithFilesystem() *flagsBuilder
+	WithDeleteEnabled(bool) *flagsBuilder
 	WithPVC(config *v1alpha1.StoragePVC) *flagsBuilder
 	WithGCS(config *v1alpha1.StorageGCS, secret *v1alpha1.StorageGCSSecrets) *flagsBuilder
 }
@@ -133,6 +134,11 @@ func (fb *flagsBuilder) WithS3(config *v1alpha1.StorageS3, secret *v1alpha1.Stor
 		fb.flags["secrets.s3.secretKey"] = secret.SecretKey
 	}
 
+	return fb
+}
+
+func (fb *flagsBuilder) WithDeleteEnabled(enabled bool) *flagsBuilder {
+	fb.flags["configData.storage.delete.enabled"] = enabled
 	return fb
 }
 

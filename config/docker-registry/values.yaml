@@ -134,6 +134,8 @@ configData: # example: https://github.com/docker/distribution/blob/master/cmd/re
     fields:
       service: registry
   storage:
+    delete:
+      enabled: false
     cache:
       blobdescriptor: inmemory
   http:

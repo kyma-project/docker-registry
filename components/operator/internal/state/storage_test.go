@@ -43,7 +43,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
 	})
 
-	t.Run("internal registry using azure storage", func(t *testing.T) {
+	t.Run("internal registry using azure storage with deleteEnabled", func(t *testing.T) {
 		azureSecret := &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "azureSecret",
@@ -63,6 +63,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 				},
 				Spec: v1alpha1.DockerRegistrySpec{
 					Storage: &v1alpha1.Storage{
+						DeleteEnabled: true,
 						Azure: &v1alpha1.StorageAzure{
 							SecretName: "azureSecret",
 						},
@@ -78,6 +79,13 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{
+			"configData": map[string]interface{}{
+				"storage": map[string]interface{}{
+					"delete": map[string]interface{}{
+						"enabled": true,
+					},
+				},
+			},
 			"storage": "azure",
 			"persistence": map[string]interface{}{
 				"enabled": false,
@@ -137,6 +145,13 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{
+			"configData": map[string]interface{}{
+				"storage": map[string]interface{}{
+					"delete": map[string]interface{}{
+						"enabled": false,
+					},
+				},
+			},
 			"storage": "s3",
 			"persistence": map[string]interface{}{
 				"enabled": false,
@@ -199,6 +214,13 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{
+			"configData": map[string]interface{}{
+				"storage": map[string]interface{}{
+					"delete": map[string]interface{}{
+						"enabled": false,
+					},
+				},
+			},
 			"storage": "gcs",
 			"persistence": map[string]interface{}{
 				"enabled": false,
@@ -260,6 +282,13 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{
+			"configData": map[string]interface{}{
+				"storage": map[string]interface{}{
+					"delete": map[string]interface{}{
+						"enabled": false,
+					},
+				},
+			},
 			"storage": "s3",
 			"persistence": map[string]interface{}{
 				"enabled": false,
@@ -360,6 +389,13 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{
+			"configData": map[string]interface{}{
+				"storage": map[string]interface{}{
+					"delete": map[string]interface{}{
+						"enabled": false,
+					},
+				},
+			},
 			"storage": "gcs",
 			"persistence": map[string]interface{}{
 				"enabled": false,
@@ -414,6 +450,9 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		expectedFlags := map[string]interface{}{
 			"configData": map[string]interface{}{
 				"storage": map[string]interface{}{
+					"delete": map[string]interface{}{
+						"enabled": false,
+					},
 					"filesystem": map[string]interface{}{
 						"rootdirectory": "/var/lib/registry",
 					},

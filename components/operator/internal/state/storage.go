@@ -30,6 +30,8 @@ func sFnStorageConfiguration(ctx context.Context, r *reconciler, s *systemState)
 
 func prepareStorage(ctx context.Context, r *reconciler, s *systemState) error {
 	if s.instance.Spec.Storage != nil {
+		s.flagsBuilder.WithDeleteEnabled(s.instance.Spec.Storage.DeleteEnabled)
+		
 		if err := prepareStorageUnique(s); err != nil {
 			return err
 		}
@@ -46,6 +48,7 @@ func prepareStorage(ctx context.Context, r *reconciler, s *systemState) error {
 			return preparePVCStorage(ctx, r, s)
 		}
 	}
+
 	s.flagsBuilder.WithFilesystem()
 	return nil
 }
