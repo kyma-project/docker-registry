@@ -53,7 +53,7 @@ func sFnUpdateFinalStatus(ctx context.Context, r *reconciler, s *systemState) (s
 
 func updateStatus(ctx context.Context, r *reconciler, s *systemState) error {
 	spec := s.instance.Spec
-	storageFields, err := getStorageField(ctx, spec.Storage, &s.instance, r.client)
+	storageFields, err := getStorageFields(ctx, spec.Storage, &s.instance, r.client)
 	if err != nil {
 		return err
 	}
