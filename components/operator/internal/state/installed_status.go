@@ -111,7 +111,7 @@ func getExternalAccessFields(ctx context.Context, r *reconciler, s *systemState)
 	}
 }
 
-func getStorageField(ctx context.Context, storage *v1alpha1.Storage, instance *v1alpha1.DockerRegistry, client client.Client) (fieldsToUpdate, error) {
+func getStorageFields(ctx context.Context, storage *v1alpha1.Storage, instance *v1alpha1.DockerRegistry, client client.Client) (fieldsToUpdate, error) {
 	storageName := FilesystemStorageName
 	deleteEnabled := "False"
 	if storage != nil {
