@@ -61,10 +61,11 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 | Parameter                               | Type   | Description                                                                                                                |
 |-----------------------------------------|--------|----------------------------------------------------------------------------------------------------------------------------|
 | **externalAccess**                      | object | Contains configuration of the registry external access through the Istio Gateway.                                          |
-| **externalAccess.enabled**              | string | Specifies if the registry is exposed.                                                                                          |
-| **externalAccess.gateway**              | string | Specifies the name of the Istio Gateway CR in the `NAMESPACE/NAME` format. Defaults to the `kyma-system/kyma-gateway`.           |
-| **externalAccess.host**                 | string | Specifies the host on which the registry will be exposed. It must fit into at least one server defined in the Gateway. |
+| **externalAccess.enabled**              | string | Specifies if the registry is exposed.                                                                                      |
+| **externalAccess.gateway**              | string | Specifies the name of the Istio Gateway CR in the `NAMESPACE/NAME` format. Defaults to the `kyma-system/kyma-gateway`.     |
+| **externalAccess.host**                 | string | Specifies the host on which the registry will be exposed. It must fit into at least one server defined in the Gateway.     |
 | **storage**                             | object | Contains configuration of the registry images storage.                                                                     |
+| **storage.deleteEnabled**               | string | Specifies if registry supports deletion of image blobs and manifests by digest.                                            |
 | **storage.azure**                       | object | Contains configuration of the Azure Storage.                                                                               |
 | **storage.azure.secretName** (required) | string | Specifies the name of the Secret that contains data needed to connect to the Azure Storage.                                |
 | **storage.s3**                          | object | Contains configuration of the s3 storage.                                                                                  |
