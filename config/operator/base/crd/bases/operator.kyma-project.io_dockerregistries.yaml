@@ -90,6 +90,8 @@ spec:
                       secretName:
                         type: string
                     type: object
+                  deleteEnabled:
+                    type: boolean
                   gcs:
                     properties:
                       bucket:
@@ -189,6 +191,8 @@ spec:
                   - type
                   type: object
                 type: array
+              deleteEnabled:
+                type: string
               externalAccess:
                 description: ExternalAccess contains the external access configuration
                   of the DockerRegistry.

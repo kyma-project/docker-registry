@@ -3,11 +3,14 @@ package state
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"github.com/pkg/errors"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"k8s.io/client-go/tools/record"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -50,7 +53,7 @@ func sFnUpdateFinalStatus(ctx context.Context, r *reconciler, s *systemState) (s
 
 func updateStatus(ctx context.Context, r *reconciler, s *systemState) error {
 	spec := s.instance.Spec
-	storageField, err := getStorageField(ctx, spec.Storage, &s.instance, r.client)
+	storageFields, err := getStorageFields(ctx, spec.Storage, &s.instance, r.client)
 	if err != nil {
 		return err
 	}
@@ -63,7 +66,6 @@ func updateStatus(ctx context.Context, r *reconciler, s *systemState) error {
 	if err != nil {
 		return err
 	}
-
 	pulladdress := fmt.Sprintf("localhost:%d", nodeport)
 	pushAddress := fmt.Sprintf("%s.%s.svc.cluster.local:%d", chart.FullnameOverride, s.instance.GetNamespace(), registry.ServicePort)
 
@@ -72,9 +74,9 @@ func updateStatus(ctx context.Context, r *reconciler, s *systemState) error {
 		{pulladdress, &s.instance.Status.InternalAccess.PullAddress, "Internal pull address", ""},
 		{pushAddress, &s.instance.Status.InternalAccess.PushAddress, "Internal push address", ""},
 		{registry.InternalAccessSecretName, &s.instance.Status.InternalAccess.SecretName, "Name of secret with registry access data", ""},
-		storageField,
 		pvcField,
 	}...)
+	fields = append(fields, storageFields...)
 
 	updateStatusFields(r.k8s, &s.instance, fields)
 	return nil
@@ -109,9 +111,12 @@ func getExternalAccessFields(ctx context.Context, r *reconciler, s *systemState)
 	}
 }
 
-func getStorageField(ctx context.Context, storage *v1alpha1.Storage, instance *v1alpha1.DockerRegistry, client client.Client) (fieldToUpdate, error) {
+func getStorageFields(ctx context.Context, storage *v1alpha1.Storage, instance *v1alpha1.DockerRegistry, client client.Client) (fieldsToUpdate, error) {
 	storageName := FilesystemStorageName
+	deleteEnabled := "False"
 	if storage != nil {
+		deleteEnabled = cases.Title(language.Und).String(strconv.FormatBool(instance.Spec.Storage.DeleteEnabled))
+
 		if storage.Azure != nil {
 			storageName = AzureStorageName
 		} else if storage.S3 != nil {
@@ -121,7 +126,7 @@ func getStorageField(ctx context.Context, storage *v1alpha1.Storage, instance *v
 		} else if storage.BTPObjectStore != nil {
 			btpSecret, err := registry.GetSecret(ctx, client, instance.Spec.Storage.BTPObjectStore.SecretName, instance.Namespace)
 			if err != nil {
-				return fieldToUpdate{}, errors.Wrap(err, fmt.Sprintf("while fetching btp storage secret from %s", instance.Namespace))
+				return nil, errors.Wrap(err, fmt.Sprintf("while fetching btp storage secret from %s", instance.Namespace))
 			}
 			storageType := getBTPStorageHyperscaler(btpSecret.Data)
 			storageName = fmt.Sprintf("%s-%s", BTPStorageName, storageType)
@@ -129,7 +134,10 @@ func getStorageField(ctx context.Context, storage *v1alpha1.Storage, instance *v
 			storageName = PVCStorageName
 		}
 	}
-	return fieldToUpdate{storageName, &instance.Status.Storage, "Storage type", ""}, nil
+	return fieldsToUpdate{
+		{storageName, &instance.Status.Storage, "Storage type", ""},
+		{deleteEnabled, &instance.Status.DeleteEnabled, "Enable image blobs and manifests by digest", ""},
+	}, nil
 }
 
 func getPVCField(storage *v1alpha1.Storage, instance *v1alpha1.DockerRegistry) fieldToUpdate {

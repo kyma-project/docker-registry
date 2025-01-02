@@ -29,6 +29,9 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 					Namespace: "test-namespace",
 				},
 				Spec: v1alpha1.DockerRegistrySpec{
+					Storage: &v1alpha1.Storage{
+						DeleteEnabled: true,
+					},
 					ExternalAccess: &v1alpha1.ExternalAccess{
 						Enabled: ptr.To(true),
 					},
@@ -44,7 +47,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		}
 
 		c := fake.NewClientBuilder().Build()
-		eventRecorder := record.NewFakeRecorder(10)
+		eventRecorder := record.NewFakeRecorder(11)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
 		next, result, err := sFnUpdateFinalStatus(context.TODO(), r, s)
 		require.NoError(t, err)
@@ -60,6 +63,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		require.Equal(t, registry.ExternalAccessSecretName, status.ExternalAccess.SecretName)
 		require.Equal(t, "registry-test-name-test-namespace.cluster.local", status.ExternalAccess.PushAddress)
 		require.Equal(t, "kyma-system/kyma-gateway", status.ExternalAccess.Gateway)
+		require.Equal(t, "True", status.DeleteEnabled)
 
 		require.Equal(t, FilesystemStorageName, status.Storage)
 
@@ -94,7 +98,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 
 		s.warningBuilder.With("test warning")
 		c := fake.NewClientBuilder().Build()
-		eventRecorder := record.NewFakeRecorder(10)
+		eventRecorder := record.NewFakeRecorder(11)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
 		next, result, err := sFnUpdateFinalStatus(context.TODO(), r, s)
 		require.NoError(t, err)
@@ -106,6 +110,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		require.Equal(t, "localhost:32137", status.InternalAccess.PullAddress)
 		require.Equal(t, "dockerregistry.test-namespace.svc.cluster.local:5000", status.InternalAccess.PushAddress)
 		require.Equal(t, "False", status.ExternalAccess.Enabled)
+		require.Equal(t, "False", status.DeleteEnabled)
 
 		require.Equal(t, AzureStorageName, status.Storage)
 
@@ -139,7 +144,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		}
 
 		c := fake.NewClientBuilder().Build()
-		eventRecorder := record.NewFakeRecorder(10)
+		eventRecorder := record.NewFakeRecorder(11)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
 		next, result, err := sFnUpdateFinalStatus(context.TODO(), r, s)
 		require.NoError(t, err)
@@ -151,6 +156,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 		require.Equal(t, "localhost:32137", status.InternalAccess.PullAddress)
 		require.Equal(t, "dockerregistry.test-namespace.svc.cluster.local:5000", status.InternalAccess.PushAddress)
 		require.Equal(t, "False", status.ExternalAccess.Enabled)
+		require.Equal(t, "False", status.DeleteEnabled)
 
 		require.Equal(t, PVCStorageName, status.Storage)
 		require.Equal(t, "test-pvc", status.PVC)
@@ -192,7 +198,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 			k8s: k8s{
 				client:        fake.NewClientBuilder().WithObjects(secret).Build(),
-				EventRecorder: record.NewFakeRecorder(10),
+				EventRecorder: record.NewFakeRecorder(11),
 			},
 		}
 

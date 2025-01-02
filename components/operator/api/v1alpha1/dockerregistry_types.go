@@ -50,6 +50,7 @@ type Storage struct {
 	GCS            *StorageGCS            `json:"gcs,omitempty"`
 	BTPObjectStore *StorageBTPObjectStore `json:"btpObjectStore,omitempty"`
 	PVC            *StoragePVC            `json:"pvc,omitempty"`
+	DeleteEnabled  bool                   `json:"deleteEnabled,omitempty"`
 }
 
 type StorageAzure struct {
@@ -168,6 +169,8 @@ type DockerRegistryStatus struct {
 	Storage string `json:"storage,omitempty"`
 
 	PVC string `json:"pvc,omitempty"`
+
+	DeleteEnabled string `json:"deleteEnabled,omitempty"`
 
 	// State signifies current state of DockerRegistry.
 	// Value can be one of ("Ready", "Processing", "Error", "Deleting").
