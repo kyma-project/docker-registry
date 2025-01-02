@@ -79,6 +79,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{
+			"rollme": "configData.storage.delete.enabled=true",
 			"configData": map[string]interface{}{
 				"storage": map[string]interface{}{
 					"delete": map[string]interface{}{
@@ -145,6 +146,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{
+			"rollme": "configData.storage.delete.enabled=false",
 			"configData": map[string]interface{}{
 				"storage": map[string]interface{}{
 					"delete": map[string]interface{}{
@@ -214,6 +216,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{
+			"rollme": "configData.storage.delete.enabled=false",
 			"configData": map[string]interface{}{
 				"storage": map[string]interface{}{
 					"delete": map[string]interface{}{
@@ -282,6 +285,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{
+			"rollme": "configData.storage.delete.enabled=false",
 			"configData": map[string]interface{}{
 				"storage": map[string]interface{}{
 					"delete": map[string]interface{}{
@@ -389,6 +393,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{
+			"rollme": "configData.storage.delete.enabled=false",
 			"configData": map[string]interface{}{
 				"storage": map[string]interface{}{
 					"delete": map[string]interface{}{
@@ -448,6 +453,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{
+			"rollme": "configData.storage.delete.enabled=false",
 			"configData": map[string]interface{}{
 				"storage": map[string]interface{}{
 					"delete": map[string]interface{}{

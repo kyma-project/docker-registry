@@ -81,9 +81,8 @@ func (fb *flagsBuilder) WithRegistryCredentials(username, password string) *flag
 }
 
 func (fb *flagsBuilder) WithRegistryHttpSecret(httpSecret string) *flagsBuilder {
-	fb.flags["rollme"] = "dontrollplease"
 	fb.flags["registryHTTPSecret"] = httpSecret
-	return fb
+	return fb.withRollme("dontrollplease")
 }
 
 func (fb *flagsBuilder) WithServicePort(servicePort int64) *flagsBuilder {
@@ -139,7 +138,9 @@ func (fb *flagsBuilder) WithS3(config *v1alpha1.StorageS3, secret *v1alpha1.Stor
 
 func (fb *flagsBuilder) WithDeleteEnabled(enabled bool) *flagsBuilder {
 	fb.flags["configData.storage.delete.enabled"] = enabled
-	return fb
+	// restart deployment registry deploy to fetch new configuration from configmap
+	// set rollme value to the contant value (reson) to not restart deployment on every reconciliation
+	return fb.withRollme(fmt.Sprintf("configData.storage.delete.enabled=%t", enabled))
 }
 
 func (fb *flagsBuilder) WithFilesystem() *flagsBuilder {
@@ -170,5 +171,10 @@ func (fb *flagsBuilder) WithGCS(config *v1alpha1.StorageGCS, secret *v1alpha1.St
 		fb.flags["secrets.gcs.accountkey"] = secret.AccountKey
 	}
 
+	return fb
+}
+
+func (fb *flagsBuilder) withRollme(value string) *flagsBuilder {
+	fb.flags["rollme"] = value
 	return fb
 }
