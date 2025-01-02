@@ -4,7 +4,7 @@ echo "Checking status of github actions for docker-registry"
 
 REF_NAME="${1:-"main"}"
 RAW_EXPECTED_SHA=$(git log "${REF_NAME}" --max-count 1 --format=format:%H)
-REPOSITORY_ID="563346860"
+REPOSITORY_ID="788884886"
 
 STATUS_URL="https://api.github.com/repositories/${REPOSITORY_ID}/actions/workflows/push.yaml/runs?head_sha=${RAW_EXPECTED_SHA}"
 GET_STATUS_JQ_QUERY=".workflow_runs[0] | \"\(.status)-\(.conclusion)\""
