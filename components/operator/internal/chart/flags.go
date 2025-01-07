@@ -82,7 +82,7 @@ func (fb *flagsBuilder) WithRegistryCredentials(username, password string) *flag
 
 func (fb *flagsBuilder) WithRegistryHttpSecret(httpSecret string) *flagsBuilder {
 	fb.flags["registryHTTPSecret"] = httpSecret
-	return fb.withRollme("dontrollplease")
+	return fb
 }
 
 func (fb *flagsBuilder) WithServicePort(servicePort int64) *flagsBuilder {
@@ -139,7 +139,7 @@ func (fb *flagsBuilder) WithS3(config *v1alpha1.StorageS3, secret *v1alpha1.Stor
 func (fb *flagsBuilder) WithDeleteEnabled(enabled bool) *flagsBuilder {
 	fb.flags["configData.storage.delete.enabled"] = enabled
 	// restart deployment registry deploy to fetch new configuration from configmap
-	// set rollme value to the contant value (reson) to not restart deployment on every reconciliation
+	// set rollme value to the contant value (reason) to not restart deployment on every reconciliation
 	return fb.withRollme(fmt.Sprintf("configData.storage.delete.enabled=%t", enabled))
 }
 
@@ -174,7 +174,14 @@ func (fb *flagsBuilder) WithGCS(config *v1alpha1.StorageGCS, secret *v1alpha1.St
 	return fb
 }
 
+// withRollme allows to set custom values for the `rollme` field in chart
+// it merges values for many command executions in format <value1>,<value2>,...,<valueN>
 func (fb *flagsBuilder) withRollme(value string) *flagsBuilder {
+	rollme, ok := fb.flags["rollme"]
+	if ok {
+		value = fmt.Sprintf("%v,%s", rollme, value)
+	}
+
 	fb.flags["rollme"] = value
 	return fb
 }
