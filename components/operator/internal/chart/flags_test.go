@@ -15,7 +15,6 @@ func Test_flagsBuilder_Build(t *testing.T) {
 	t.Run("build flags", func(t *testing.T) {
 		expectedFlags := map[string]interface{}{
 			"registryHTTPSecret": "testHttpSecret",
-			"rollme":             "dontrollplease",
 			"dockerRegistry": map[string]interface{}{
 				"password": "testPassword",
 				"username": "testUsername",

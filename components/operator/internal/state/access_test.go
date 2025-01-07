@@ -122,7 +122,6 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 				"password": "makota",
 			},
 			"registryHTTPSecret": "httpEnvKeyVal",
-			"rollme":             "dontrollplease",
 		}
 
 		next, result, err := sFnAccessConfiguration(context.Background(), r, s)
