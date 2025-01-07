@@ -6,16 +6,10 @@ This tutorial shows how you can remove previously pushed image to the registry u
 
 * [kubectl](https://kubernetes.io/docs/tasks/tools/)
 * [Kyma CLI v3](https://github.com/kyma-project/cli/)
-* [skopeo](https://github.com/containers/skopeo/)
-* [curl](https://curl.se/)
+* [skopeo](https://github.com/containers/skopeo/) (for skopeo case)
+* [curl](https://curl.se/) (for registry API)
 
 ## Steps
-
-You can explore registry with pure registry API or skopeo:
-
-<!-- tabs:start -->
-
-#### **Registry API**
 
 1. Enable image manifests deletion functionality by changing the the **.spec.storage.deleteEnabled** flag to `true`:
 
@@ -58,6 +52,10 @@ kubectl port-forward -n kyma-system svc/dockerregistry 5000:5000
 export DR_USERNAME=$(kubectl get secret -n kyma-system dockerregistry-config -o jsonpath="{.data.username}" | base64 -d)
 export DR_PASSWORD=$(kubectl get secret -n kyma-system dockerregistry-config -o jsonpath="{.data.password}" | base64 -d)
 ```
+
+<!-- tabs:start -->
+
+#### **Registry API**
 
 5. Verify that image was pushed to the registry and exists with given tag:
 
@@ -78,48 +76,6 @@ curl -u "$DR_USERNAME:$DR_PASSWORD" -X DELETE localhost:5000/v2/dr/manifests/<DI
 ```
 
 #### **Skopeo**
-
-1. Enable image manifests deletion functionality by changing the the **.spec.storage.deleteEnabled** flag to `true`:
-
-```bash
-kubectl apply -n kyma-system -f - <<EOF
-apiVersion: operator.kyma-project.io/v1alpha1
-kind: DockerRegistry
-metadata:
-    name: default
-    namespace: kyma-system
-spec:
-    storage:
-        deleteEnabled: true
-EOF
-```
-
-Once the DockerRegistry CR becomes `Ready`, you see a updated field **.status.deleteEnabled** with new value.
-
-```yaml
-...
-status:
-    deleteEnabled: true
-```
-
-2. Push image to the registry:
-
-```bash
-kyma alpha registry image-import <IMAGE_NAME>:<IMAGE_TAG>
-```
-
-3. Port-forward the registry service in another terminal:
-
-```bash
-kubectl port-forward -n kyma-system svc/dockerregistry 5000:5000
-```
-
-4. Export registry credentials:
-
-```bash
-export DR_USERNAME=$(kubectl get secret -n kyma-system dockerregistry-config -o jsonpath="{.data.username}" | base64 -d)
-export DR_PASSWORD=$(kubectl get secret -n kyma-system dockerregistry-config -o jsonpath="{.data.password}" | base64 -d)
-```
 
 5. Verify that image was pushed to the registry and exists with given tag:
 
