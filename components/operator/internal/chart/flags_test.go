@@ -47,3 +47,33 @@ func Test_flagsBuilder_Build(t *testing.T) {
 		require.Equal(t, expectedFlags, flags)
 	})
 }
+
+func Test_flagsBuilder_withRollme(t *testing.T) {
+	t.Run("add rollme flag", func(t *testing.T) {
+		flags := flagsBuilder{
+			flags: map[string]interface{}{},
+		}
+
+		_ = flags.withRollme("reason=test")
+
+		expectedFlags := map[string]interface{}{
+			"rollme": "reason=test",
+		}
+		require.Equal(t, expectedFlags, flags.Build())
+	})
+
+	t.Run("add value to existing rollme flag", func(t *testing.T) {
+		flags := flagsBuilder{
+			flags: map[string]interface{}{
+				"rollme": "reason=test",
+			},
+		}
+
+		_ = flags.withRollme("another-reason=test-2")
+
+		expectedFlags := map[string]interface{}{
+			"rollme": "reason=test,another-reason=test-2",
+		}
+		require.Equal(t, expectedFlags, flags.Build())
+	})
+}
