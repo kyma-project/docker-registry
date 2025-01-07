@@ -42,7 +42,7 @@ This tutorial shows how you can push an image to the Docker Registry and use it.
 4. Import the image to Docker Registry:
 
    ```bash
-   kyma image-import simple-image:latest
+   kyma alpha registry image-import simple-image:latest
    ```
 
 4. Create a Pod using the image from Docker Registry:
