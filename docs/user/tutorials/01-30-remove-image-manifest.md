@@ -77,7 +77,7 @@ curl -u "$DR_USERNAME:$DR_PASSWORD" -X DELETE localhost:5000/v2/dr/manifests/<DI
 
 #### **skopeo**
 
-5. Verify that image was pushed to the registry and exists with given tag:
+5. Verify that the image was pushed to the registry and exists with given tag:
 
 ```bash
 skopeo list-tags --creds "$DR_USERNAME:$DR_PASSWORD" --tls-verify=false docker://localhost:5000/<IMAGE_NAME>
