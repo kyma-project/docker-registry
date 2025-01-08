@@ -34,7 +34,7 @@ status:
     deleteEnabled: true
 ```
 
-2. Push image to the registry:
+2. Push the image to the registry:
 
 ```bash
 kyma alpha registry image-import <IMAGE_NAME>:<IMAGE_TAG>
