@@ -40,7 +40,7 @@ status:
 kyma alpha registry image-import <IMAGE_NAME>:<IMAGE_TAG>
 ```
 
-3. Port-forward the registry service in another terminal:
+3. Port-forward the registry service to another terminal:
 
 ```bash
 kubectl port-forward -n kyma-system svc/dockerregistry 5000:5000
