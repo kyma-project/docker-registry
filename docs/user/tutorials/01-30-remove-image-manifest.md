@@ -63,7 +63,7 @@ export DR_PASSWORD=$(kubectl get secret -n kyma-system dockerregistry-config -o 
 curl -u "$DR_USERNAME:$DR_PASSWORD" -sS localhost:5000/v2/<IMAGE_NAME>/tags/list
 ```
 
-6. Get tag digest:
+6. Get the tag digest:
 
 ```bash
 curl -u "$DR_USERNAME:$DR_PASSWORD" -o /dev/null -w '%header{Docker-Content-Digest}' -H 'Accept: application/vnd.docker.distribution.manifest.v2+json' -sS localhost:5000/v2/<IMAGE_NAME>/manifests/0.1
