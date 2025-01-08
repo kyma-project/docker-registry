@@ -11,7 +11,7 @@ This tutorial shows how to remove a previously pushed image to the registry usin
 
 ## Steps
 
-1. Enable image manifests deletion functionality by changing the the **.spec.storage.deleteEnabled** flag to `true`:
+1. Enable the image manifests deletion functionality by changing the **.spec.storage.deleteEnabled** flag to `true`:
 
 ```bash
 kubectl apply -n kyma-system -f - <<EOF
