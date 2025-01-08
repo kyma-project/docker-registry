@@ -83,7 +83,7 @@ curl -u "$DR_USERNAME:$DR_PASSWORD" -X DELETE localhost:5000/v2/dr/manifests/<DI
 skopeo list-tags --creds "$DR_USERNAME:$DR_PASSWORD" --tls-verify=false docker://localhost:5000/<IMAGE_NAME>
 ```
 
-6. Remove tag using digest from previous step:
+6. Remove the tag using digest from previous step:
 
 ```bash
 skopeo delete --creds "$DR_USERNAME:$DR_PASSWORD" --tls-verify=false docker://localhost:5000/<IMAGE_NAME>:<IMAGE_TAG>
