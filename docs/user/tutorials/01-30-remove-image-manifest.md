@@ -57,7 +57,7 @@ export DR_PASSWORD=$(kubectl get secret -n kyma-system dockerregistry-config -o 
 
 #### **Registry API**
 
-5. Verify that image was pushed to the registry and exists with given tag:
+5. Verify that the image was pushed to the registry and exists with the given tag:
 
 ```bash
 curl -u "$DR_USERNAME:$DR_PASSWORD" -sS localhost:5000/v2/<IMAGE_NAME>/tags/list
