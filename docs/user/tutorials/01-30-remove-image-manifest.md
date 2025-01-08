@@ -75,7 +75,7 @@ curl -u "$DR_USERNAME:$DR_PASSWORD" -o /dev/null -w '%header{Docker-Content-Dige
 curl -u "$DR_USERNAME:$DR_PASSWORD" -X DELETE localhost:5000/v2/dr/manifests/<DIGEST>
 ```
 
-#### **Skopeo**
+#### **skopeo**
 
 5. Verify that image was pushed to the registry and exists with given tag:
 
