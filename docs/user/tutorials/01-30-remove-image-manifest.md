@@ -26,7 +26,7 @@ spec:
 EOF
 ```
 
-Once the DockerRegistry CR becomes `Ready`, you see a updated field **.status.deleteEnabled** with new value.
+Once the DockerRegistry CR becomes `Ready`, you see the updated **.status.deleteEnabled** field with a new value.
 
 ```yaml
 ...
