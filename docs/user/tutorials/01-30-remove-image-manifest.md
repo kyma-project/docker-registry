@@ -69,7 +69,7 @@ curl -u "$DR_USERNAME:$DR_PASSWORD" -sS localhost:5000/v2/<IMAGE_NAME>/tags/list
 curl -u "$DR_USERNAME:$DR_PASSWORD" -o /dev/null -w '%header{Docker-Content-Digest}' -H 'Accept: application/vnd.docker.distribution.manifest.v2+json' -sS localhost:5000/v2/<IMAGE_NAME>/manifests/0.1
 ```
 
-7. Remove tag using digest from previous step:
+7. Remove the tag using digest from the previous step:
 
 ```bash
 curl -u "$DR_USERNAME:$DR_PASSWORD" -X DELETE localhost:5000/v2/dr/manifests/<DIGEST>
