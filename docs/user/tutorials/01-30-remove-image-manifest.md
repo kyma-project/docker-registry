@@ -1,6 +1,6 @@
 # Remove Image from Registry
 
-This tutorial shows how you can remove previously pushed image to the registry using the pure registry API or the skopeo.
+This tutorial shows how to remove a previously pushed image to the registry using the pure registry API or [skopeo](https://github.com/containers/skopeo).
 
 ## Prerequsities
 
