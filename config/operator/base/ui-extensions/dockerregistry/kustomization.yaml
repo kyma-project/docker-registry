@@ -1,6 +1,5 @@
 configMapGenerator:
 - name: operator.kyma-project.io
-  namespace: kube-public
   files:
   - general
   - form

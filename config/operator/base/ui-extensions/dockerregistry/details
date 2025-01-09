@@ -1,16 +1,8 @@
-header:
-  - name: header.ready
-    source: status.state
-    widget: Badge
-    highlights:
-      positive:
-        - "Ready"
-      informative:
-        - "Processing"
-      warning:
-        - "Warning"
-      critical:
-        - "Error"
+status:
+  body:
+    - name: Condition details
+      widget: ConditionList
+      source: status.conditions
 body:
   - name: details.storage.title
     widget: Panel
@@ -62,28 +54,6 @@ body:
           name: status.externalAccess.secretName
           namespace: $root.metadata.namespace
           kind: "'Secret'"
-
-  - source: status.conditions
-    widget: Table
-    name: Reconciliation Conditions
-    children:
-      - source: type
-        name: Type
-      - source: status
-        name: Status
-        widget: Badge
-        highlights:
-          positive:
-            - 'True'
-          negative:
-            - 'False'
-      - source: reason
-        name: Reason
-      - source: message
-        name: Message
-      - source: '$readableTimestamp(lastTransitionTime)'
-        name: Last transition
-        sort: true
 
   - name: details.events
     widget: EventList
