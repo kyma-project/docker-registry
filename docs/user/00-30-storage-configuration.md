@@ -6,7 +6,7 @@ The DockerRegistry CR allows you to store images in five ways: filesystem, Azure
 
 The filesystem storage is a built-in storage type based on the PersistentVolumeClaim CR, which is part of the Kubernetes functionality. This is a default DockerRegistry CR configuration, and no additional configuration is needed.
 
-All images pushed to this storage are removed when the Docker Registry is uninstalled, or the cluster is removed. Stored images can't be shared between clusters.
+All images pushed to this storage are removed when the Docker Registry is uninstalled/reconfigured, or the cluster is removed. Stored images can't be shared between clusters.
 
 ### Sample CR
 
