@@ -45,7 +45,7 @@ jobs:
       - name: compute github commit sha
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-      - uses: kyma-project/terraform-module/.github/actions/create-sap-btp-kyma@d1af98a8816f11d994f9d2f2cff4bf2338f9444f
+      - uses: kyma-project/terraform-module/.github/actions/create-sap-btp-kyma@2edb264e0f701fc93af4fb35eaeb7b8b3c05e493
         id: create-btp-resources
         with:
           btp_subaccount_name: dockerregistry-test-${{ steps.vars.outputs.sha_short }}-${{ github.run_attempt }}
@@ -70,7 +70,7 @@ jobs:
         run: |
           KUBECONFIG=$KUBECONFIG make -C tests/btp test
 
-      - uses: kyma-project/terraform-module/.github/actions/force-delete-sap-btp-subaccount@d1af98a8816f11d994f9d2f2cff4bf2338f9444f
+      - uses: kyma-project/terraform-module/.github/actions/force-delete-sap-btp-subaccount@2edb264e0f701fc93af4fb35eaeb7b8b3c05e493
         if: always()
         with:
           btp_subaccount_id: ${{ steps.create-btp-resources.outputs.subaccount_id }}
