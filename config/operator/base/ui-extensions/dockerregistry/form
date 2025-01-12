@@ -110,6 +110,9 @@
         kind: PersistentVolumeClaim
         version: v1
         scope: namespace
+    - name: details.storage.deleteEnabled
+      path: deleteEnabled
+      type: boolean
 - name: details.externalAccess
   path: spec.externalAccess
   widget: FormGroup
