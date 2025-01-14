@@ -1,14 +1,20 @@
 status:
   body:
-    - name: Condition details
+    - name: status.storageType
+      source: status.storage
+    - name: status.deleteEnabled
+      source: status.deleteEnabled
+    - name: status.pvc  
+      source: status.pvc
+      visibility: status.pvc
+    - name: status.conditions
       widget: ConditionList
       source: status.conditions
 body:
-  - name: details.storage.title
-    widget: Panel
-    children:
-      - name: details.storage.type.title
-        source: status.storage
+  - widget: Alert
+    severity: warning
+    source: '"alert.filesystemstorage"'
+    visibility: $root.status.storage = 'filesystem'
   - name: details.internalAccess
     widget: Panel
     visibility: "$exists(status.internalAccess.enabled)"
