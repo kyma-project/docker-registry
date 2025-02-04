@@ -9,10 +9,9 @@ namespace: kyma-system
 # "wordpress" becomes "alices-wordpress".
 # Note that it should also match with the prefix (text before '-') of the namespace
 # field above.
-
 namePrefix: dockerregistry-
-# Labels to add to all resources.
 
+# Labels to add to all resources.
 labels:
 - includeTemplates: true
   pairs:

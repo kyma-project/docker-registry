@@ -3,8 +3,8 @@ patches:
       - op: add
         path: "/metadata/labels"
         value: 
-          app.kubernetes.io/component: rbac
-          app.kubernetes.io/instance: dockerregistry-operator-role
+          app.kubernetes.io/component: dockerregistry-operator-rbac
+          app.kubernetes.io/instance: dockerregistry-operator-clusterrole
     target:
       group: rbac.authorization.k8s.io
       version: v1

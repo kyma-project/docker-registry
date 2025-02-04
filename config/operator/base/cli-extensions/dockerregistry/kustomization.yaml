@@ -7,7 +7,7 @@ configMapGenerator:
   options:
     disableNameSuffixHash: true
     labels:
-      app.kubernetes.io/component: configmap
-      app.kubernetes.io/instance: dockerregistry-operator-configmap
+      app.kubernetes.io/component: cli
+      app.kubernetes.io/instance: cli-dockerregistry-operator
       app.kubernetes.io/name: dockerregistry-operator
       kyma-cli/extension: resource
