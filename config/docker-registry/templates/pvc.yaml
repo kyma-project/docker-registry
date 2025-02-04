@@ -6,9 +6,9 @@ metadata:
   name: {{ template "docker-registry.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ template "docker-registry.fullname" . }}
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
+    {{- include "tplValue" ( dict "value" .Values.commonLabels "context" . ) | nindent 4 }}
+    app.kubernetes.io/instance: {{ template "fullname" . }}-pvc
+    app.kubernetes.io/component: {{ template "fullname" . }}
     heritage: "{{ .Release.Service }}"
 spec:
   accessModes:

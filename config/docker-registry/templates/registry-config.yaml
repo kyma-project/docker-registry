@@ -11,6 +11,9 @@ metadata:
   name: dockerregistry-config
   namespace: {{ .Release.Namespace }}
   labels:
+    {{- include "tplValue" ( dict "value" .Values.commonLabels "context" . ) | nindent 4 }}
+    app.kubernetes.io/instance: {{ template "fullname" . }}-secret
+    app.kubernetes.io/component: {{ template "fullname" . }}
     dockerregistry.kyma-project.io/config: credentials
 data:
   username: "{{ $username | b64enc }}"
