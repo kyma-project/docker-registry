@@ -20,12 +20,16 @@ func Test_flagsBuilder_Build(t *testing.T) {
 				"username": "testUsername",
 			},
 			"registryNodePort": int64(1234),
+			"commonLabels": map[string]interface{}{
+				"app.kubernetes.io/managed-by": "test",
+			},
 		}
 
 		flags := NewFlagsBuilder().
 			WithNodePort(1234).
 			WithRegistryCredentials("testUsername", "testPassword").
 			WithRegistryHttpSecret("testHttpSecret").
+			WithManagedByLabel("test").
 			Build()
 
 		require.Equal(t, expectedFlags, flags)
