@@ -17,6 +17,8 @@ func sFnApplyResources(_ context.Context, r *reconciler, s *systemState) (stateF
 			"Installing for configuration")
 	}
 
+	s.flagsBuilder.WithManagedByLabel("dockerregistry-operator")
+
 	// install component
 	err := chart.Install(s.chartConfig, s.flagsBuilder.Build())
 	if err != nil {

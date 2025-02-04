@@ -22,6 +22,7 @@ type FlagsBuilder interface {
 	WithDeleteEnabled(bool) *flagsBuilder
 	WithPVC(config *v1alpha1.StoragePVC) *flagsBuilder
 	WithGCS(config *v1alpha1.StorageGCS, secret *v1alpha1.StorageGCSSecrets) *flagsBuilder
+	WithManagedByLabel(string) *flagsBuilder
 }
 
 type flagsBuilder struct {
@@ -37,10 +38,38 @@ func NewFlagsBuilder() FlagsBuilder {
 func (fb *flagsBuilder) Build() map[string]interface{} {
 	flags := map[string]interface{}{}
 	for key, value := range fb.flags {
-		flagPath := strings.Split(key, ".")
+		flagPath := strings.FieldsFunc(key, fieldsFuncWithExtrudes(key))
+		flagPath = removeEscapesFromFlagPath(flagPath)
 		appendFlag(flags, flagPath, value)
 	}
 	return flags
+}
+
+func fieldsFuncWithExtrudes(flag string) func(rune) bool {
+	index := 0
+	return func(r rune) bool {
+		split := shouldBeSplit(flag, index, r)
+
+		// increase index to know on which rune we are right now
+		index++
+
+		return split
+	}
+}
+
+func shouldBeSplit(flag string, index int, r rune) bool {
+	if r != '.' {
+		return false
+	}
+
+	return index > 0 && flag[index-1] != '\\'
+}
+
+func removeEscapesFromFlagPath(flagPath []string) []string {
+	for i := range flagPath {
+		flagPath[i] = strings.ReplaceAll(flagPath[i], "\\", "")
+	}
+	return flagPath
 }
 
 func appendFlag(flags map[string]interface{}, flagPath []string, value interface{}) {
@@ -171,6 +200,11 @@ func (fb *flagsBuilder) WithGCS(config *v1alpha1.StorageGCS, secret *v1alpha1.St
 		fb.flags["secrets.gcs.accountkey"] = secret.AccountKey
 	}
 
+	return fb
+}
+
+func (fb *flagsBuilder) WithManagedByLabel(managedBy string) *flagsBuilder {
+	fb.flags["commonLabels.app\\.kubernetes\\.io/managed-by"] = managedBy
 	return fb
 }
 
