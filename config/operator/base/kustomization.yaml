@@ -1,24 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
 # Adds namespace to all resources.
 namespace: kyma-system
+
 # Value of this field is prepended to the
 # names of all resources, e.g. a deployment named
 # "wordpress" becomes "alices-wordpress".
 # Note that it should also match with the prefix (text before '-') of the namespace
 # field above.
+
 namePrefix: dockerregistry-
 # Labels to add to all resources.
+
 labels:
-  - pairs:
-      kyma-project.io/module: docker-registry
-      app.kubernetes.io/name: dockerregistry-operator
-      app.kubernetes.io/version: main
-      app.kubernetes.io/part-of: dockerregistry-operator
-      app.kubernetes.io/managed-by: kustomize
-    includeSelectors: false
-    includeTemplates: true
+- includeTemplates: true
+  pairs:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: dockerregistry-operator
+    app.kubernetes.io/part-of: dockerregistry-operator
+    app.kubernetes.io/version: main
+    kyma-project.io/module: docker-registry
+
 resources:
-  - ./crd
-  - ./deployment
-  - ./rbac
-  - ./ui-extensions
-  - ./cli-extensions
+- ./crd
+- ./deployment
+- ./rbac
+- ./ui-extensions
+- ./cli-extensions

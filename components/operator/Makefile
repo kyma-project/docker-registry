@@ -72,7 +72,6 @@ install-operator-k3d: build-image-operator ## Build and install dockerregistry o
 	k3d image import $(OPERATOR_NAME):$(HASH_TAG) -c kyma
 	kubectl set image deployment dockerregistry-operator -n kyma-system manager=$(OPERATOR_NAME):$(HASH_TAG)
 
-
 .PHONY: install
 install: manifests kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR)/crd | kubectl apply -f -
@@ -85,7 +84,6 @@ uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified 
 deploy-main: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
 	kubectl create namespace kyma-system || true
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR) | kubectl apply -f -
-
 
 .PHONY: generate-kustomization-dev
 generate-kustomization-dev:
@@ -102,16 +100,13 @@ deploy: manifests kustomize generate-kustomization-dev ## Deploy controller to t
 	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit set image europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator=${IMG}
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR_DEV) | kubectl apply -f -
 
-
 .PHONY: undeploy
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with IGNORE_NOT_FOUND=true to ignore resource not found errors during deletion.
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR) | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
 
 .PHONY: render-manifest
-render-manifest: manifests kustomize ## Render dockerregistry-operator.yaml manifest with image from IMG env.
-	cd $(CONFIG_OPERATOR)/deployment && $(KUSTOMIZE) edit set image controller=${IMG}
+render-manifest: kustomize ## Render dockerregistry-operator.yaml manifest.
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR) > $(PROJECT_ROOT)/dockerregistry-operator.yaml
-
 
 .PHONY: apply-default-dockerregistry-cr
 apply-default-dockerregistry-cr: ## Apply the k3d dockerregistry CR.
@@ -121,7 +116,6 @@ apply-default-dockerregistry-cr: ## Apply the k3d dockerregistry CR.
 .PHONY: remove-dockerregistry
 remove-dockerregistry: ## Remove Dockerregistry CR
 	kubectl delete dockerregistry -n kyma-system default --timeout 2m || (kubectl get dockerregistry -n kyma-system -oyaml && false)
-
 
 .PHONY: check-dockerregistry-installation
 check-dockerregistry-installation: ## Wait for Dockerregistry CR to be in Ready state.
@@ -139,7 +133,6 @@ print-dockerregistry-details: ## Print all pods, deploys and dockerregistry CRs 
 	kubectl get dockerregistry -n kyma-system -oyaml
 	kubectl get deploy -n kyma-system -oyaml
 	kubectl get pods -n kyma-system -oyaml
-
 
 ##@ Module
 .PHONY: module-image
