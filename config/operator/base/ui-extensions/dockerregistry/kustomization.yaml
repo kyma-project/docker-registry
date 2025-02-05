@@ -9,8 +9,8 @@ configMapGenerator:
   options:
     disableNameSuffixHash: true
     labels:
-      app.kubernetes.io/component: configmap
-      app.kubernetes.io/instance: dockerregistry-operator-configmap
+      app.kubernetes.io/component: busola
+      app.kubernetes.io/instance: busola-dockerregistry-operator
       app.kubernetes.io/name: dockerregistry-operator
       busola.io/extension: resource
       busola.io/extension-version: "0.5"

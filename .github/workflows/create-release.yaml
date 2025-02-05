@@ -30,10 +30,10 @@ jobs:
           fetch-depth: 0
 
       - name: Bump version
-        run: ./hack/replace_docker_registry_version.sh
+        run: ./.github/scripts/upgrade-operator-kustomize.sh
         env:
-          IMG_VERSION: ${{ github.event.inputs.name }}
-          PROJECT_ROOT: "."
+          IMG: "europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:${{ github.event.inputs.name }}"
+          MODULE_VERSION: ${{ github.event.inputs.name }}
 
       - name: Bump sec-scanners-config.yaml based on values.yaml
         run: ./.github/scripts/upgrade-sec-scanners-config.sh
@@ -87,7 +87,6 @@ jobs:
       - name: Create changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PULL_BASE_REF: ${{ github.event.inputs.name }}
         run: ./.github/scripts/create-changelog.sh ${{ github.event.inputs.name }}
 
       - name: Create draft release
@@ -101,8 +100,6 @@ jobs:
       - name: Create release assets
         id: create-assets
         env:
-          IMG: "europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:${{ github.event.inputs.name }}"
-          PULL_BASE_REF: ${{ github.event.inputs.name }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_ID: ${{ steps.create-draft.outputs.release_id }}
         run: ./.github/scripts/release.sh

@@ -8,7 +8,7 @@ resources:
 labels:
   - pairs:
       app.kubernetes.io/component: dockerregistry-operator.kyma-project.io
-      app.kubernetes.io/instance: dockerregistries.operator.kyma-project.io
+      app.kubernetes.io/instance: dockerregistry-operator-crd
     includeSelectors: false
     includeTemplates: true
 
