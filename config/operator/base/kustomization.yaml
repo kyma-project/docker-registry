@@ -9,7 +9,7 @@ namePrefix: dockerregistry-
 # Labels to add to all resources.
 labels:
   - pairs:
-      kyma-project.io/module: dockerregistry-operator
+      kyma-project.io/module: docker-registry
       app.kubernetes.io/name: dockerregistry-operator
       app.kubernetes.io/version: main
       app.kubernetes.io/part-of: dockerregistry-operator
