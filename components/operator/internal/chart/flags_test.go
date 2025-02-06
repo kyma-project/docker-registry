@@ -8,7 +8,8 @@ import (
 
 func Test_flagsBuilder_Build(t *testing.T) {
 	t.Run("build empty flags", func(t *testing.T) {
-		flags := NewFlagsBuilder().Build()
+		flags, err := NewFlagsBuilder().Build()
+		require.NoError(t, err)
 		require.Equal(t, map[string]interface{}{}, flags)
 	})
 
@@ -20,14 +21,19 @@ func Test_flagsBuilder_Build(t *testing.T) {
 				"username": "testUsername",
 			},
 			"registryNodePort": int64(1234),
+			"commonLabels": map[string]interface{}{
+				"app.kubernetes.io/managed-by": "test",
+			},
 		}
 
-		flags := NewFlagsBuilder().
+		flags, err := NewFlagsBuilder().
 			WithNodePort(1234).
 			WithRegistryCredentials("testUsername", "testPassword").
 			WithRegistryHttpSecret("testHttpSecret").
+			WithManagedByLabel("test").
 			Build()
 
+		require.NoError(t, err)
 		require.Equal(t, expectedFlags, flags)
 	})
 
@@ -39,40 +45,47 @@ func Test_flagsBuilder_Build(t *testing.T) {
 			},
 		}
 
-		flags := NewFlagsBuilder().
+		flags, err := NewFlagsBuilder().
 			WithRegistryCredentials("testUsername", "testPassword").
 			Build()
 
+		require.NoError(t, err)
 		require.Equal(t, expectedFlags, flags)
 	})
 }
 
 func Test_flagsBuilder_withRollme(t *testing.T) {
 	t.Run("add rollme flag", func(t *testing.T) {
-		flags := flagsBuilder{
+		builder := flagsBuilder{
 			flags: map[string]interface{}{},
 		}
 
-		_ = flags.withRollme("reason=test")
+		_ = builder.withRollme("reason=test")
 
 		expectedFlags := map[string]interface{}{
 			"rollme": "reason=test",
 		}
-		require.Equal(t, expectedFlags, flags.Build())
+
+		flags, err := builder.Build()
+		require.NoError(t, err)
+		require.Equal(t, expectedFlags, flags)
 	})
 
 	t.Run("add value to existing rollme flag", func(t *testing.T) {
-		flags := flagsBuilder{
+		builder := flagsBuilder{
 			flags: map[string]interface{}{
 				"rollme": "reason=test",
 			},
 		}
 
-		_ = flags.withRollme("another-reason=test-2")
+		_ = builder.withRollme("another-reason=test-2")
 
 		expectedFlags := map[string]interface{}{
 			"rollme": "reason=test,another-reason=test-2",
 		}
-		require.Equal(t, expectedFlags, flags.Build())
+
+		flags, err := builder.Build()
+		require.NoError(t, err)
+		require.Equal(t, expectedFlags, flags)
 	})
 }

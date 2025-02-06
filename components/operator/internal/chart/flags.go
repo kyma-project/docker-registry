@@ -2,13 +2,13 @@ package chart
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
+	"helm.sh/helm/v3/pkg/strvals"
 )
 
 type FlagsBuilder interface {
-	Build() map[string]interface{}
+	Build() (map[string]interface{}, error)
 	WithFullname(fullname string) *flagsBuilder
 	WithRegistryCredentials(username string, password string) *flagsBuilder
 	WithRegistryHttpSecret(httpSecret string) *flagsBuilder
@@ -22,6 +22,7 @@ type FlagsBuilder interface {
 	WithDeleteEnabled(bool) *flagsBuilder
 	WithPVC(config *v1alpha1.StoragePVC) *flagsBuilder
 	WithGCS(config *v1alpha1.StorageGCS, secret *v1alpha1.StorageGCSSecrets) *flagsBuilder
+	WithManagedByLabel(string) *flagsBuilder
 }
 
 type flagsBuilder struct {
@@ -34,39 +35,15 @@ func NewFlagsBuilder() FlagsBuilder {
 	}
 }
 
-func (fb *flagsBuilder) Build() map[string]interface{} {
+func (fb *flagsBuilder) Build() (map[string]interface{}, error) {
 	flags := map[string]interface{}{}
 	for key, value := range fb.flags {
-		flagPath := strings.Split(key, ".")
-		appendFlag(flags, flagPath, value)
-	}
-	return flags
-}
-
-func appendFlag(flags map[string]interface{}, flagPath []string, value interface{}) {
-	currentFlag := flags
-	for i, pathPart := range flagPath {
-		createIfEmpty(currentFlag, pathPart)
-		if lastElement(flagPath, i) {
-			currentFlag[pathPart] = value
-		} else {
-			currentFlag = nextDeeperFlag(currentFlag, pathPart)
+		err := strvals.ParseInto(fmt.Sprintf("%s=%v", key, value), flags)
+		if err != nil {
+			return nil, err
 		}
 	}
-}
-
-func createIfEmpty(flags map[string]interface{}, key string) {
-	if _, ok := flags[key]; !ok {
-		flags[key] = map[string]interface{}{}
-	}
-}
-
-func lastElement(values []string, i int) bool {
-	return i == len(values)-1
-}
-
-func nextDeeperFlag(currentFlag map[string]interface{}, path string) map[string]interface{} {
-	return currentFlag[path].(map[string]interface{})
+	return flags, nil
 }
 
 func (fb *flagsBuilder) WithFullname(fullname string) *flagsBuilder {
@@ -174,12 +151,17 @@ func (fb *flagsBuilder) WithGCS(config *v1alpha1.StorageGCS, secret *v1alpha1.St
 	return fb
 }
 
+func (fb *flagsBuilder) WithManagedByLabel(managedBy string) *flagsBuilder {
+	fb.flags["commonLabels.app\\.kubernetes\\.io/managed-by"] = managedBy
+	return fb
+}
+
 // withRollme allows to set custom values for the `rollme` field in chart
 // it merges values for many command executions in format <value1>,<value2>,...,<valueN>
 func (fb *flagsBuilder) withRollme(value string) *flagsBuilder {
 	rollme, ok := fb.flags["rollme"]
 	if ok {
-		value = fmt.Sprintf("%v,%s", rollme, value)
+		value = fmt.Sprintf("%v\\,%s", rollme, value)
 	}
 
 	fb.flags["rollme"] = value

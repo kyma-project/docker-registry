@@ -51,7 +51,10 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnStorageConfiguration, next)
 
-		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+
+		require.EqualValues(t, expectedFlags, flags)
 	})
 
 	t.Run("setup node port and use existing username and password", func(t *testing.T) {
@@ -129,7 +132,10 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnStorageConfiguration, next)
 
-		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+
+		require.EqualValues(t, expectedFlags, flags)
 	})
 
 	t.Run("setup external access", func(t *testing.T) {
@@ -195,7 +201,10 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnStorageConfiguration, next)
 
-		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+
+		require.EqualValues(t, expectedFlags, flags)
 	})
 
 	t.Run("external access gateway not found error", func(t *testing.T) {
@@ -240,7 +249,10 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnStorageConfiguration, next)
 
-		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+
+		require.EqualValues(t, expectedFlags, flags)
 
 		require.Equal(t, "Warning: .spec.externalAccess.enabled is true but got error: while getting Gateway kyma-gateway in namespace kyma-system: gatewaies.networking.istio.io \"kyma-gateway\" not found", s.warningBuilder.Build())
 	})

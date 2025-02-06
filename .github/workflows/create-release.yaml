@@ -30,7 +30,9 @@ jobs:
           fetch-depth: 0
 
       - name: Bump version
-        run: ./.github/scripts/upgrade-operator-kustomize.sh
+        run: |
+          ./.github/scripts/upgrade-operator-kustomize.sh
+          ./.github/scripts/upgrade-chart-version.sh
         env:
           IMG: "europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:${{ github.event.inputs.name }}"
           MODULE_VERSION: ${{ github.event.inputs.name }}

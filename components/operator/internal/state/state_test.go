@@ -47,7 +47,11 @@ func fixManifestCache(manifest string) chart.ManifestCache {
 	_ = cache.Set(context.Background(), types.NamespacedName{
 		Name:      testInstalledDockerRegistry.GetName(),
 		Namespace: testInstalledDockerRegistry.GetNamespace(),
-	}, chart.DockerRegistrySpecManifest{Manifest: manifest, CustomFlags: map[string]interface{}{}})
+	}, chart.DockerRegistrySpecManifest{Manifest: manifest, CustomFlags: map[string]interface{}{
+		"commonLabels": map[string]interface{}{
+			"app.kubernetes.io/managed-by": "dockerregistry-operator",
+		},
+	}})
 
 	return cache
 }

@@ -40,7 +40,9 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnUpdateConfigurationStatus, next)
 
-		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+		require.EqualValues(t, expectedFlags, flags)
 	})
 
 	t.Run("internal registry using azure storage with deleteEnabled", func(t *testing.T) {
@@ -105,7 +107,9 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnUpdateConfigurationStatus, next)
 
-		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+		require.EqualValues(t, expectedFlags, flags)
 	})
 	t.Run("internal registry using s3 storage", func(t *testing.T) {
 		s3Secret := &corev1.Secret{
@@ -178,7 +182,9 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnUpdateConfigurationStatus, next)
 
-		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+		require.EqualValues(t, expectedFlags, flags)
 	})
 	t.Run("internal registry using gcs storage", func(t *testing.T) {
 		gcsSecret := &corev1.Secret{
@@ -231,7 +237,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			"gcs": map[string]interface{}{
 				"bucket":        "gcsBucket",
 				"rootdirectory": "dir",
-				"chunkSize":     10,
+				"chunkSize":     int64(10),
 			},
 			"secrets": map[string]interface{}{
 				"gcs": map[string]interface{}{
@@ -245,7 +251,9 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnUpdateConfigurationStatus, next)
 
-		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+		require.EqualValues(t, expectedFlags, flags)
 	})
 
 	t.Run("internal registry using btp aws storage", func(t *testing.T) {
@@ -316,7 +324,9 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnUpdateConfigurationStatus, next)
 
-		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+		require.EqualValues(t, expectedFlags, flags)
 	})
 
 	t.Run("internal registry using btp azure storage", func(t *testing.T) {
@@ -420,7 +430,9 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnUpdateConfigurationStatus, next)
 
-		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+		require.EqualValues(t, expectedFlags, flags)
 	})
 
 	t.Run("internal registry using pvc storage", func(t *testing.T) {
@@ -476,7 +488,9 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnUpdateConfigurationStatus, next)
 
-		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+		require.EqualValues(t, expectedFlags, flags)
 	})
 
 	t.Run("error when pvc does not exist", func(t *testing.T) {

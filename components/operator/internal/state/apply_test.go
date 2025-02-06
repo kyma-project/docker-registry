@@ -35,6 +35,16 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnVerifyResources, next)
 
+		expectedFlags := map[string]interface{}{
+			"commonLabels": map[string]interface{}{
+				"app.kubernetes.io/managed-by": "dockerregistry-operator",
+			},
+		}
+
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+		require.Equal(t, expectedFlags, flags)
+
 		status := s.instance.Status
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeInstalled,

@@ -4,10 +4,10 @@ metadata:
   name: {{ template "docker-registry.fullname" . }}-config
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ template "docker-registry.name" . }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    {{- include "tplValue" ( dict "value" .Values.commonLabels "context" . ) | nindent 4 }}
+    app.kubernetes.io/instance: {{ template "fullname" . }}-configmap
+    app.kubernetes.io/component: {{ template "fullname" . }}
     heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
 data:
   config.yml: |-
 {{ toYaml .Values.configData | indent 4 }}
