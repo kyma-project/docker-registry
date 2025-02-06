@@ -163,7 +163,7 @@ func (fb *flagsBuilder) WithManagedByLabel(managedBy string) *flagsBuilder {
 func (fb *flagsBuilder) withRollme(value string) *flagsBuilder {
 	rollme, ok := fb.flags["rollme"]
 	if ok {
-		value = fmt.Sprintf("%v,%s", rollme, value)
+		value = fmt.Sprintf("%v\\,%s", rollme, value)
 	}
 
 	fb.flags["rollme"] = value
