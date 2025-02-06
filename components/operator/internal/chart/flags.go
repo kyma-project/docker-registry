@@ -8,7 +8,7 @@ import (
 )
 
 type FlagsBuilder interface {
-	Build() map[string]interface{}
+	Build() (map[string]interface{}, error)
 	WithFullname(fullname string) *flagsBuilder
 	WithRegistryCredentials(username string, password string) *flagsBuilder
 	WithRegistryHttpSecret(httpSecret string) *flagsBuilder
@@ -35,17 +35,15 @@ func NewFlagsBuilder() FlagsBuilder {
 	}
 }
 
-func (fb *flagsBuilder) Build() map[string]interface{} {
+func (fb *flagsBuilder) Build() (map[string]interface{}, error) {
 	flags := map[string]interface{}{}
 	for key, value := range fb.flags {
 		err := strvals.ParseInto(fmt.Sprintf("%s=%v", key, value), flags)
 		if err != nil {
-			// this may happen only if input key format or value type are incorrect
-			// in our case this is impossible because we control both data
-			fmt.Println("ERR:", err)
+			return nil, err
 		}
 	}
-	return flags
+	return flags, nil
 }
 
 func (fb *flagsBuilder) WithFullname(fullname string) *flagsBuilder {

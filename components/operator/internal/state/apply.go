@@ -20,7 +20,7 @@ func sFnApplyResources(_ context.Context, r *reconciler, s *systemState) (stateF
 	s.flagsBuilder.WithManagedByLabel("dockerregistry-operator")
 
 	// install component
-	err := chart.Install(s.chartConfig, s.flagsBuilder.Build())
+	err := install(s)
 	if err != nil {
 		r.log.Warnf("error while installing resource %s: %s",
 			client.ObjectKeyFromObject(&s.instance), err.Error())
@@ -35,4 +35,13 @@ func sFnApplyResources(_ context.Context, r *reconciler, s *systemState) (stateF
 
 	// switch state verify
 	return nextState(sFnVerifyResources)
+}
+
+func install(s *systemState) error {
+	flags, err := s.flagsBuilder.Build()
+	if err != nil {
+		return err
+	}
+
+	return chart.Install(s.chartConfig, flags)
 }

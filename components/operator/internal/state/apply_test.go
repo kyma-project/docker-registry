@@ -40,7 +40,10 @@ func Test_buildSFnApplyResources(t *testing.T) {
 				"app.kubernetes.io/managed-by": "dockerregistry-operator",
 			},
 		}
-		require.Equal(t, expectedFlags, s.flagsBuilder.Build())
+
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+		require.Equal(t, expectedFlags, flags)
 
 		status := s.instance.Status
 		requireContainsCondition(t, status,
