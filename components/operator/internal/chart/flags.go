@@ -42,7 +42,7 @@ func (fb *flagsBuilder) Build() map[string]interface{} {
 		if err != nil {
 			// this may happen only if input key format or value type are incorrect
 			// in our case this is impossible because we control both data
-			panic(err)
+			fmt.Println("ERR:", err)
 		}
 	}
 	return flags
