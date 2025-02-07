@@ -22,8 +22,8 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ template "docker-registry.name" . }}
         release: {{ .Release.Name }}
+        {{- include "tplValue" ( dict "value" .Values.commonLabels "context" . ) | nindent 8 }}
         {{- if .Values.podLabels }}
 {{ toYaml .Values.podLabels | indent 8 }}
         {{- end }}
