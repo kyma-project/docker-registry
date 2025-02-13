@@ -22,3 +22,4 @@ resources:
   - ./rbac
   - ./ui-extensions
   - ./cli-extensions
+  - ./priority-class
