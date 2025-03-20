@@ -11,3 +11,4 @@ configMapGenerator:
       app.kubernetes.io/instance: cli-dockerregistry-operator
       app.kubernetes.io/name: dockerregistry-operator
       kyma-cli/extension: resource
+      kyma-cli/extension-version: v1
