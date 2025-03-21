@@ -48,13 +48,13 @@ This tutorial shows how you can expose the registry to the outside of the cluste
 
     ```bash
     export IMAGE_NAME=<IMAGE_NAME> # put your image name here
-    docker tag "${IMAGE_NAME}" "${REGISTRY_ADDRESS}"/"${IMAGE_NAME}"
+    docker tag "${IMAGE_NAME}" "${REGISTRY_ADDRESS}/${IMAGE_NAME}"
     ```
 
 4. Push the image to the registry:
 
     ```bash
-    docker push "${REGISTRY_ADDRESS}"/"${IMAGE_NAME}"
+    docker push "${REGISTRY_ADDRESS}/${IMAGE_NAME}"
     ```
 
 5. Create a Pod using the image from Docker Registry:
@@ -62,5 +62,5 @@ This tutorial shows how you can expose the registry to the outside of the cluste
     ```bash
 
     export REGISTRY_INTERNAL_PULL_ADDRESS=$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.internalAccess.pullAddress})
-    kubectl run my-pod --image="${REGISTRY_INTERNAL_PULL_ADDRESS}"/"${IMAGE_NAME}" --overrides='{ "spec": { "imagePullSecrets": [ { "name": "dockerregistry-config" } ] } }'
+    kubectl run my-pod --image="${REGISTRY_INTERNAL_PULL_ADDRESS}/${IMAGE_NAME}" --overrides='{ "spec": { "imagePullSecrets": [ { "name": "dockerregistry-config" } ] } }'
     ```
