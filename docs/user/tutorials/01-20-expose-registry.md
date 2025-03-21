@@ -9,16 +9,7 @@ This tutorial shows how you can expose the registry to the outside of the cluste
 
 ## Steps
 
-1. Export cluster address:
-
-    ```bash
-    export CLUSTER_ADDRESS={YOUR_CLUSTER_ADDRESS}
-    ```
-
-    > [!NOTE]
-    > You can find your cluster address in the `kyma-system/kyma-gateway` gateway resource.
-
-2. Expose the registry service by changing the **spec.externalAccess.enabled** flag to `true`:
+1. Expose the registry service by changing the **spec.externalAccess.enabled** flag to `true`:
 
     ```bash
     kubectl apply -n kyma-system -f - <<EOF
@@ -44,32 +35,32 @@ This tutorial shows how you can expose the registry to the outside of the cluste
         secretName: dockerregistry-config-external
     ```
 
-3. Log in to the registry using the docker-cli:
+2. Log in to the registry using the docker-cli:
 
     ```bash
     export REGISTRY_USERNAME=$(kubectl get secrets -n kyma-system dockerregistry-config-external -o jsonpath={.data.username} | base64 -d)
     export REGISTRY_PASSWORD=$(kubectl get secrets -n kyma-system dockerregistry-config-external -o jsonpath={.data.password} | base64 -d)
     export REGISTRY_ADDRESS=$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress})
-    docker login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} ${REGISTRY_ADDRESS}
+    docker login -u "${REGISTRY_USERNAME}" -p "${REGISTRY_PASSWORD}" "${REGISTRY_ADDRESS}"
     ```
 
-4. Rename the image to contain the registry address:
+3. Rename the image to contain the registry address:
 
     ```bash
     export IMAGE_NAME=<IMAGE_NAME> # put your image name here
-    docker tag ${IMAGE_NAME} ${REGISTRY_ADDRESS}/${IMAGE_NAME}
+    docker tag "${IMAGE_NAME}" "${REGISTRY_ADDRESS}/${IMAGE_NAME}"
     ```
 
-5. Push the image to the registry:
+4. Push the image to the registry:
 
     ```bash
-    docker push ${REGISTRY_ADDRESS}/${IMAGE_NAME}
+    docker push "${REGISTRY_ADDRESS}/${IMAGE_NAME}"
     ```
 
-6. Create a Pod using the image from Docker Registry:
+5. Create a Pod using the image from Docker Registry:
 
     ```bash
 
     export REGISTRY_INTERNAL_PULL_ADDRESS=$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.internalAccess.pullAddress})
-    kubectl run my-pod --image=${REGISTRY_INTERNAL_PULL_ADDRESS}/${IMAGE_NAME} --overrides='{ "spec": { "imagePullSecrets": [ { "name": "dockerregistry-config" } ] } }'
+    kubectl run my-pod --image="${REGISTRY_INTERNAL_PULL_ADDRESS}/${IMAGE_NAME}" --overrides='{ "spec": { "imagePullSecrets": [ { "name": "dockerregistry-config" } ] } }'
     ```
