@@ -1,0 +1,22 @@
+- name: "config [flags]"
+  description: "Saves Kyma registry dockerconfig to a file"
+  descriptionLong: "Use this command to save Kyma registry dockerconfig to a file."
+  action:
+    functionID: registry_config
+    customFlags:
+    - type: bool
+      name: "externalurl"
+      description: "External URL for the Kyma registry"
+      path: ".pushRegAddrOnly"
+      default: false
+    - type: string
+      name: "output"
+      description: "Path where the output file should be saved to. NOTE: docker expects the file to be named `config.json`"
+      path: ".output"
+    config:
+      useExternal: true
+- name: "image-import <image> [flags]"
+  description: "Import image to in-cluster registry"
+  descriptionLong: "Import image from daemon to in-cluster registry."
+  action:
+    functionID: registry_image-import
