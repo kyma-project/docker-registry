@@ -3,7 +3,8 @@ configMapGenerator:
   namespace: kube-public
   files:
   - rootCommand
-  - coreCommands
+  - coreCommands # backward compatibility
+  - actionCommands
   options:
     disableNameSuffixHash: true
     labels:
