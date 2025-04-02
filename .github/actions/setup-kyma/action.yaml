@@ -14,4 +14,5 @@ runs:
       shell: bash
       run: |
         mkdir -p ${{ inputs.path }}
-        curl -s -L "https://github.com/kyma-project/cli/releases/download/v0.0.0-dev/kyma_$(uname -s)_$(uname -m).tar.gz" | tar -zxvf - -C ${{ inputs.path }} kyma
+        VERSION=$(curl -sL https://api.github.com/repos/kyma-project/cli/releases/latest | jq -r '.tag_name')
+        curl -s -L "https://github.com/kyma-project/cli/releases/download/${VERSION}/kyma_$(uname -s)_$(uname -m).tar.gz" | tar -zxvf - -C ${{ inputs.path }} kyma
