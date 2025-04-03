@@ -1,9 +1,10 @@
 configMapGenerator:
-- name: operator.cli
+# old extensions API to support cli 3.0.0 users
+- name: operator.cli-compat
   namespace: kube-public
   files:
   - rootCommand
-  - coreCommands # backward compatibility
+  - coreCommands
   - actionCommands
   options:
     disableNameSuffixHash: true
