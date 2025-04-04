@@ -11,9 +11,14 @@ subCommands:
   uses: registry_config
   flags:
   - type: bool
-    name: "external-url"
-    description: "Get external URL for the Kyma registry only"
+    name: "push-reg-addr"
+    description: "Get external registry push address only"
     configPath: ".pushRegAddrOnly"
+    default: "false"
+  - type: bool
+    name: "pull-reg-addr"
+    description: "Get external registry address used to pull images"
+    configPath: ".pullRegAddrOnly"
     default: "false"
   - type: string
     name: "output"
