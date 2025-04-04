@@ -54,7 +54,7 @@ subCommands:
     name: "image-import <image> [flags]"
     description: "Import image to in-cluster registry"
     descriptionLong: "Import image from daemon to in-cluster registry."
-  uses: registry_image-import
+  uses: registry_image_import
   args:
     type: string
     configPath: ".image"
