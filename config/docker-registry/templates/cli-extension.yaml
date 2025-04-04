@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: registry.cli
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "tplValue" ( dict "value" .Values.commonLabels "context" . ) | nindent 4 }}
+    kyma-cli/extension: commands
+    kyma-cli/extension-version: v1
+    app.kubernetes.io/instance: {{ template "fullname" . }}-cli-registry
+    app.kubernetes.io/component: cli
+data:
+  kyma-commands.yaml: |-
+{{ .Files.Get "files/kyma-commands.yaml" | indent 4}}
