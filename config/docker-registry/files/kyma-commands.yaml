@@ -1,0 +1,60 @@
+metadata:
+  name: registry
+  description: A set of commands for the Kyma registry
+  descriptionLong: Use this command to manage resources related to the Kyma registry.
+
+subCommands:
+- metadata:
+    name: "config-external [flags]"
+    description: "Saves Kyma registry external dockerconfig"
+    descriptionLong: "Use this command to save Kyma registry external dockerconfig."
+  uses: registry_config
+  flags:
+  - type: bool
+    name: "push-reg-addr"
+    description: "Get external registry push address only"
+    configPath: ".pushRegAddrOnly"
+    default: "false"
+  - type: bool
+    name: "pull-reg-addr"
+    description: "Get external registry address used to pull images"
+    configPath: ".pullRegAddrOnly"
+    default: "false"
+  - type: string
+    name: "output"
+    description: "Path where the output file should be saved to. NOTE: docker expects the file to be named 'config.json'"
+    configPath: ".output"
+  with:
+    useExternal: true
+
+- metadata:
+    name: "config-internal [flags]"
+    description: "Saves Kyma registry internal dockerconfig"
+    descriptionLong: "Use this command to save Kyma registry internal dockerconfig."
+  uses: registry_config
+  flags:
+  - type: bool
+    name: "push-reg-addr"
+    description: "Get in-cluster registry address only"
+    configPath: ".pushRegAddrOnly"
+    default: "false"
+  - type: bool
+    name: "pull-reg-addr"
+    description: "Get in-cluster registry address used to pull images by Kubernetes only"
+    configPath: ".pullRegAddrOnly"
+    default: "false"
+  - type: string
+    name: "output"
+    description: "Path where the output file should be saved to. NOTE: docker expects the file to be named 'config.json'"
+    configPath: ".output"
+  with:
+    useExternal: false
+
+- metadata:
+    name: "image-import <image> [flags]"
+    description: "Import image to in-cluster registry"
+    descriptionLong: "Import image from daemon to in-cluster registry."
+  uses: registry_image_import
+  args:
+    type: string
+    configPath: ".image"
