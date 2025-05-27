@@ -106,7 +106,7 @@ func Test_sFnServedFilter(t *testing.T) {
 
 		nextFn, result, err := sFnServedFilter(context.TODO(), r, s)
 
-		expectedErrorMessage := "Only one instance of DockerRegistry is allowed (current served instance: dockerregistry-test/test-2). This DockerRegistry CR is redundant. Remove it to fix the problem."
+		expectedErrorMessage := "only one instance of DockerRegistry is allowed (current served instance: dockerregistry-test/test-2) - this DockerRegistry CR is redundant - remove it to fix the problem"
 		require.EqualError(t, err, expectedErrorMessage)
 		require.Nil(t, result)
 		require.Nil(t, nextFn)

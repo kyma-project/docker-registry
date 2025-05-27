@@ -39,7 +39,7 @@ func setServed(servedDockerRegistry *v1alpha1.DockerRegistry, s *systemState) er
 	s.setServed(v1alpha1.ServedFalse)
 	s.setState(v1alpha1.StateWarning)
 	err := fmt.Errorf(
-		"Only one instance of DockerRegistry is allowed (current served instance: %s/%s). This DockerRegistry CR is redundant. Remove it to fix the problem.",
+		"only one instance of DockerRegistry is allowed (current served instance: %s/%s) - this DockerRegistry CR is redundant - remove it to fix the problem",
 		servedDockerRegistry.GetNamespace(), servedDockerRegistry.GetName())
 	s.instance.UpdateConditionFalse(
 		v1alpha1.ConditionTypeConfigured,

@@ -102,7 +102,7 @@ func getCachedAndCurrentManifest(config *Config, customFlags map[string]interfac
 func shouldRenderAgain(cachedSpec DockerRegistrySpecManifest, config *Config, customFlags map[string]interface{}) bool {
 	// cachedSpec is up-to-date only if flags used to render and manager is the same one who rendered it before
 	equalFlags := reflect.DeepEqual(cachedSpec.CustomFlags, customFlags)
-	return !(cachedSpec.ManagerUID == config.ManagerUID && equalFlags)
+	return cachedSpec.ManagerUID != config.ManagerUID || !equalFlags
 }
 
 func renderChart(config *Config, customFlags map[string]interface{}) (*release.Release, error) {
