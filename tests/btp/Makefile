@@ -1,6 +1,6 @@
 .PHONY: docker_push_simple_app
 docker_push_simple_app:
-	@kyma alpha registry config --output config.json
+	@kyma registry config --output config.json
 	# TODO: get multiplatform nginx; now we get nginx for amd64
 	docker pull nginx@sha256:f05d105face814474acc5538160bd3f29309d9398dd895a4e71f676a4fd9a3fc
 	docker tag nginx@sha256:f05d105face814474acc5538160bd3f29309d9398dd895a4e71f676a4fd9a3fc $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress})/simple-app:0.0.1
