@@ -7,14 +7,13 @@ yq eval-all --inplace '
         select(fileIndex == 1)
         | .containerRegistry.path as $registryPath
         | (
-            {
+            .images + {
                 "dockerregistry_operator" : {
                     "name" : "dockerregistry-operator",
                     "directory" : "prod",
                     "version" : env(IMG_VERSION)
                 }
             }
-            + .images
           )[]
         | $registryPath + "/" + .directory + "/" + .name + ":" + .version
     ]
