@@ -1,9 +1,9 @@
 module-name: docker-registry
 kind: kyma
 bdba:
-  - europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:main
   - europe-docker.pkg.dev/kyma-project/prod/external/library/registry:2.8.3-v1
   - europe-docker.pkg.dev/kyma-project/prod/registry-init:v20240506-57d31b1d
+  - europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:main
 mend:
   language: golang-mod
   exclude:
