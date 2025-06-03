@@ -16,7 +16,7 @@ require (
 	golang.org/x/text v0.25.0
 	gopkg.in/yaml.v3 v3.0.1
 	helm.sh/helm/v3 v3.18.2
-	istio.io/api v1.26.0
+	istio.io/api v1.26.1
 	istio.io/client-go v1.26.1
 	k8s.io/api v0.33.1
 	k8s.io/apiextensions-apiserver v0.33.1
