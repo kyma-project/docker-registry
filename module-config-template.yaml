@@ -1,8 +1,16 @@
 name: kyma-project.io/module/docker-registry
-channel: {{.Channel}}
-version: {{.Version}}
-defaultCR: config/samples/default-dockerregistry-cr.yaml
-manifest: dockerregistry-operator.yaml
-annotations:
-  "operator.kyma-project.io/doc-url": "https://kyma-project.io/#/docker-registry/user/README"
-moduleRepo: https://github.com/kyma-project/docker-registry.git
+version:
+defaultCR:
+manifest:
+documentation: "https://kyma-project.io/#/docker-registry/user/README"
+repository: https://github.com/kyma-project/docker-registry.git
+security: sec-scanners-config.yaml
+manager:
+  name: dockerregistry-operator
+  group: apps
+  version: v1
+  kind: Deployment
+associatedResources:
+  - group: operator.kyma-project.io
+    kind: DockerRegistry
+    version: v1alpha1
