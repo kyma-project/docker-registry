@@ -69,9 +69,7 @@ jobs:
           git checkout -B "${MODULE_VERSION}-${CHANNEL}" upstream/main
 
           mkdir -p modules/docker-registry/${CHANNEL}
-          cp ../dockerregistry-operator.yaml modules/docker-registry/${CHANNEL}/dockerregistry-operator.yaml
-          cp ../default-dockerregistry-cr.yaml modules/docker-registry/${CHANNEL}/default-dockerregistry-cr.yaml
-          cp ../module-config.yaml modules/docker-registry/${CHANNEL}/module-config.yaml
+          cp ../module-config.yaml modules/docker-registry/${CHANNEL}/${MODULE_VERSION}/module-config.yaml
           
           git add .
           git commit -m "promote docker registry ${MODULE_VERSION} to ${CHANNEL} channel"

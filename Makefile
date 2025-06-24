@@ -32,5 +32,5 @@ check-var = $(if $(strip $($1)),,$(error "$1" is not defined))
 ##@ Actions
 .PHONY: module-config
 module-config:
-	yq ".channel = \"${CHANNEL}\" | .version = \"${MODULE_VERSION}\""\
-    	module-config-template.yaml > module-config.yaml
+	yq ".version = \"${MODULE_VERSION}\" | .defaultCR = \"https://github.com/kyma-project/docker-registry/releases/download/${MODULE_VERSION}/default-dockerregistry-cr.yaml\" | .manifest = \"https://github.com/kyma-project/docker-registry/releases/download/${MODULE_VERSION}/dockerregistry-operator.yaml\"  "\
+    module-config-template.yaml > module-config.yaml
