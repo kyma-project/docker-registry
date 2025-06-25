@@ -14,3 +14,7 @@ associatedResources:
   - group: operator.kyma-project.io
     kind: DockerRegistry
     version: v1alpha1
+icons:
+  - name: module-icon
+    # TODO: provide docker registry icon
+    link: https://raw.githubusercontent.com/kyma-project/kyma/refs/heads/main/docs/assets/logo_icon.svg
