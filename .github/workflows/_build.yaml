@@ -43,6 +43,7 @@ jobs:
       name: dockerregistry-operator
       dockerfile: components/operator/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
+      build-engine: buildx
 
   build-registry-init:
     needs: compute-tags
@@ -51,3 +52,4 @@ jobs:
       name: registry-init
       dockerfile: components/registry-init/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
+      build-engine: buildx
