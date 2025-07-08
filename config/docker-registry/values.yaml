@@ -127,7 +127,7 @@ storage: filesystem
 #  rootdirectory: ""
 #  chunkSize: 5242880
 
-# https://docs.docker.com/registry/configuration/
+# https://distribution.github.io/distribution/about/configuration/
 configData: # example: https://github.com/docker/distribution/blob/master/cmd/registry/config-dev.yml
   version: 0.1
   log:
