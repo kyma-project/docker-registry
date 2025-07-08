@@ -8,7 +8,7 @@ containerRegistry:
 images:
   registry:
     name: "registry"
-    version: "2.8.3-v1"
+    version: "3.0.0"
     directory: "prod/external/library"
   registry_init:
     name: "registry-init"
@@ -104,11 +104,6 @@ storage: filesystem
 #   gcs:
 #     accountkey: ""
 
-# Secrets for Swift username and password
-#   swift:
-#     username: ""
-#     password: ""
-
 # Options for s3 storage type:
 # s3:
 #  region: us-east-1
@@ -117,17 +112,12 @@ storage: filesystem
 #  encrypt: false
 #  secure: true
 
-# Options for swift storage type:
-# swift:
-#  authurl: http://swift.example.com/
-#  container: my-container
-
 # gcs:
 #  bucket: ""
 #  rootdirectory: ""
 #  chunkSize: 5242880
 
-# https://docs.docker.com/registry/configuration/
+# https://distribution.github.io/distribution/about/configuration/
 configData: # example: https://github.com/docker/distribution/blob/master/cmd/registry/config-dev.yml
   version: 0.1
   log:
