@@ -183,22 +183,6 @@ spec:
             - name: REGISTRY_STORAGE_GCS_CHUNKSIZE
               value: {{ .Values.gcs.chunkSize}}
             {{- end }}
-{{- else if eq .Values.storage "swift" }}
-            - name: REGISTRY_STORAGE_SWIFT_AUTHURL
-              value: {{ required ".Values.swift.authurl is required" .Values.swift.authurl }}
-            - name: REGISTRY_STORAGE_SWIFT_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "docker-registry.fullname" . }}-secret
-                  key: swiftUsername
-            - name: REGISTRY_STORAGE_SWIFT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "docker-registry.fullname" . }}-secret
-                  key: swiftPassword
-            - name: REGISTRY_STORAGE_SWIFT_CONTAINER
-              value: {{ required ".Values.swift.container is required" .Values.swift.container }}
-{{- end }}
           volumeMounts:
 {{- if eq .Values.storage "filesystem" }}
             - name: data

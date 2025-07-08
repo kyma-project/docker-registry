@@ -104,11 +104,6 @@ storage: filesystem
 #   gcs:
 #     accountkey: ""
 
-# Secrets for Swift username and password
-#   swift:
-#     username: ""
-#     password: ""
-
 # Options for s3 storage type:
 # s3:
 #  region: us-east-1
@@ -116,11 +111,6 @@ storage: filesystem
 #  bucket: my-bucket
 #  encrypt: false
 #  secure: true
-
-# Options for swift storage type:
-# swift:
-#  authurl: http://swift.example.com/
-#  container: my-container
 
 # gcs:
 #  bucket: ""

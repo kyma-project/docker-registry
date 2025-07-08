@@ -49,8 +49,6 @@ their default values.
 | `secrets.htpasswd`          | Htpasswd authentication                                                                    | `nil`           |
 | `secrets.s3.accessKey`      | Access Key for S3 configuration                                                            | `nil`           |
 | `secrets.s3.secretKey`      | Secret Key for S3 configuration                                                            | `nil`           |
-| `secrets.swift.username`    | Username for Swift configuration                                                           | `nil`           |
-| `secrets.swift.password`    | Password for Swift configuration                                                           | `nil`           |
 | `haSharedSecret`            | Shared Secret for Registry                                                                 | `nil`           |
 | `configData`                | Configuration hash for Docker                                                              | `nil`           |
 | `s3.region`                 | S3 region                                                                                  | `nil`           |
@@ -58,8 +56,6 @@ their default values.
 | `s3.bucket`                 | S3 bucket name                                                                             | `nil`           |
 | `s3.encrypt`                | Store images in encrypted format                                                           | `nil`           |
 | `s3.secure`                 | Use HTTPS                                                                                  | `nil`           |
-| `swift.authurl`             | Swift authurl                                                                              | `nil`           |
-| `swift.container`           | Swift container                                                                            | `nil`           |
 | `nodeSelector`              | node labels for Pod assignment                                                             | `{}`            |
 | `tolerations`               | Pod tolerations                                                                            | `[]`            |
 | `ingress.enabled`           | If true, Ingress will be created                                                           | `false`         |
