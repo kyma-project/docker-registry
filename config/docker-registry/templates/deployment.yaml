@@ -183,7 +183,7 @@ spec:
             - name: REGISTRY_STORAGE_GCS_CHUNKSIZE
               value: {{ .Values.gcs.chunkSize}}
             {{- end }}
-{{ - end }}
+{{- end }}
           volumeMounts:
 {{- if eq .Values.storage "filesystem" }}
             - name: data
