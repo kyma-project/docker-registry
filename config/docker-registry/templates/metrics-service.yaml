@@ -5,7 +5,7 @@ metadata:
   name: docker-registry-metrics-service
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "chart.labels" . | nindent 4 }}
+    {{- include "tplValue" ( dict "value" .Values.commonLabels "context" . ) | nindent 4 }}
   annotations:
     prometheus.io/path: /metrics
     prometheus.io/port: {{ .Values.configData.http.debug.addr | quote }}
@@ -18,5 +18,6 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "chart.selectorLabels" . | nindent 4 }}
+    app: {{ template "docker-registry.name" . }}
+    release: {{ .Release.Name }}
 {{- end }}
