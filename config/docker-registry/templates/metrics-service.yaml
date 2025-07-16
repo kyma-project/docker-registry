@@ -1,4 +1,4 @@
-{{- if .Values.metrics.enable }}
+{{- if .Values.configData.http.debug.prometheus.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -8,13 +8,13 @@ metadata:
     {{- include "chart.labels" . | nindent 4 }}
   annotations:
     prometheus.io/path: /metrics
-    prometheus.io/port: {{ .Values.metrics.port | quote }}
+    prometheus.io/port: {{ .Values.configData.http.debug.addr | quote }}
     prometheus.io/scrape: "true"
 spec:
   type: ClusterIP
   ports:
-    - port: {{ .Values.metrics.port }}
-      targetPort: {{ .Values.metrics.port }}
+    - port: {{ .Values.configData.http.debug.addr }}
+      targetPort: {{ .Values.configData.http.debug.addr }}
       protocol: TCP
       name: http
   selector:

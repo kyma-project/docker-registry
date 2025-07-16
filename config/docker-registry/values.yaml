@@ -202,7 +202,3 @@ destinationRule:
   enabled: true
 rollme: "{{ randAlphaNum 5}}"
 registryHTTPSecret: "{{ randAlphaNum 16 | b64enc }}"
-
-metrics:
-  enable: true
-  port: 8080
