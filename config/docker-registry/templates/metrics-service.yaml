@@ -8,13 +8,13 @@ metadata:
     {{- include "tplValue" ( dict "value" .Values.commonLabels "context" . ) | nindent 4 }}
   annotations:
     prometheus.io/path: /metrics
-    prometheus.io/port: {{ .Values.configData.http.debug.addr | quote }}
+    prometheus.io/port: {{ .Values.configData.http.debug.addr | trimPrefix ":" | quote }}
     prometheus.io/scrape: "true"
 spec:
   type: ClusterIP
   ports:
-    - port: {{ .Values.configData.http.debug.addr }}
-      targetPort: {{ .Values.configData.http.debug.addr }}
+    - port: {{ .Values.configData.http.debug.addr | trimPrefix ":"  }}
+      targetPort: {{ .Values.configData.http.debug.addr | trimPrefix ":"  }}
       protocol: TCP
       name: http
   selector:
