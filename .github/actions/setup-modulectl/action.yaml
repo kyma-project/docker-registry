@@ -3,7 +3,7 @@ description: Downloads modulectl and installs it locally.
 
 inputs:
   path:
-    description: 'path where kyma should be installed'
+    description: 'path where modulectl should be installed'
     required: false
     default: "../bin"
 
