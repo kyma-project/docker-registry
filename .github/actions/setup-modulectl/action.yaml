@@ -1,0 +1,19 @@
+name: Install modulectl
+description: Downloads modulectl and installs it locally.
+
+inputs:
+  path:
+    description: 'path where kyma should be installed'
+    required: false
+    default: "../bin"
+
+runs:
+  using: composite
+  steps:
+    - name: Install modulectl
+      shell: bash
+      run: |
+        mkdir -p ${{ inputs.path }}
+        wget https://github.com/kyma-project/modulectl/releases/latest/download/modulectl-linux -O modulectl-linux
+        chmod +x modulectl-linux
+        mv modulectl-linux ${{ inputs.path }}/modulectl

@@ -30,6 +30,12 @@ uploadFile() {
   fi
 }
 
+# dev registry is used because even if --dry-run is set, the cli expects the --registry flag to check connection
+modulectl create -c module-config.yaml --registry https://europe-docker.pkg.dev/kyma-project/dev --dry-run -o module-template.yaml
+
+echo "Generated module-template.yaml:"
+cat module-template.yaml
+
 make -C components/operator/ render-manifest
 
 echo "Generated dockerregistry-operator.yaml:"
@@ -40,3 +46,4 @@ UPLOAD_URL="https://uploads.github.com/repos/kyma-project/docker-registry/releas
 
 uploadFile "dockerregistry-operator.yaml" "${UPLOAD_URL}?name=dockerregistry-operator.yaml"
 uploadFile "config/samples/default-dockerregistry-cr.yaml" "${UPLOAD_URL}?name=default-dockerregistry-cr.yaml"
+uploadFile "module-template.yaml" "${UPLOAD_URL}?name=module-template.yaml"
