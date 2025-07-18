@@ -1,0 +1,23 @@
+{{- if .Values.configData.http.debug.prometheus.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker-registry-metrics-service
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "tplValue" ( dict "value" .Values.commonLabels "context" . ) | nindent 4 }}
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: {{ .Values.configData.http.debug.addr | trimPrefix ":" | quote }}
+    prometheus.io/scrape: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.configData.http.debug.addr | trimPrefix ":"  }}
+      targetPort: {{ .Values.configData.http.debug.addr | trimPrefix ":"  }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "docker-registry.name" . }}
+    release: {{ .Release.Name }}
+{{- end }}
