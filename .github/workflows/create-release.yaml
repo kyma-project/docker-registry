@@ -103,6 +103,14 @@ jobs:
           RELEASE_ID=$(./.github/scripts/create-draft-release.sh ${{ github.event.inputs.name }})
           echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
 
+      - name: Render module-config
+        env:
+          MODULE_VERSION: ${{ github.event.inputs.name }}
+        run: |
+          make module-config
+          echo "==== module-config ==="
+          cat module-config.yaml
+
       - name: Create release assets
         id: create-assets
         env:
