@@ -46,4 +46,4 @@ UPLOAD_URL="https://uploads.github.com/repos/kyma-project/docker-registry/releas
 
 uploadFile "dockerregistry-operator.yaml" "${UPLOAD_URL}?name=dockerregistry-operator.yaml"
 uploadFile "config/samples/default-dockerregistry-cr.yaml" "${UPLOAD_URL}?name=default-dockerregistry-cr.yaml"
-uploadFile "module-template.yaml" "${UPLOAD_URL}?name=module-template.yaml"
+uploadFile "module-template.yaml" "${UPLOAD_URL}?name=community-module-template.yaml"
