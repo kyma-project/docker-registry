@@ -86,10 +86,6 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref_name }} # checkout to latest branch changes ( by default this action checkouts to the SHA that triggers action )
 
-      - uses: ./.github/actions/setup-modulectl
-        with:
-          path: "/usr/local/bin"
-
       - name: Create changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -102,14 +98,6 @@ jobs:
         run: |
           RELEASE_ID=$(./.github/scripts/create-draft-release.sh ${{ github.event.inputs.name }})
           echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
-
-      - name: Render community-module-config
-        env:
-          MODULE_VERSION: ${{ github.event.inputs.name }}
-        run: |
-          make community-module-config
-          echo "==== community-module-config ==="
-          cat module-config.yaml
 
       - name: Create release assets
         id: create-assets
@@ -140,8 +128,47 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.inputs.name }} # checkout to latest branch changes ( by default this action checkouts to the SHA that triggers action )
-          
+
       - name: Publish release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./.github/scripts/publish-release.sh ${{ needs.create-draft.outputs.release_id }} ${{ github.event.inputs.latest_release }}
+
+  upload-community-module-template:
+    name: Upload community module-template
+    needs: [publish-release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.name }} # checkout to latest branch changes ( by default this action checkouts to the SHA that triggers action )
+
+      - uses: ./.github/actions/setup-modulectl
+        with:
+          path: "/usr/local/bin"
+
+      - name: Render community module-config
+        env:
+          MODULE_VERSION: ${{ github.event.inputs.name }}
+        run: |
+          make community-module-config
+          echo "==== community-module-config ==="
+          cat module-config.yaml
+
+      - name: Generate community module template
+        run: |
+          # dev registry is used because even if --dry-run is set, the cli expects the --registry flag to check connection
+          modulectl create -c module-config.yaml --registry https://europe-docker.pkg.dev/kyma-project/dev --dry-run -o module-template.yaml
+
+      - name: Publish module-template
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Uploading module-template.yaml to release ${{ github.event.inputs.name }}"
+          curl -s -w "%{http_code}" \
+            --request POST --data-binary @"module-template.yaml" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: text/yaml" \
+            "https://uploads.github.com/repos/kyma-project/docker-registry/releases/${{ github.event.inputs.name }}/assets?name=community-module-template.yaml"
