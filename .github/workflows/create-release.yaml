@@ -86,6 +86,10 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref_name }} # checkout to latest branch changes ( by default this action checkouts to the SHA that triggers action )
 
+      - uses: ./.github/actions/setup-modulectl
+        with:
+          path: "/usr/local/bin"
+
       - name: Create changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -98,6 +102,14 @@ jobs:
         run: |
           RELEASE_ID=$(./.github/scripts/create-draft-release.sh ${{ github.event.inputs.name }})
           echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
+
+      - name: Render community-module-config
+        env:
+          MODULE_VERSION: ${{ github.event.inputs.name }}
+        run: |
+          make community-module-config
+          echo "==== community-module-config ==="
+          cat module-config.yaml
 
       - name: Create release assets
         id: create-assets

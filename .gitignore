@@ -38,6 +38,7 @@ vendor
 
 moduletemplate-latest.yaml
 module-config.yaml
+module-template.yaml
 dockerregistry-operator.yaml
 dockerregistry.yaml
 
