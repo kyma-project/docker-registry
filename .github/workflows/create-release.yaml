@@ -107,7 +107,7 @@ jobs:
         env:
           MODULE_VERSION: ${{ github.event.inputs.name }}
         run: |
-          make module-config
+          make community-module-config
           echo "==== module-config ==="
           cat module-config.yaml
 

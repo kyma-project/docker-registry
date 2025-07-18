@@ -34,3 +34,8 @@ check-var = $(if $(strip $($1)),,$(error "$1" is not defined))
 module-config:
 	yq ".version = \"${MODULE_VERSION}\" | .defaultCR = \"https://github.com/kyma-project/docker-registry/releases/download/${MODULE_VERSION}/default-dockerregistry-cr.yaml\" | .manifest = \"https://github.com/kyma-project/docker-registry/releases/download/${MODULE_VERSION}/dockerregistry-operator.yaml\"  "\
     module-config-template.yaml > module-config.yaml
+
+.PHONY: community-module-config
+community-module-config:
+	yq "del(.security) | .annotations[\"operator.kyma-project.io/community-module\"]=\"true\" | .namespace = \"default\" | .version = \"${MODULE_VERSION}\" | .defaultCR = \"https://github.com/kyma-project/docker-registry/releases/download/${MODULE_VERSION}/default-dockerregistry-cr.yaml\" | .manifest = \"https://github.com/kyma-project/docker-registry/releases/download/${MODULE_VERSION}/dockerregistry-operator.yaml\"  "\
+    module-config-template.yaml > module-config.yaml
