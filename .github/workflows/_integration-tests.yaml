@@ -70,6 +70,9 @@ jobs:
         run: |
           KUBECONFIG=$KUBECONFIG make -C tests/btp test
 
+      - if: ${{ always() }}
+        uses: ./.github/actions/collect-cluster-info
+
       - uses: kyma-project/terraform-module/.github/actions/force-delete-sap-btp-subaccount@2edb264e0f701fc93af4fb35eaeb7b8b3c05e493
         if: always()
         with:
