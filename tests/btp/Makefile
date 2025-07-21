@@ -69,5 +69,16 @@ cleanup-kyma:
 	@kubectl delete -n kyma-system servicebindings.services.cloud.sap.com --all
 	@kubectl delete -n kyma-system serviceinstances.services.cloud.sap.com --all
 
+.PHONY: cluster-info
+cluster-info: ## Print useful info about the cluster regarding integration run
+	@echo "####################### Operator Logs #######################"
+	@kubectl logs -n kyma-system -l app.kubernetes.io/component=dockerregistry-operator.kyma-project.io --tail=-1 || true
+	@echo ""
 
+	@echo "####################### DockerRegistry CR #######################"
+	@kubectl get dockerregistry -A -oyaml || true
+	@echo ""
 
+	@echo "####################### Pods #######################"
+	@kubectl get pods -A || true
+	@echo ""
