@@ -3,7 +3,7 @@ kind: kyma
 bdba:
   - europe-docker.pkg.dev/kyma-project/prod/external/library/registry:3.0.0
   - europe-docker.pkg.dev/kyma-project/prod/registry-init:v20240506-57d31b1d
-  - europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:main
+  - europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:0.8.0
 mend:
   language: golang-mod
   exclude:
