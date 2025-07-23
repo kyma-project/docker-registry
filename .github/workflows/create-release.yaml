@@ -136,7 +136,7 @@ jobs:
 
   upload-community-module-template:
     name: Upload community module-template
-    needs: [publish-release]
+    needs: [create-draft, publish-release]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -161,14 +161,25 @@ jobs:
         run: |
           # dev registry is used because even if --dry-run is set, the cli expects the --registry flag to check connection
           modulectl create -c module-config.yaml --registry https://europe-docker.pkg.dev/kyma-project/dev --dry-run -o module-template.yaml
+          echo "==== module-template ==="
+          cat module-template.yaml
 
       - name: Publish module-template
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Uploading module-template.yaml to release ${{ github.event.inputs.name }}"
-          curl -s -w "%{http_code}" \
+          echo "Uploading module-template.yaml to release ${{ github.event.inputs.name }} with ID ${{ needs.create-draft.outputs.release_id }}"
+          response=$(curl -s -w "%{http_code}" \
             --request POST --data-binary @"module-template.yaml" \
             -H "Authorization: token $GITHUB_TOKEN" \
             -H "Content-Type: text/yaml" \
-            "https://uploads.github.com/repos/kyma-project/docker-registry/releases/${{ github.event.inputs.name }}/assets?name=community-module-template.yaml"
+            "https://uploads.github.com/repos/kyma-project/docker-registry/releases/${{ needs.create-draft.outputs.release_id }}/assets?name=community-module-template.yaml")
+          
+          if [[ "$response" != "201" ]]; then
+            echo "Unable to upload the community-module-template.yaml file."
+            echo "HTTP Status: $response"
+            cat output.txt
+            exit 1
+          else
+            echo "community-module-template.yaml uploaded"
+          fi
