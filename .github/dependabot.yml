@@ -24,6 +24,9 @@ updates:
       k8s-io:
         patterns:
           - "k8s.io/*"
+      istio:
+        patterns:
+          - "istio.io/*"
 
   - package-ecosystem: "docker"
     directory: "/components/operator"
