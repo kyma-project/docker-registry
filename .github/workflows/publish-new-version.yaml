@@ -1,4 +1,4 @@
-name: promote to release channel
+name: publish new docker-registry version 
 
 on:
   workflow_dispatch:
