@@ -72,11 +72,11 @@ podAnnotations:
 podLabels: {}
 commonLabels:
   app: '{{ template "docker-registry.name" . }}'
-  version: "main"
+  version: "0.9.0"
   helm.sh/chart: '{{ include "chart" . }}'
   kyma-project.io/module: '{{ template "docker-registry.name" . }}'
   app.kubernetes.io/name: '{{ template "docker-registry.name" . }}'
-  app.kubernetes.io/version: "main"
+  app.kubernetes.io/version: "0.9.0"
   app.kubernetes.io/part-of: '{{ template "docker-registry.name" . }}'
   app.kubernetes.io/managed-by: "Helm"
 persistence:
