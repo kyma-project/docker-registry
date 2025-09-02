@@ -1,7 +1,7 @@
 name: kyma-project.io/module/docker-registry
 version:
-defaultCR:
-manifest:
+defaultCR: default-dockerregistry-cr.yaml
+manifest: dockerregistry-operator.yaml
 documentation: "https://help.sap.com/docs/btp/sap-business-technology-platform-internal/docker-registry-module"
 repository: https://github.com/kyma-project/docker-registry.git
 security: sec-scanners-config.yaml
