@@ -6,6 +6,9 @@ The `dockerregistries.operator.kyma-project.io` CustomResourceDefinition (CRD) i
    kubectl get crd dockerregistries.operator.kyma-project.io -o yaml
    ```
 
+Note that only one custom resource is supported and will lead to an image registry being instantiated.
+Additional CRs will be ignored.
+
 ## Sample Custom Resource
 
 The following Docker Registry custom resource (CR) shows the configuration of the Docker Registry.
