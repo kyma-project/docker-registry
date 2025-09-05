@@ -37,7 +37,7 @@ status:
 2. Push the image to the registry:
 
 ```bash
-kyma alpha registry image-import <IMAGE_NAME>:<IMAGE_TAG>
+kyma registry image-import <IMAGE_NAME>:<IMAGE_TAG>
 ```
 
 3. Port-forward the registry service to another terminal:
