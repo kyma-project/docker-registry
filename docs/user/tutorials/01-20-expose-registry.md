@@ -25,7 +25,7 @@ This tutorial shows how you can expose the registry to the outside of the cluste
     EOF
     ```
 
-   Once the DockerRegistry CR becomes `Ready`, you see a Secret name which you need to use as `ImagePullSecret` when scheduling workloads in the cluster.
+   Once the DockerRegistry CR becomes `Ready`, you will see a Secret name that you must use as `ImagePullSecret` when scheduling workloads in the cluster.
 
     ```yaml
     ...
