@@ -42,13 +42,14 @@ This tutorial shows how you can push an image to the Docker Registry and use it.
 4. Import the image to Docker Registry:
 
    ```bash
-   kyma alpha registry image-import simple-image:latest
+   kyma registry image-import simple-image:latest
    ```
 
 4. Create a Pod using the image from Docker Registry:
 
    ```bash
-   kubectl run simple-pod --image=localhost:32137/simple-image:latest --overrides='{ "spec": { "imagePullSecrets": [ { "name": "dockerregistry-config" } ] } }'
+   export REGISTRY_INTERNAL_PULL_ADDRESS=$(kyma registry config-internal --pull-reg-addr)
+   kubectl run simple-pod --image="${REGISTRY_INTERNAL_PULL_ADDRESS}/simple-image:latest" --overrides='{ "spec": { "imagePullSecrets": [ { "name": "dockerregistry-config" } ] } }'
    ```
 
    > [!NOTE] 
