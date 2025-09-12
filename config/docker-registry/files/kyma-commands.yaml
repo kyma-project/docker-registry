@@ -21,7 +21,7 @@ subCommands:
   - type: string
     name: "output"
     description: "Path where the output file should be saved to. NOTE: docker expects the file to be named 'config.json'"
-    default: "./config.json"
+    default: ""
   with:
     pushRegAddrOnly: ${{  .flags.pushregaddr.value }}
     pullRegAddrOnly: ${{  .flags.pullregaddr.value }}
@@ -45,7 +45,7 @@ subCommands:
   - type: string
     name: "output"
     description: "Path where the output file should be saved to. NOTE: docker expects the file to be named 'config.json'"
-    default: "./config.json"
+    default: ""
   with:
     pushRegAddrOnly: ${{  .flags.pushregaddr.value }}
     pullRegAddrOnly: ${{  .flags.pullregaddr.value }}
