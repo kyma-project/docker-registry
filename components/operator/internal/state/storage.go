@@ -16,7 +16,7 @@ import (
 func sFnStorageConfiguration(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	err := prepareStorage(ctx, r, s)
 	if err != nil {
-		s.setState(v1alpha1.StateError)
+		s.setState(v1alpha1.StateWarning)
 		s.instance.UpdateConditionFalse(
 			v1alpha1.ConditionTypeConfigured,
 			v1alpha1.ConditionReasonConfigurationErr,
