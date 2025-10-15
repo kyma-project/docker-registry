@@ -29,9 +29,12 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/util/workqueue"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/event"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 )
 
 // dockerRegistryReconciler reconciles a DockerRegistry object
@@ -57,6 +60,11 @@ func NewDockerRegistryReconciler(client client.Client, config *rest.Config, reco
 func (sr *dockerRegistryReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.DockerRegistry{}, builder.WithPredicates(predicate.NoStatusChangePredicate{})).
+		Watches(&v1alpha1.DockerRegistry{}, &handler.Funcs{
+			// retrigger all DockerRegistry CRs reconciliations when one is deleted
+			// this should ensure at least one DockerRegistry CR is served
+			DeleteFunc: sr.retriggerAllDockerRegistryCRs,
+		}).
 		Watches(&corev1.Service{}, tracing.ServiceCollectorWatcher()).
 		Complete(sr)
 }
@@ -77,4 +85,23 @@ func (sr *dockerRegistryReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 
 	r := sr.initStateMachine(log)
 	return r.Reconcile(ctx, *instance)
+}
+
+func (sr *dockerRegistryReconciler) retriggerAllDockerRegistryCRs(ctx context.Context, e event.DeleteEvent, q workqueue.TypedRateLimitingInterface[ctrl.Request]) {
+	log := sr.log.With("deletion_watcher")
+
+	list := &v1alpha1.DockerRegistryList{}
+	err := sr.client.List(ctx, list, &client.ListOptions{})
+	if err != nil {
+		log.Errorf("error listing dockerregistry objects: %s", err.Error())
+		return
+	}
+
+	for _, s := range list.Items {
+		log.Debugf("retriggering reconciliation for DockerRegistry %s/%s", s.GetNamespace(), s.GetName())
+		q.Add(ctrl.Request{NamespacedName: client.ObjectKey{
+			Namespace: s.GetNamespace(),
+			Name:      s.GetName(),
+		}})
+	}
 }
