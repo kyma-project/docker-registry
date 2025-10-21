@@ -173,7 +173,7 @@ type DockerRegistryStatus struct {
 	DeleteEnabled string `json:"deleteEnabled,omitempty"`
 
 	// State signifies current state of DockerRegistry.
-	// Value can be one of ("Ready", "Processing", "Error", "Deleting").
+	// Value can be one of ("Ready", "Processing", "Error", "Deleting", "Warning").
 	// +kubebuilder:validation:Enum=Processing;Deleting;Ready;Error;Warning
 	State State `json:"state,omitempty"`
 
