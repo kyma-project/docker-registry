@@ -6,6 +6,7 @@ import (
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
+	"github.com/kyma-project/docker-registry/components/operator/internal/warning"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
@@ -19,6 +20,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			instance:       v1alpha1.DockerRegistry{},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
 			flagsBuilder:   chart.NewFlagsBuilder(),
+			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
 			k8s: k8s{client: fake.NewClientBuilder().Build()},
@@ -74,6 +76,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
 			flagsBuilder:   chart.NewFlagsBuilder(),
+			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
 			k8s: k8s{client: fake.NewClientBuilder().WithObjects(azureSecret).Build()},
@@ -143,6 +146,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
 			flagsBuilder:   chart.NewFlagsBuilder(),
+			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
 			k8s: k8s{client: fake.NewClientBuilder().WithObjects(s3Secret).Build()},
@@ -215,6 +219,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
 			flagsBuilder:   chart.NewFlagsBuilder(),
+			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
 			k8s: k8s{client: fake.NewClientBuilder().WithObjects(gcsSecret).Build()},
@@ -286,6 +291,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
 			flagsBuilder:   chart.NewFlagsBuilder(),
+			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
 			k8s: k8s{client: fake.NewClientBuilder().WithObjects(gcsSecret).Build()},
@@ -357,6 +363,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
 			flagsBuilder:   chart.NewFlagsBuilder(),
+			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
 			k8s: k8s{client: fake.NewClientBuilder().WithObjects(gcsSecret).Build()},
@@ -364,9 +371,13 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
-		require.Error(t, err)
+		require.NoError(t, err)
 		require.Nil(t, result)
-		require.Nil(t, next)
+		require.NotNil(t, next)
+
+		// Check that warning was recorded
+		warnings := s.warningBuilder.Build()
+		require.Contains(t, warnings, "Azure storage is not supported for BTPObjectStore")
 	})
 
 	t.Run("internal registry using btp gcs storage", func(t *testing.T) {
@@ -396,6 +407,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
 			flagsBuilder:   chart.NewFlagsBuilder(),
+			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
 			k8s: k8s{client: fake.NewClientBuilder().WithObjects(gcsSecret).Build()},
@@ -458,6 +470,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
 			flagsBuilder:   chart.NewFlagsBuilder(),
+			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
 			k8s: k8s{client: fake.NewClientBuilder().WithObjects(pvc).Build()},
@@ -509,6 +522,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
 			flagsBuilder:   chart.NewFlagsBuilder(),
+			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
 			k8s: k8s{client: fake.NewClientBuilder().Build()},
@@ -516,9 +530,13 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
-		require.ErrorContains(t, err, "pvc specified to store images can't be reached because of the error")
+		require.NoError(t, err)
 		require.Nil(t, result)
-		require.Nil(t, next)
+		require.NotNil(t, next)
+
+		// Check that warning was recorded
+		warnings := s.warningBuilder.Build()
+		require.Contains(t, warnings, "pvc specified to store images can't be reached because of the error")
 	})
 
 	t.Run("internal registry using multiple storages", func(t *testing.T) {
@@ -536,6 +554,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
 			flagsBuilder:   chart.NewFlagsBuilder(),
+			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
 			k8s: k8s{client: fake.NewClientBuilder().Build()},
@@ -543,9 +562,13 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
-		require.Error(t, err)
+		require.NoError(t, err)
 		require.Nil(t, result)
-		require.Nil(t, next)
+		require.NotNil(t, next)
+
+		// Check that warning was recorded
+		warnings := s.warningBuilder.Build()
+		require.Contains(t, warnings, "only one storage option can be used")
 	})
 
 }

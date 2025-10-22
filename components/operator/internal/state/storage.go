@@ -16,13 +16,12 @@ import (
 func sFnStorageConfiguration(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	err := prepareStorage(ctx, r, s)
 	if err != nil {
-		s.setState(v1alpha1.StateWarning)
+		s.warningBuilder.With("failed to set storage configuration: " + err.Error())
 		s.instance.UpdateConditionFalse(
 			v1alpha1.ConditionTypeConfigured,
 			v1alpha1.ConditionReasonConfigurationErr,
 			err,
 		)
-		return stopWithEventualError(err)
 	}
 
 	return nextState(sFnUpdateConfigurationStatus)
