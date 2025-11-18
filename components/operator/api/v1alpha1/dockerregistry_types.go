@@ -199,9 +199,9 @@ type DockerRegistryStatus struct {
 // DockerRegistry is the Schema for the dockerregistry API
 type DockerRegistry struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata"`
 
-	Spec   DockerRegistrySpec   `json:"spec,omitempty"`
+	Spec   DockerRegistrySpec   `json:"spec"`
 	Status DockerRegistryStatus `json:"status,omitempty"`
 }
 
@@ -247,7 +247,7 @@ func (s *DockerRegistry) IsServedEmpty() bool {
 // DockerRegistryList contains a list of DockerRegistry
 type DockerRegistryList struct {
 	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
+	metav1.ListMeta `json:"metadata"`
 	Items           []DockerRegistry `json:"items"`
 }
 
