@@ -2,12 +2,19 @@ package config
 
 import (
 	"context"
+	"errors"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/vrischmann/envconfig"
+	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
+)
+
+const (
+	notificationDelay = 1 * time.Second
 )
 
 type Config struct {
@@ -16,15 +23,17 @@ type Config struct {
 	LogFormat string `envconfig:"default=json" yaml:"logFormat"`
 }
 
+type CallbackFn func(Config)
+
 func GetConfig(prefix string) (Config, error) {
 	cfg := Config{}
 	err := envconfig.InitWithPrefix(&cfg, prefix)
 	return cfg, err
 }
 
-func readConfigFile(cfgPath string) (Config, error) {
+func LoadLogConfig(path string) (Config, error) {
 	cfg := Config{}
-	data, err := os.ReadFile(cfgPath)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return cfg, err
 	}
@@ -32,49 +41,80 @@ func readConfigFile(cfgPath string) (Config, error) {
 	return cfg, err
 }
 
-// RunOnConfigChange watches for config changes and executes the callback function
-// When Kubernetes updates ConfigMaps, it atomically updates symlinks, so we watch the parent directory
-func RunOnConfigChange(ctx context.Context, log interface{ Info(...interface{}) }, cfgPath string, onChangeFunc func(Config)) {
-	if cfgPath == "" {
-		return
+// RunOnConfigChange - run callback functions when config is changed
+func RunOnConfigChange(ctx context.Context, log *zap.SugaredLogger, path string, callbacks ...CallbackFn) {
+	log.Info("config notifier started")
+
+	for {
+		// wait 1 sec not to burn out the container for example when any method below always ends with an error
+		time.Sleep(notificationDelay)
+
+		err := fireCallbacksOnConfigChange(ctx, log, path, callbacks...)
+		if err != nil && errors.Is(err, context.Canceled) {
+			log.Info("context canceled")
+			return
+		}
+		if err != nil {
+			log.Error(err)
+		}
+	}
+}
+
+func fireCallbacksOnConfigChange(ctx context.Context, log *zap.SugaredLogger, path string, callbacks ...CallbackFn) error {
+	err := notifyModification(ctx, path)
+	if err != nil {
+		return err
 	}
 
+	log.Info("config file change detected")
+
+	cfg, err := LoadLogConfig(path)
+	if err != nil {
+		return err
+	}
+
+	log.Debugf("firing '%d' callbacks", len(callbacks))
+
+	fireCallbacks(cfg, callbacks...)
+	return nil
+}
+
+func fireCallbacks(cfg Config, funcs ...CallbackFn) {
+	for i := range funcs {
+		fn := funcs[i]
+		fn(cfg)
+	}
+}
+
+// notifyModification watches for file modifications using fsnotify
+// This replaces serverless's file.NotifyModification
+func notifyModification(ctx context.Context, path string) error {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
-		log.Info("unable to create config watcher", "error", err)
-		return
+		return err
 	}
 	defer func() {
-		if err := watcher.Close(); err != nil {
-			log.Info("error closing watcher", "error", err)
-		}
+		_ = watcher.Close()
 	}()
 
 	// Watch the directory containing the config file to catch Kubernetes ConfigMap updates
 	// which are done via atomic symlink changes
-	configDir := filepath.Dir(cfgPath)
-
+	configDir := filepath.Dir(path)
 	if err := watcher.Add(configDir); err != nil {
-		log.Info("unable to watch config directory", "error", err)
-		return
+		return err
 	}
 
 	for {
 		select {
 		case <-ctx.Done():
-			return
+			return ctx.Err()
 		case event := <-watcher.Events:
 			// Kubernetes ConfigMap updates trigger Create events on the ..data symlink
 			if event.Op&fsnotify.Create == fsnotify.Create || event.Op&fsnotify.Write == fsnotify.Write {
-				cfg, err := readConfigFile(cfgPath)
-				if err != nil {
-					log.Info("unable to read config", "error", err)
-					continue
-				}
-				onChangeFunc(cfg)
+				return nil
 			}
 		case err := <-watcher.Errors:
-			log.Info("config watcher error", "error", err)
+			return err
 		}
 	}
 }

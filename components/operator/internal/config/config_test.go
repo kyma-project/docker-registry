@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestReadConfigFile(t *testing.T) {
+func TestLoadLogConfig(t *testing.T) {
 	// Create a temporary config file
 	tmpDir := t.TempDir()
 	configFile := filepath.Join(tmpDir, "config.yaml")
@@ -22,7 +22,7 @@ chartPath: /custom/chart/path
 	require.NoError(t, err)
 
 	// Read the config file
-	cfg, err := readConfigFile(configFile)
+	cfg, err := LoadLogConfig(configFile)
 	require.NoError(t, err)
 
 	// Verify the values
@@ -31,7 +31,7 @@ chartPath: /custom/chart/path
 	require.Equal(t, "/custom/chart/path", cfg.ChartPath)
 }
 
-func TestReadConfigFile_InvalidYAML(t *testing.T) {
+func TestLoadLogConfig_InvalidYAML(t *testing.T) {
 	// Create a temporary config file with invalid YAML
 	tmpDir := t.TempDir()
 	configFile := filepath.Join(tmpDir, "config.yaml")
@@ -45,13 +45,13 @@ chartPath: [invalid unclosed bracket
 	require.NoError(t, err)
 
 	// Read the config file - should error
-	_, err = readConfigFile(configFile)
+	_, err = LoadLogConfig(configFile)
 	require.Error(t, err)
 }
 
-func TestReadConfigFile_NonExistent(t *testing.T) {
+func TestLoadLogConfig_NonExistent(t *testing.T) {
 	// Try to read a non-existent file
-	cfg, err := readConfigFile("/non/existent/config.yaml")
+	cfg, err := LoadLogConfig("/non/existent/config.yaml")
 	require.Error(t, err)
 	require.Empty(t, cfg.LogLevel)
 }
