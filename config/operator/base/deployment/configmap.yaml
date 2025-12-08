@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: operator-config
+  namespace: system
+  labels:
+    app.kubernetes.io/component: dockerregistry-operator.kyma-project.io
+data:
+  config.yaml: |
+    logLevel: info
+    logFormat: json
+
