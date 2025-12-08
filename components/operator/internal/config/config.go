@@ -4,7 +4,6 @@ import (
 	"context"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/vrischmann/envconfig"
@@ -60,9 +59,6 @@ func RunOnConfigChange(ctx context.Context, log interface{ Info(...interface{}) 
 		return
 	}
 
-	ticker := time.NewTicker(10 * time.Second)
-	defer ticker.Stop()
-
 	for {
 		select {
 		case <-ctx.Done():
@@ -79,8 +75,6 @@ func RunOnConfigChange(ctx context.Context, log interface{ Info(...interface{}) 
 			}
 		case err := <-watcher.Errors:
 			log.Info("config watcher error", "error", err)
-		case <-ticker.C:
-			// Periodic check to ensure watcher is still active
 		}
 	}
 }
