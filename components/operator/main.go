@@ -141,7 +141,6 @@ func main() {
 		cfg.ChartPath,
 	)
 
-	//TODO: get it from some configuration
 	configKubernetes := k8s.Config{
 		BaseNamespace:                 "kyma-system",
 		BaseInternalSecretName:        registry.InternalAccessSecretName,
