@@ -87,7 +87,6 @@ func fireCallbacks(cfg Config, funcs ...CallbackFn) {
 }
 
 // notifyModification watches for file modifications using fsnotify
-// This replaces serverless's file.NotifyModification
 func notifyModification(ctx context.Context, path string) error {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
