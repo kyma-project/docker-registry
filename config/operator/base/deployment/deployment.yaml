@@ -29,6 +29,8 @@ spec:
       containers:
       - command:
         - /operator
+        args:
+        - --config-path=/etc/operator/config.yaml
         image: controller:latest
         name: manager
         env:
@@ -36,6 +38,14 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.uid
+        - name: LOG_LEVEL
+          value: "info"
+        - name: LOG_FORMAT
+          value: "json"
+        volumeMounts:
+        - name: config
+          mountPath: /etc/operator
+          readOnly: true
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -60,5 +70,9 @@ spec:
           requests:
             cpu: 10m
             memory: 64Mi
+      volumes:
+      - name: config
+        configMap:
+          name: operator-config
       serviceAccountName: operator
       terminationGracePeriodSeconds: 10
