@@ -6,7 +6,7 @@ toolchain go1.24.3
 
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
-	github.com/fsnotify/fsnotify v1.7.0
+	github.com/fsnotify/fsnotify v1.9.0
 	github.com/google/uuid v1.6.0
 	github.com/kyma-project/manager-toolkit v0.0.0-20251201082204-449f6914b121
 	github.com/onsi/ginkgo/v2 v2.27.2
