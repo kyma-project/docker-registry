@@ -9,7 +9,7 @@ require (
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/google/uuid v1.6.0
 	github.com/kyma-project/manager-toolkit v0.0.0-20251201082204-449f6914b121
-	github.com/onsi/ginkgo/v2 v2.27.2
+	github.com/onsi/ginkgo/v2 v2.27.3
 	github.com/onsi/gomega v1.38.3
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.11.1
