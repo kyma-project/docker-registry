@@ -5,8 +5,9 @@ import (
 	"testing"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
-	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
 	"github.com/kyma-project/docker-registry/components/operator/internal/warning"
+
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
@@ -133,7 +134,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 					_ = cache.Set(context.Background(), types.NamespacedName{
 						Name:      testInstalledDockerRegistry.GetName(),
 						Namespace: testInstalledDockerRegistry.GetNamespace(),
-					}, chart.DockerRegistrySpecManifest{Manifest: testDeployManifest})
+					}, chart.ContextManifest{Manifest: testDeployManifest})
 					return cache
 				}(),
 				CacheKey: types.NamespacedName{

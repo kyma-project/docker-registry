@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
+	"github.com/kyma-project/manager-toolkit/installation/base/resource"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	gomegatypes "github.com/onsi/gomega/types"
@@ -70,62 +71,25 @@ func (h *testHelper) updateDeploymentStatus(deploymentName string) {
 		WithTimeout(time.Second * 30).
 		Should(BeTrue())
 
-	deployment.Status.Conditions = append(deployment.Status.Conditions, appsv1.DeploymentCondition{
-		Type:    appsv1.DeploymentAvailable,
-		Status:  corev1.ConditionTrue,
-		Reason:  "test-reason",
-		Message: "test-message",
-	})
-	deployment.Status.Replicas = 1
-	Expect(k8sClient.Status().Update(h.ctx, &deployment)).To(Succeed())
-
-	replicaSetName := h.createReplicaSetForDeployment(deployment)
-
-	var replicaSet appsv1.ReplicaSet
-	Eventually(h.getKubernetesObjectFunc(replicaSetName, &replicaSet)).
-		WithPolling(time.Second * 2).
-		WithTimeout(time.Second * 30).
-		Should(BeTrue())
-
-	replicaSet.Status.ReadyReplicas = 1
-	replicaSet.Status.Replicas = 1
-	Expect(k8sClient.Status().Update(h.ctx, &replicaSet)).To(Succeed())
-
-	By(fmt.Sprintf("Deployment status updated: %s", deploymentName))
-}
-
-func (h *testHelper) createReplicaSetForDeployment(deployment appsv1.Deployment) string {
-	replicaSetName := fmt.Sprintf("%s-replica-set", deployment.Name)
-	By(fmt.Sprintf("Creating replica set (for deployment): %s", replicaSetName))
-	var (
-		trueValue = true
-		one       = int32(1)
-	)
-	replicaSet := appsv1.ReplicaSet{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      replicaSetName,
-			Namespace: h.namespaceName,
-			Labels:    deployment.Spec.Selector.MatchLabels,
-			OwnerReferences: []metav1.OwnerReference{
-				{
-					APIVersion: "apps/v1",
-					Kind:       "Deployment",
-					Name:       deployment.Name,
-					UID:        deployment.GetUID(),
-					Controller: &trueValue,
-				},
-			},
+	deployment.Status.Conditions = []appsv1.DeploymentCondition{
+		{
+			Type:    appsv1.DeploymentAvailable,
+			Status:  corev1.ConditionTrue,
+			Reason:  resource.MinimumReplicasAvailableReason,
+			Message: "test-message",
 		},
-		// dummy values
-		Spec: appsv1.ReplicaSetSpec{
-			Replicas: &one,
-			Selector: deployment.Spec.Selector,
-			Template: deployment.Spec.Template,
+		{
+			Type:    appsv1.DeploymentProgressing,
+			Status:  corev1.ConditionTrue,
+			Reason:  resource.NewRSAvailableReason,
+			Message: "test-message",
 		},
 	}
-	Expect(k8sClient.Create(h.ctx, &replicaSet)).To(Succeed())
-	By(fmt.Sprintf("Replica set (for deployment) created: %s", replicaSetName))
-	return replicaSetName
+	deployment.Status.ObservedGeneration = deployment.Generation
+	deployment.Status.UnavailableReplicas = 0
+	Expect(k8sClient.Status().Update(h.ctx, &deployment)).To(Succeed())
+
+	By(fmt.Sprintf("Deployment status updated: %s", deploymentName))
 }
 
 func (h *testHelper) createDockerRegistry(crName string, spec v1alpha1.DockerRegistrySpec) {
@@ -192,8 +156,11 @@ func (h *testHelper) listKubernetesObject(list client.ObjectList) (bool, error) 
 	return true, err
 }
 
-func (h *testHelper) getDockerRegistryStatusFunc(name string) func() (v1alpha1.DockerRegistryStatus, error) {
+func (h *testHelper) getDockerRegistryStatusFunc(name, deploymentName string) func() (v1alpha1.DockerRegistryStatus, error) {
 	return func() (v1alpha1.DockerRegistryStatus, error) {
+		// we have to update deployment status manually
+		h.updateDeploymentStatus(deploymentName)
+
 		return h.getDockerRegistryStatus(name)
 	}
 }

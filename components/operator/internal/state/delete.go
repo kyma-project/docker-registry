@@ -5,7 +5,12 @@ import (
 	"time"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
-	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
+	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
+	"github.com/kyma-project/docker-registry/components/operator/internal/resource"
+	toolkit_resource "github.com/kyma-project/manager-toolkit/installation/base/resource"
+	"github.com/kyma-project/manager-toolkit/installation/chart"
+	"github.com/kyma-project/manager-toolkit/installation/chart/action"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -22,7 +27,7 @@ func sFnDeleteResources(_ context.Context, _ *reconciler, s *systemState) (state
 	return nextState(sFnSafeDeletionState)
 }
 
-func sFnSafeDeletionState(_ context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+func sFnSafeDeletionState(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	if err := chart.CheckCRDOrphanResources(s.chartConfig); err != nil {
 		// stop state machine with a warning and requeue reconciliation in 1min
 		// warning state indicates that user intervention would fix it. It's not reconciliation error.
@@ -35,20 +40,29 @@ func sFnSafeDeletionState(_ context.Context, r *reconciler, s *systemState) (sta
 		return stopWithEventualError(err)
 	}
 
-	return deleteResourcesWithFilter(r, s)
+	return deleteResourcesWithFilter(ctx, r, s)
 }
 
-func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...chart.FilterFunc) (stateFn, *ctrl.Result, error) {
-	err, done := chart.UninstallSecrets(s.chartConfig, filterFuncs...)
+func deleteResourcesWithFilter(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+	done, err := chart.Uninstall(s.chartConfig, &chart.UninstallOpts{
+		// cleanup secrets created in all namespaces
+		PostActions: []action.PostUninstall{
+			action.PostUninstallWithPredicate(
+				func(u unstructured.Unstructured) (bool, error) {
+					return resource.RemoveResourceFromAllNamespaces(ctx, r.client, r.log, u)
+				},
+				toolkit_resource.AndPredicates(
+					toolkit_resource.HasKind("Secret"),
+					toolkit_resource.HasLabel(registry.LabelConfigKey, registry.LabelConfigVal),
+				),
+			),
+		},
+	})
 	if err != nil {
-		return uninstallSecretsError(r, s, err)
+		return uninstallResourcesError(r, s, err)
 	}
 	if !done {
 		return awaitingSecretsRemoval(s)
-	}
-
-	if err := chart.Uninstall(s.chartConfig, filterFuncs...); err != nil {
-		return uninstallResourcesError(r, s, err)
 	}
 
 	s.setState(v1alpha1.StateDeleting)
@@ -79,21 +93,9 @@ func awaitingSecretsRemoval(s *systemState) (stateFn, *ctrl.Result, error) {
 	s.instance.UpdateConditionTrue(
 		v1alpha1.ConditionTypeDeleted,
 		v1alpha1.ConditionReasonDeletion,
-		"Deleting secrets",
+		"Deleting module resources",
 	)
 
 	// wait one sec until ctrl-mngr remove finalizers from secrets
 	return requeueAfter(time.Second)
-}
-
-func uninstallSecretsError(r *reconciler, s *systemState, err error) (stateFn, *ctrl.Result, error) {
-	r.log.Warnf("error while uninstalling secrets %s: %s",
-		client.ObjectKeyFromObject(&s.instance), err.Error())
-	s.setState(v1alpha1.StateError)
-	s.instance.UpdateConditionFalse(
-		v1alpha1.ConditionTypeDeleted,
-		v1alpha1.ConditionReasonDeletionErr,
-		err,
-	)
-	return stopWithEventualError(err)
 }

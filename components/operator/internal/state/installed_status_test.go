@@ -5,11 +5,11 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
+	"github.com/kyma-project/docker-registry/components/operator/internal/flags"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"github.com/kyma-project/docker-registry/components/operator/internal/warning"
 
-	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
-	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
@@ -37,7 +37,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 					},
 				},
 			},
-			flagsBuilder:     chart.NewFlagsBuilder(),
+			flagsBuilder:     flags.NewBuilder(),
 			nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
 			gatewayHostResolver: &testExternalAddressResolver{expectedAccess: &registry.ResolvedAccess{
 				Host:    "registry-test-name-test-namespace.cluster.local",
@@ -90,7 +90,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 					},
 				},
 			},
-			flagsBuilder:        chart.NewFlagsBuilder(),
+			flagsBuilder:        flags.NewBuilder(),
 			nodePortResolver:    registry.NewNodePortResolver(registry.RandomNodePort),
 			gatewayHostResolver: &testExternalAddressResolver{expectedError: errors.New("test-error")},
 			warningBuilder:      warning.NewBuilder(),
@@ -137,7 +137,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 					},
 				},
 			},
-			flagsBuilder:        chart.NewFlagsBuilder(),
+			flagsBuilder:        flags.NewBuilder(),
 			nodePortResolver:    registry.NewNodePortResolver(registry.RandomNodePort),
 			gatewayHostResolver: &testExternalAddressResolver{expectedError: errors.New("test-error")},
 			warningBuilder:      warning.NewBuilder(),
@@ -185,7 +185,7 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 				},
 			},
 			statusSnapshot:   v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:     chart.NewFlagsBuilder(),
+			flagsBuilder:     flags.NewBuilder(),
 			nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
 			warningBuilder:   warning.NewBuilder(),
 		}

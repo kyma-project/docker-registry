@@ -5,7 +5,9 @@ import (
 	"testing"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
-	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
+	"github.com/kyma-project/docker-registry/components/operator/internal/flags"
+
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -27,10 +29,10 @@ func Test_buildSFnApplyResources(t *testing.T) {
 					Namespace: testInstalledDockerRegistry.GetNamespace(),
 				},
 			},
-			flagsBuilder: chart.NewFlagsBuilder(),
+			flagsBuilder: flags.NewBuilder(),
 		}
 
-		next, result, err := sFnApplyResources(context.Background(), nil, s)
+		next, result, err := sFnApplyResources(context.Background(), &reconciler{}, s)
 		require.Nil(t, err)
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnVerifyResources, next)
@@ -68,7 +70,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 					Namespace: testInstalledDockerRegistry.GetNamespace(),
 				},
 			},
-			flagsBuilder: chart.NewFlagsBuilder(),
+			flagsBuilder: flags.NewBuilder(),
 		}
 		r := &reconciler{}
 
@@ -89,7 +91,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 					Namespace: testInstalledDockerRegistry.GetNamespace(),
 				},
 			},
-			flagsBuilder: chart.NewFlagsBuilder(),
+			flagsBuilder: flags.NewBuilder(),
 		}
 		r := &reconciler{
 			log: zap.NewNop().Sugar(),

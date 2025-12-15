@@ -1,14 +1,15 @@
-package chart
+package flags
 
 import (
 	"testing"
 
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_flagsBuilder_Build(t *testing.T) {
 	t.Run("build empty flags", func(t *testing.T) {
-		flags, err := NewFlagsBuilder().Build()
+		flags, err := NewBuilder().Build()
 		require.NoError(t, err)
 		require.Equal(t, map[string]interface{}{}, flags)
 	})
@@ -26,7 +27,7 @@ func Test_flagsBuilder_Build(t *testing.T) {
 			},
 		}
 
-		flags, err := NewFlagsBuilder().
+		flags, err := NewBuilder().
 			WithNodePort(1234).
 			WithRegistryCredentials("testUsername", "testPassword").
 			WithRegistryHttpSecret("testHttpSecret").
@@ -45,7 +46,7 @@ func Test_flagsBuilder_Build(t *testing.T) {
 			},
 		}
 
-		flags, err := NewFlagsBuilder().
+		flags, err := NewBuilder().
 			WithRegistryCredentials("testUsername", "testPassword").
 			Build()
 
@@ -56,8 +57,8 @@ func Test_flagsBuilder_Build(t *testing.T) {
 
 func Test_flagsBuilder_withRollme(t *testing.T) {
 	t.Run("add rollme flag", func(t *testing.T) {
-		builder := flagsBuilder{
-			flags: map[string]interface{}{},
+		builder := Builder{
+			FlagsBuilder: chart.NewFlagsBuilder(),
 		}
 
 		_ = builder.withRollme("reason=test")
@@ -72,16 +73,17 @@ func Test_flagsBuilder_withRollme(t *testing.T) {
 	})
 
 	t.Run("add value to existing rollme flag", func(t *testing.T) {
-		builder := flagsBuilder{
-			flags: map[string]interface{}{
-				"rollme": "reason=test",
-			},
+		builder := Builder{
+			FlagsBuilder: chart.NewFlagsBuilder(),
 		}
 
-		_ = builder.withRollme("another-reason=test-2")
+		_ = builder.
+			withRollme("reason=test").
+			withRollme("another-reason=test-2").
+			withRollme("test=test2")
 
 		expectedFlags := map[string]interface{}{
-			"rollme": "reason=test,another-reason=test-2",
+			"rollme": "reason=test,another-reason=test-2,test=test2",
 		}
 
 		flags, err := builder.Build()
