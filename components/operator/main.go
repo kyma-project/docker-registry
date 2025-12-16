@@ -81,14 +81,24 @@ func main() {
 
 	cfg, err := config.GetConfig("")
 	if err != nil {
-		os.Exit(1)
+		panic(errors.Wrap(err, "unable to load config from environment"))
+	}
+
+	// Load log config from file if provided, otherwise use environment/defaults
+	logCfg := cfg
+	if configPath != "" {
+		loadedCfg, err := config.LoadLogConfig(configPath)
+		if err != nil {
+			panic(errors.Wrapf(err, "unable to load config from file: %s", configPath))
+		}
+		logCfg = loadedCfg
 	}
 
 	// Setup logging with atomic level for dynamic reconfiguration
 	atomicLevel := uberzap.NewAtomicLevel()
-	log, err := logging.ConfigureLogger(cfg.LogLevel, cfg.LogFormat, atomicLevel)
+	log, err := logging.ConfigureLogger(logCfg.LogLevel, logCfg.LogFormat, atomicLevel)
 	if err != nil {
-		os.Exit(1)
+		panic(errors.Wrap(err, "unable to configure logger"))
 	}
 
 	zapLog := log.WithContext()
