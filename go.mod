@@ -4,13 +4,16 @@ go 1.24.0
 
 toolchain go1.24.3
 
-replace github.com/kyma-project/manager-toolkit => ../manager-toolkit
+replace github.com/kyma-project/manager-toolkit/installation/chart => ../manager-toolkit/installation/chart
+
+replace github.com/kyma-project/manager-toolkit/logging => ../manager-toolkit/logging
 
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/google/uuid v1.6.0
-	github.com/kyma-project/manager-toolkit v0.0.0-20251216125323-f8a16cda801a
+	github.com/kyma-project/manager-toolkit/installation/chart v0.0.0-20251217072146-89399407e246
+	github.com/kyma-project/manager-toolkit/logging v0.0.0-20251217072146-89399407e246
 	github.com/onsi/ginkgo/v2 v2.27.3
 	github.com/onsi/gomega v1.38.3
 	github.com/pkg/errors v0.9.1
@@ -19,7 +22,6 @@ require (
 	go.uber.org/zap v1.27.1
 	golang.org/x/text v0.32.0
 	gopkg.in/yaml.v3 v3.0.1
-	helm.sh/helm/v3 v3.19.4
 	istio.io/api v1.28.1
 	istio.io/client-go v1.28.1
 	k8s.io/api v0.34.3
@@ -137,6 +139,7 @@ require (
 	google.golang.org/protobuf v1.36.7 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
+	helm.sh/helm/v3 v3.19.4 // indirect
 	k8s.io/apiserver v0.34.3 // indirect
 	k8s.io/cli-runtime v0.34.3 // indirect
 	k8s.io/component-base v0.34.3 // indirect
