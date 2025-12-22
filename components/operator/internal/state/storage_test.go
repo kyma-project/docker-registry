@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
-	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
+	"github.com/kyma-project/docker-registry/components/operator/internal/flags"
 	"github.com/kyma-project/docker-registry/components/operator/internal/warning"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
@@ -19,7 +19,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		s := &systemState{
 			instance:       v1alpha1.DockerRegistry{},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:   chart.NewFlagsBuilder(),
+			flagsBuilder:   flags.NewBuilder(),
 			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
@@ -75,7 +75,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 				},
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:   chart.NewFlagsBuilder(),
+			flagsBuilder:   flags.NewBuilder(),
 			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
@@ -145,7 +145,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 				},
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:   chart.NewFlagsBuilder(),
+			flagsBuilder:   flags.NewBuilder(),
 			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
@@ -218,7 +218,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 				},
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:   chart.NewFlagsBuilder(),
+			flagsBuilder:   flags.NewBuilder(),
 			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
@@ -290,7 +290,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 				},
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:   chart.NewFlagsBuilder(),
+			flagsBuilder:   flags.NewBuilder(),
 			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
@@ -362,7 +362,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 				},
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:   chart.NewFlagsBuilder(),
+			flagsBuilder:   flags.NewBuilder(),
 			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
@@ -406,7 +406,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 				},
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:   chart.NewFlagsBuilder(),
+			flagsBuilder:   flags.NewBuilder(),
 			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
@@ -469,7 +469,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 				},
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:   chart.NewFlagsBuilder(),
+			flagsBuilder:   flags.NewBuilder(),
 			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
@@ -521,7 +521,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 				},
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:   chart.NewFlagsBuilder(),
+			flagsBuilder:   flags.NewBuilder(),
 			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{
@@ -553,7 +553,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 				},
 			},
 			statusSnapshot: v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:   chart.NewFlagsBuilder(),
+			flagsBuilder:   flags.NewBuilder(),
 			warningBuilder: warning.NewBuilder(),
 		}
 		r := &reconciler{

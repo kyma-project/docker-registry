@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
-	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -43,5 +43,7 @@ func install(s *systemState) error {
 		return err
 	}
 
-	return chart.Install(s.chartConfig, flags)
+	return chart.Install(s.chartConfig, &chart.InstallOpts{
+		CustomFlags: flags,
+	})
 }
