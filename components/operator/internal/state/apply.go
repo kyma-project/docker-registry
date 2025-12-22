@@ -5,9 +5,9 @@ import (
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
+	"github.com/kyma-project/manager-toolkit/installation/base/resource"
 	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/manager-toolkit/installation/chart/action"
-	"github.com/kyma-project/manager-toolkit/installation/resource"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -50,7 +50,7 @@ func install(ctx context.Context, r *reconciler, s *systemState) error {
 	return chart.Install(s.chartConfig, &chart.InstallOpts{
 		CustomFlags: flags,
 		PreActions: []action.PreApply{
-			action.PreApplyWithPredicates(
+			action.PreApplyWithPredicate(
 				adjustPVCPreApplyAction(ctx, r.client),
 				resource.HasKind("PersistentVolumeClaim"),
 			),

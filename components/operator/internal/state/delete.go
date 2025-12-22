@@ -7,9 +7,9 @@ import (
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"github.com/kyma-project/docker-registry/components/operator/internal/resource"
+	toolkit_resource "github.com/kyma-project/manager-toolkit/installation/base/resource"
 	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/manager-toolkit/installation/chart/action"
-	toolkit_resource "github.com/kyma-project/manager-toolkit/installation/resource"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -47,11 +47,14 @@ func deleteResourcesWithFilter(ctx context.Context, r *reconciler, s *systemStat
 	done, err := chart.Uninstall(s.chartConfig, &chart.UninstallOpts{
 		// cleanup secrets created in all namespaces
 		PostActions: []action.PostUninstall{
-			action.PostUninstallWithPredicates(func(u unstructured.Unstructured) (bool, error) {
-				return resource.RemoveResourceFromAllNamespaces(ctx, r.client, r.log, u)
-			},
-				toolkit_resource.HasKind("Secret"),
-				toolkit_resource.HasLabel(registry.LabelConfigKey, registry.LabelConfigVal),
+			action.PostUninstallWithPredicate(
+				func(u unstructured.Unstructured) (bool, error) {
+					return resource.RemoveResourceFromAllNamespaces(ctx, r.client, r.log, u)
+				},
+				toolkit_resource.AndPredicates(
+					toolkit_resource.HasKind("Secret"),
+					toolkit_resource.HasLabel(registry.LabelConfigKey, registry.LabelConfigVal),
+				),
 			),
 		},
 	})
