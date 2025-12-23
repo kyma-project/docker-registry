@@ -5,6 +5,7 @@ import (
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/manager-toolkit/installation/chart"
+	"github.com/pkg/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -24,9 +25,23 @@ func sFnVerifyResources(_ context.Context, r *reconciler, s *systemState) (state
 		return stopWithEventualError(err)
 	}
 
-	if !result.Ready {
+	if !result.Ready && result.Reason == chart.DeploymentVerificationProcessing {
 		return requeueAfter(requeueDuration)
 	}
+
+	if !result.Ready {
+		// verification failed
+		s.setState(v1alpha1.StateError)
+		s.instance.UpdateConditionTrue(
+			v1alpha1.ConditionTypeDeploymentFailure,
+			v1alpha1.ConditionReasonDeploymentReplicaFailure,
+			result.Reason,
+		)
+		return stopWithEventualError(errors.New(result.Reason))
+	}
+
+	// remove possible previous DeploymentFailure condition
+	s.instance.RemoveCondition(v1alpha1.ConditionTypeDeploymentFailure)
 
 	return nextState(sFnUpdateFinalStatus)
 }
