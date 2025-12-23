@@ -85,7 +85,6 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 | **storage.btpObjectStore.secretName**   | string | Specifies the name of the Secret that contains data needed to connect to BTP Object Store.                                 |
 | **storage.pvc.name** (required)         | string | Specifies the name of the PersistentVolumeClaim.                                                                           |
 
-
 **Status:**
 
 | Parameter                                            | Type       | Description                                                                                                                                                                                                                                                                                                                                                    |
@@ -122,15 +121,16 @@ Processing of a Docker Registry CR can succeed, continue, or fail for one of the
 
 This section describes the possible states of the Docker Registry CR. Three condition types, `Installed`, `Configured` and `Deleted`, are used.
 
-| No  | CR State   | Condition type | Condition status | Condition reason | Remark                                             |
-|-----|------------|----------------|------------------|------------------|----------------------------------------------------|
-| 1   | Processing | Configured     | true             | Configured       | Docker Registry configuration verified             |
-| 2   | Processing | Configured     | unknown          | Configuration    | Docker Registry configuration verification ongoing |
-| 3   | Error      | Configured     | false            | ConfigurationErr | Docker Registry configuration verification error   |
-| 4   | Error      | Configured     | false            | Duplicated       | Only one Docker Registry CR is allowed             |
-| 5   | Ready      | Installed      | true             | Installed        | Docker Registry workloads deployed                 |
-| 6   | Processing | Installed      | unknown          | Installation     | Deploying Docker Registry workloads                |
-| 7   | Error      | Installed      | false            | InstallationErr  | Deployment error                                   |
-| 8   | Deleting   | Deleted        | unknown          | Deletion         | Deletion in progress                               |
-| 9   | Deleting   | Deleted        | true             | Deleted          | Docker Registry module deleted                     |
-| 10  | Error      | Deleted        | false            | DeletionErr      | Deletion failed                                    |
+| No  | CR State          | Condition type    | Condition status | Condition reason         | Remark                                             |
+|-----|-------------------|-------------------|------------------|--------------------------|----------------------------------------------------|
+| 1   | Processing        | Configured        | true             | Configured               | Docker Registry configuration verified             |
+| 2   | Processing        | Configured        | unknown          | Configuration            | Docker Registry configuration verification ongoing |
+| 3   | Error             | Configured        | false            | ConfigurationErr         | Docker Registry configuration verification error   |
+| 4   | Error             | Configured        | false            | Duplicated               | Only one Docker Registry CR is allowed             |
+| 5   | Ready             | Installed         | true             | Installed                | Docker Registry workloads deployed                 |
+| 6   | Processing        | Installed         | unknown          | Installation             | Deploying Docker Registry workloads                |
+| 7   | Error             | Installed         | false            | InstallationErr          | Deployment error                                   |
+| 8   | Error             | DeploymentFailure | true             | DeploymentReplicaFailure | Deployment has the ReplicaFailure condition        |
+| 8   | Deleting          | Deleted           | unknown          | Deletion                 | Deletion in progress                               |
+| 9   | Deleting          | Deleted           | true             | Deleted                  | Docker Registry module deleted                     |
+| 10  | Error             | Deleted           | false            | DeletionErr              | Deletion failed                                    |

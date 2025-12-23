@@ -8,9 +8,10 @@ import (
 	"strings"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
-	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
+	"github.com/kyma-project/docker-registry/components/operator/internal/flags"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"github.com/kyma-project/docker-registry/components/operator/internal/warning"
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/rest"
@@ -40,7 +41,7 @@ type systemState struct {
 	statusSnapshot      v1alpha1.DockerRegistryStatus
 	chartConfig         *chart.Config
 	warningBuilder      *warning.Builder
-	flagsBuilder        chart.FlagsBuilder
+	flagsBuilder        *flags.Builder
 	nodePortResolver    *registry.NodePortResolver
 	gatewayHostResolver registry.ExternalAccessResolver
 }
@@ -63,11 +64,12 @@ func (s *systemState) setServed(served v1alpha1.Served) {
 
 func chartConfig(ctx context.Context, r *reconciler, namespace string) *chart.Config {
 	return &chart.Config{
-		Ctx:        ctx,
-		Log:        r.log,
-		Cache:      r.cache,
-		CacheKey:   secretCacheKey,
-		ManagerUID: r.managerPodUID,
+		Ctx:         ctx,
+		Log:         r.log,
+		Cache:       r.cache,
+		CacheKey:    secretCacheKey,
+		ManagerUID:  r.managerPodUID,
+		ManagerName: "dockerregistry-manager",
 		Cluster: chart.Cluster{
 			Client: r.client,
 			Config: r.config,
@@ -110,7 +112,7 @@ func (m *reconciler) Reconcile(ctx context.Context, v v1alpha1.DockerRegistry) (
 	state := systemState{
 		instance:         v,
 		warningBuilder:   warning.NewBuilder(),
-		flagsBuilder:     chart.NewFlagsBuilder(),
+		flagsBuilder:     flags.NewBuilder(),
 		chartConfig:      chartConfig(ctx, m, v.Namespace),
 		nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
 		gatewayHostResolver: registry.NewExternalAccessResolver(

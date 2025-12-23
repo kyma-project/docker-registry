@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
-	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
+	"github.com/kyma-project/docker-registry/components/operator/internal/flags"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"github.com/pkg/errors"
 	"golang.org/x/text/cases"
@@ -67,7 +67,7 @@ func updateStatus(ctx context.Context, r *reconciler, s *systemState) error {
 		return err
 	}
 	pulladdress := fmt.Sprintf("localhost:%d", nodeport)
-	pushAddress := fmt.Sprintf("%s.%s.svc.cluster.local:%d", chart.FullnameOverride, s.instance.GetNamespace(), registry.ServicePort)
+	pushAddress := fmt.Sprintf("%s.%s.svc.cluster.local:%d", flags.FullnameOverride, s.instance.GetNamespace(), registry.ServicePort)
 
 	fields := append(externalAddressFields, fieldsToUpdate{
 		{"True", &s.instance.Status.InternalAccess.Enabled, "Internal access enabled", ""},

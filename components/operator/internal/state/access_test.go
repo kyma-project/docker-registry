@@ -5,9 +5,10 @@ import (
 	"testing"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
-	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
+	"github.com/kyma-project/docker-registry/components/operator/internal/flags"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"github.com/kyma-project/docker-registry/components/operator/internal/warning"
+
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	networkingv1beta1 "istio.io/api/networking/v1beta1"
@@ -26,7 +27,7 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 		s := &systemState{
 			instance:         v1alpha1.DockerRegistry{},
 			statusSnapshot:   v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:     chart.NewFlagsBuilder(),
+			flagsBuilder:     flags.NewBuilder(),
 			nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
 		}
 		r := &reconciler{
@@ -102,7 +103,7 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 				},
 			},
 			statusSnapshot:   v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:     chart.NewFlagsBuilder(),
+			flagsBuilder:     flags.NewBuilder(),
 			nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
 		}
 		r := &reconciler{
@@ -170,7 +171,7 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 				},
 			},
 			statusSnapshot:      v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:        chart.NewFlagsBuilder(),
+			flagsBuilder:        flags.NewBuilder(),
 			nodePortResolver:    registry.NewNodePortResolver(registry.RandomNodePort),
 			gatewayHostResolver: registry.NewExternalAccessResolver("registry-test-name-test-namespace"),
 		}
@@ -221,7 +222,7 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 				},
 			},
 			statusSnapshot:      v1alpha1.DockerRegistryStatus{},
-			flagsBuilder:        chart.NewFlagsBuilder(),
+			flagsBuilder:        flags.NewBuilder(),
 			nodePortResolver:    registry.NewNodePortResolver(registry.RandomNodePort),
 			gatewayHostResolver: registry.NewExternalAccessResolver(""),
 			warningBuilder:      warning.NewBuilder(),

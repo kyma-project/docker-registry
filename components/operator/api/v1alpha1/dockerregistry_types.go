@@ -120,19 +120,23 @@ const (
 	// prerequisites and soft dependencies
 	ConditionTypeConfigured = ConditionType("Configured")
 
+	// registry deployment failure details
+	ConditionTypeDeploymentFailure = ConditionType("DeploymentFailure")
+
 	// deletion
 	ConditionTypeDeleted = ConditionType("Deleted")
 
-	ConditionReasonConfiguration    = ConditionReason("Configuration")
-	ConditionReasonConfigurationErr = ConditionReason("ConfigurationErr")
-	ConditionReasonConfigured       = ConditionReason("Configured")
-	ConditionReasonInstallation     = ConditionReason("Installation")
-	ConditionReasonInstallationErr  = ConditionReason("InstallationErr")
-	ConditionReasonInstalled        = ConditionReason("Installed")
-	ConditionReasonDuplicated       = ConditionReason("Duplicated")
-	ConditionReasonDeletion         = ConditionReason("Deletion")
-	ConditionReasonDeletionErr      = ConditionReason("DeletionErr")
-	ConditionReasonDeleted          = ConditionReason("Deleted")
+	ConditionReasonConfiguration            = ConditionReason("Configuration")
+	ConditionReasonConfigurationErr         = ConditionReason("ConfigurationErr")
+	ConditionReasonConfigured               = ConditionReason("Configured")
+	ConditionReasonInstallation             = ConditionReason("Installation")
+	ConditionReasonInstallationErr          = ConditionReason("InstallationErr")
+	ConditionReasonInstalled                = ConditionReason("Installed")
+	ConditionReasonDeploymentReplicaFailure = ConditionReason("DeploymentReplicaFailure")
+	ConditionReasonDuplicated               = ConditionReason("Duplicated")
+	ConditionReasonDeletion                 = ConditionReason("Deletion")
+	ConditionReasonDeletionErr              = ConditionReason("DeletionErr")
+	ConditionReasonDeleted                  = ConditionReason("Deleted")
 
 	Finalizer = "dockerregistry-operator.kyma-project.io/deletion-hook"
 )
@@ -236,6 +240,10 @@ func (s *DockerRegistry) UpdateConditionTrue(c ConditionType, r ConditionReason,
 		Message:            msg,
 	}
 	meta.SetStatusCondition(&s.Status.Conditions, condition)
+}
+
+func (s *DockerRegistry) RemoveCondition(c ConditionType) {
+	_ = meta.RemoveStatusCondition(&s.Status.Conditions, string(c))
 }
 
 func (s *DockerRegistry) IsServedEmpty() bool {

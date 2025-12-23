@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
-	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -47,7 +47,7 @@ func fixManifestCache(manifest string) chart.ManifestCache {
 	_ = cache.Set(context.Background(), types.NamespacedName{
 		Name:      testInstalledDockerRegistry.GetName(),
 		Namespace: testInstalledDockerRegistry.GetNamespace(),
-	}, chart.DockerRegistrySpecManifest{Manifest: manifest, CustomFlags: map[string]interface{}{
+	}, chart.ContextManifest{Manifest: manifest, CustomFlags: map[string]interface{}{
 		"commonLabels": map[string]interface{}{
 			"app.kubernetes.io/managed-by": "dockerregistry-operator",
 		},
