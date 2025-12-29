@@ -6,9 +6,8 @@ toolchain go1.24.3
 
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
-	github.com/fsnotify/fsnotify v1.9.0
 	github.com/google/uuid v1.6.0
-	github.com/kyma-project/manager-toolkit v0.0.0-20251216125323-f8a16cda801a
+	github.com/kyma-project/manager-toolkit/logging v0.0.0-20251228124903-71c93d767d90
 	github.com/onsi/ginkgo/v2 v2.27.3
 	github.com/onsi/gomega v1.38.3
 	github.com/pkg/errors v0.9.1
@@ -53,6 +52,7 @@ require (
 	github.com/evanphx/json-patch/v5 v5.9.11 // indirect
 	github.com/exponent-io/jsonpath v0.0.0-20210407135951-1de76d718b3f // indirect
 	github.com/fatih/color v1.13.0 // indirect
+	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
 	github.com/go-errors/errors v1.4.2 // indirect
 	github.com/go-gorp/gorp/v3 v3.1.0 // indirect

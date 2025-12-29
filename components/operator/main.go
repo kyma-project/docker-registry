@@ -39,12 +39,14 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	ctrlmetrics "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
+	"github.com/kyma-project/manager-toolkit/logging/config"
+	"github.com/kyma-project/manager-toolkit/logging/logger"
+
 	operatorv1alpha1 "github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/controllers"
-	"github.com/kyma-project/docker-registry/components/operator/internal/config"
+	internalconfig "github.com/kyma-project/docker-registry/components/operator/internal/config"
 	k8s "github.com/kyma-project/docker-registry/components/operator/internal/controllers/kubernetes"
 	"github.com/kyma-project/docker-registry/components/operator/internal/gitrepository"
-	"github.com/kyma-project/docker-registry/components/operator/internal/logging"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	internalresource "github.com/kyma-project/docker-registry/components/operator/internal/resource"
 	//+kubebuilder:scaffold:imports
@@ -79,36 +81,55 @@ func main() {
 	flag.DurationVar(&syncPeriod, "sync-period", 30*time.Minute, "Sync period for controller cache.")
 	flag.Parse()
 
-	cfg, err := config.GetConfig("")
+	// Load ChartPath from environment
+	appCfg, err := internalconfig.GetConfig("")
 	if err != nil {
 		panic(errors.Wrap(err, "unable to load config from environment"))
 	}
 
-	// Load log config from file if provided, otherwise use environment/defaults
-	logCfg := cfg
+	// Load logging config from environment or file
+	logCfg, err := config.GetConfig("")
+	if err != nil {
+		panic(errors.Wrap(err, "unable to load logging config from environment"))
+	}
+
 	if configPath != "" {
-		loadedCfg, err := config.LoadLogConfig(configPath)
+		loadedCfg, err := config.LoadConfig(configPath)
 		if err != nil {
-			panic(errors.Wrapf(err, "unable to load config from file: %s", configPath))
+			panic(errors.Wrapf(err, "unable to load logging config from file: %s", configPath))
 		}
 		logCfg = loadedCfg
 	}
 
-	// Setup logging with atomic level for dynamic reconfiguration
+	// Setup logger with atomic level for dynamic reconfiguration
 	atomicLevel := uberzap.NewAtomicLevel()
-	log, err := logging.ConfigureLogger(logCfg.LogLevel, logCfg.LogFormat, atomicLevel)
+	logLevel, err := logger.MapLevel(logCfg.LogLevel)
 	if err != nil {
-		panic(errors.Wrap(err, "unable to configure logger"))
+		panic(errors.Wrap(err, "unable to parse log level"))
+	}
+
+	logFormat, err := logger.MapFormat(logCfg.LogFormat)
+	if err != nil {
+		panic(errors.Wrap(err, "unable to parse log format"))
+	}
+
+	log, err := logger.NewWithAtomicLevel(logFormat, atomicLevel)
+	if err != nil {
+		panic(errors.Wrap(err, "unable to create logger"))
+	}
+
+	if err := logger.InitKlog(log, logLevel); err != nil {
+		panic(errors.Wrap(err, "unable to init klog"))
 	}
 
 	zapLog := log.WithContext()
 
-	// Setup signal handler once - used for both manager and dynamic config
+	// Setup signal handler
 	signalCtx := ctrl.SetupSignalHandler()
 
 	// Start dynamic reconfiguration in background if config path is provided
 	if configPath != "" {
-		go logging.ReconfigureOnConfigChange(signalCtx, zapLog, atomicLevel, configPath)
+		go config.ReconfigureOnConfigChange(signalCtx, zapLog, atomicLevel, configPath)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), cleanupTimeout)
@@ -148,7 +169,7 @@ func main() {
 		mgr.GetClient(), mgr.GetConfig(),
 		mgr.GetEventRecorderFor("dockerregistry-operator"),
 		zapLog,
-		cfg.ChartPath,
+		appCfg.ChartPath,
 	)
 
 	configKubernetes := k8s.Config{
