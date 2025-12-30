@@ -51,11 +51,8 @@ func shouldCreateDockerRegistry(h testHelper, name, deploymentName string, spec 
 	// act
 	h.createDockerRegistry(name, spec)
 
-	// we have to update deployment status manually
-	h.updateDeploymentStatus(deploymentName)
-
 	// assert
-	Eventually(h.getDockerRegistryStatusFunc(name)).
+	Eventually(h.getDockerRegistryStatusFunc(name, deploymentName)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 20).
 		Should(ConditionTrueMatcher())

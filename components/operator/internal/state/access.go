@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
-	"github.com/kyma-project/docker-registry/components/operator/internal/chart"
+	"github.com/kyma-project/docker-registry/components/operator/internal/flags"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"github.com/pkg/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -61,7 +61,7 @@ func setInternalAccessConfig(ctx context.Context, r *reconciler, s *systemState)
 	r.log.Debugf("docker registry node port: %d", nodePort)
 	s.flagsBuilder.WithNodePort(int64(nodePort)).
 		WithServicePort(registry.ServicePort).
-		WithFullname(chart.FullnameOverride)
+		WithFullname(flags.FullnameOverride)
 	return nil
 }
 
