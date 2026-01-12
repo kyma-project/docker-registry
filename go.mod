@@ -9,7 +9,7 @@ require (
 	github.com/kyma-project/manager-toolkit/installation/chart v0.0.0-20251230094719-5f905ea06576
 	github.com/kyma-project/manager-toolkit/logging v0.0.0-20251228124903-71c93d767d90
 	github.com/onsi/ginkgo/v2 v2.27.4
-	github.com/onsi/gomega v1.38.3
+	github.com/onsi/gomega v1.39.0
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.11.1
 	github.com/vrischmann/envconfig v1.4.1
