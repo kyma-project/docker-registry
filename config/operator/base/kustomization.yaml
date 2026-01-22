@@ -18,7 +18,7 @@ labels:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: dockerregistry-operator
     app.kubernetes.io/part-of: dockerregistry-operator
-    app.kubernetes.io/version: main
+    app.kubernetes.io/version: 0.11.0
     kyma-project.io/module: docker-registry
 
 resources:
