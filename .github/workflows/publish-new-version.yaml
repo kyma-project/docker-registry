@@ -79,4 +79,4 @@ jobs:
             -H "${BOT_USERNAME}:docker-registry-${MODULE_VERSION}" \
             -R "https://${GH_TOOLS_REPO_URL}/kyma/module-manifests/" \
             --title "Promote Docker Registry ${MODULE_VERSION}" \
-            --body "Adding Docker Registry [${MODULE_VERSION}](https://github.com/kyma-project/docker-registry/releases/tag/${MODULE_VERSION})
+            --body "Adding Docker Registry [${MODULE_VERSION}](https://github.com/kyma-project/docker-registry/releases/tag/${MODULE_VERSION})"
