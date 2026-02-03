@@ -27,6 +27,8 @@ jobs:
       - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
       - name: run test
         run: |
+          kubectl create namespace kyma-system || true
+          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make -C components/operator deploy
           make -C tests/operator test
         env:
@@ -60,6 +62,8 @@ jobs:
 
       - name: install exposed docker registry with remote btp object store backend
         run: |
+          KUBECONFIG=$KUBECONFIG kubectl create namespace kyma-system || true
+          KUBECONFIG=$KUBECONFIG kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           echo '${{ secrets.BTP_REMOTE_SERVICE_MANAGER_BINDING }}' > tests/btp/sm.env
           KUBECONFIG=$KUBECONFIG make -C tests/btp ensure-btp-object-store-backend
           make -C components/operator render-manifest
