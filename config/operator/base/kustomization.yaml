@@ -28,3 +28,4 @@ resources:
 - ./ui-extensions
 - ./cli-extensions
 - ./priority-class
+- ./network-policy
