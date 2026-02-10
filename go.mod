@@ -7,7 +7,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/kyma-project/manager-toolkit/installation/base v0.260113.143439-fb9dc47
 	github.com/kyma-project/manager-toolkit/installation/chart v0.260113.143439-fb9dc47
-	github.com/kyma-project/manager-toolkit/logging v0.260113.143439-fb9dc47
+	github.com/kyma-project/manager-toolkit/logging v0.260128.123422-9ec1c8b
 	github.com/onsi/ginkgo/v2 v2.27.5
 	github.com/onsi/gomega v1.39.0
 	github.com/pkg/errors v0.9.1
