@@ -121,6 +121,7 @@ storage: filesystem
 configData: # example: https://github.com/docker/distribution/blob/master/cmd/registry/config-dev.yml
   version: 0.1
   log:
+    level: info
     formatter: json
     fields:
       service: registry

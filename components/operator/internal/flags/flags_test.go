@@ -91,3 +91,69 @@ func Test_flagsBuilder_withRollme(t *testing.T) {
 		require.Equal(t, expectedFlags, flags)
 	})
 }
+
+func Test_flagsBuilder_WithLogging(t *testing.T) {
+	t.Run("set log level and format with access logs enabled", func(t *testing.T) {
+		expectedFlags := map[string]interface{}{
+			"configData": map[string]interface{}{
+				"log": map[string]interface{}{
+					"level":     "debug",
+					"formatter": "json",
+					"accesslog": map[string]interface{}{
+						"disabled": false,
+					},
+				},
+			},
+			"rollme": "configData.log.level=debug,configData.log.formatter=json,configData.log.accesslog.disabled=false",
+		}
+
+		flags, err := NewBuilder().
+			WithLogging("debug", "json", false).
+			Build()
+
+		require.NoError(t, err)
+		require.Equal(t, expectedFlags, flags)
+	})
+
+	t.Run("set log level and format with access logs disabled", func(t *testing.T) {
+		expectedFlags := map[string]interface{}{
+			"configData": map[string]interface{}{
+				"log": map[string]interface{}{
+					"level":     "info",
+					"formatter": "text",
+					"accesslog": map[string]interface{}{
+						"disabled": true,
+					},
+				},
+			},
+			"rollme": "configData.log.level=info,configData.log.formatter=text,configData.log.accesslog.disabled=true",
+		}
+
+		flags, err := NewBuilder().
+			WithLogging("info", "text", true).
+			Build()
+
+		require.NoError(t, err)
+		require.Equal(t, expectedFlags, flags)
+	})
+
+	t.Run("skip level and format when empty", func(t *testing.T) {
+		expectedFlags := map[string]interface{}{
+			"configData": map[string]interface{}{
+				"log": map[string]interface{}{
+					"accesslog": map[string]interface{}{
+						"disabled": false,
+					},
+				},
+			},
+			"rollme": "configData.log.accesslog.disabled=false",
+		}
+
+		flags, err := NewBuilder().
+			WithLogging("", "", false).
+			Build()
+
+		require.NoError(t, err)
+		require.Equal(t, expectedFlags, flags)
+	})
+}
