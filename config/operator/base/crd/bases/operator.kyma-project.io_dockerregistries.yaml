@@ -74,6 +74,37 @@ spec:
                       should fit to at least one server defined in the gateway
                     type: string
                 type: object
+              logging:
+                description: Logging defines the logging configuration for docker-registry
+                  pods.
+                properties:
+                  accessLogDisabled:
+                    default: false
+                    description: |-
+                      AccessLogDisabled disables the HTTP access logs.
+                      Access logs use Apache Combined Log Format and cannot be configured to use json/text formatter.
+                    type: boolean
+                  format:
+                    default: json
+                    description: |-
+                      Format defines the log format for the docker-registry.
+                      Valid values are: "json", "text".
+                    enum:
+                    - json
+                    - text
+                    type: string
+                  level:
+                    default: info
+                    description: |-
+                      Level defines the log level for the docker-registry.
+                      Valid values are: "error", "warn", "info", "debug".
+                    enum:
+                    - error
+                    - warn
+                    - info
+                    - debug
+                    type: string
+                type: object
               storage:
                 description: Storage defines the storage configuration ( filesystem
                   / s3 / azure / gcs / btpObjectStore ).

@@ -28,6 +28,28 @@ type DockerRegistrySpec struct {
 
 	// ExternalAccess defines the external access configuration.
 	ExternalAccess *ExternalAccess `json:"externalAccess,omitempty"`
+
+	// Logging defines the logging configuration for docker-registry pods.
+	Logging *Logging `json:"logging,omitempty"`
+}
+
+type Logging struct {
+	// Level defines the log level for the docker-registry.
+	// Valid values are: "error", "warn", "info", "debug".
+	// +kubebuilder:validation:Enum=error;warn;info;debug
+	// +kubebuilder:default=info
+	Level string `json:"level,omitempty"`
+
+	// Format defines the log format for the docker-registry.
+	// Valid values are: "json", "text".
+	// +kubebuilder:validation:Enum=json;text
+	// +kubebuilder:default=json
+	Format string `json:"format,omitempty"`
+
+	// AccessLogDisabled disables the HTTP access logs.
+	// Access logs use Apache Combined Log Format and cannot be configured to use json/text formatter.
+	// +kubebuilder:default=false
+	AccessLogDisabled bool `json:"accessLogDisabled,omitempty"`
 }
 
 type ExternalAccess struct {
