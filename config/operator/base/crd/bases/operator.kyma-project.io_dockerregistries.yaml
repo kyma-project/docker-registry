@@ -88,10 +88,11 @@ spec:
                     default: json
                     description: |-
                       Format defines the log format for the docker-registry.
-                      Valid values are: "json", "text".
+                      Valid values are: "json", "text", "console" (alias for "text").
                     enum:
                     - json
                     - text
+                    - console
                     type: string
                   level:
                     default: info
