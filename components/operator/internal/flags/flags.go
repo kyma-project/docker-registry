@@ -135,12 +135,12 @@ func (fb *Builder) WithManagedByLabel(managedBy string) *Builder {
 func (fb *Builder) WithLogging(level, format string, accessLogDisabled bool) *Builder {
 	if level != "" {
 		_ = fb.With("configData.log.level", level)
-		// restart deployment registry to fetch new logging configuration from configmap
+		// restart deployment registry to fetch new logging configuration
 		fb = fb.withRollme(fmt.Sprintf("configData.log.level=%s", level))
 	}
 	if format != "" {
 		_ = fb.With("configData.log.formatter", format)
-		// restart deployment registry to fetch new logging configuration from configmap
+		// restart deployment registry to fetch new logging configuration
 		fb = fb.withRollme(fmt.Sprintf("configData.log.formatter=%s", format))
 	}
 	// Access logs use Apache Combined Log Format and cannot use json/text formatter
