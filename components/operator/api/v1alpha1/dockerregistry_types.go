@@ -41,8 +41,8 @@ type Logging struct {
 	Level string `json:"level,omitempty"`
 
 	// Format defines the log format for the docker-registry.
-	// Valid values are: "json", "text".
-	// +kubebuilder:validation:Enum=json;text
+	// Valid values are: "json", "text", "console" (alias for "text").
+	// +kubebuilder:validation:Enum=json;text;console
 	// +kubebuilder:default=json
 	Format string `json:"format,omitempty"`
 

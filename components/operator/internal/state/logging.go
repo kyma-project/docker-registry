@@ -11,6 +11,16 @@ const (
 	defaultLogFormat = "json"
 )
 
+// sanitizeLogFormat converts format name so it matches other components
+func sanitizeLogFormat(format string) string {
+	switch format {
+	case "console":
+		return "text"
+	default:
+		return format
+	}
+}
+
 func sFnLoggingConfiguration(_ context.Context, _ *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	logLevel := defaultLogLevel
 	logFormat := defaultLogFormat
@@ -21,7 +31,7 @@ func sFnLoggingConfiguration(_ context.Context, _ *reconciler, s *systemState) (
 			logLevel = s.instance.Spec.Logging.Level
 		}
 		if s.instance.Spec.Logging.Format != "" {
-			logFormat = s.instance.Spec.Logging.Format
+			logFormat = sanitizeLogFormat(s.instance.Spec.Logging.Format)
 		}
 		accessLogDisabled = s.instance.Spec.Logging.AccessLogDisabled
 	}

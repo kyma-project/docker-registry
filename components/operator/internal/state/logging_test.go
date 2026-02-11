@@ -117,4 +117,32 @@ func Test_sFnLoggingConfiguration(t *testing.T) {
 		accesslog := logConfig["accesslog"].(map[string]interface{})
 		require.Equal(t, false, accesslog["disabled"])
 	})
+
+	t.Run("sanitize console format to text", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{
+					Logging: &v1alpha1.Logging{
+						Level:  "info",
+						Format: "console",
+					},
+				},
+			},
+			flagsBuilder: flags.NewBuilder(),
+		}
+
+		next, result, err := sFnLoggingConfiguration(context.Background(), nil, s)
+		require.Nil(t, err)
+		require.Nil(t, result)
+		require.NotNil(t, next)
+
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+		configData := flags["configData"].(map[string]interface{})
+		logConfig := configData["log"].(map[string]interface{})
+		require.Equal(t, "info", logConfig["level"])
+		require.Equal(t, "text", logConfig["formatter"]) // console should be converted to text
+		accesslog := logConfig["accesslog"].(map[string]interface{})
+		require.Equal(t, false, accesslog["disabled"])
+	})
 }
