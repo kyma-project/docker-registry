@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "tplValue" ( dict "value" .Values.commonLabels "context" . ) | nindent 4 }}
-    app.kubernetes.io/instance: dockerregistry-allow-to-apiserver-policy
+    app.kubernetes.io/instance: dockerregistry-allow-registry-policy
     purpose: allow-registry-api
 spec:
   podSelector:
