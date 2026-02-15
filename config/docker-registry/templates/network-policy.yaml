@@ -99,6 +99,7 @@ spec:
 ---
 # NetworkPolicy to allow whole egress traffic
 # this is needed to allow to communicate with any storage backend
+{{- if ne .Values.storage "filesystem" }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -116,3 +117,4 @@ spec:
     - Egress
   egress:
     - {}
+{{- end }}
