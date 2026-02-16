@@ -22,7 +22,7 @@ The default configuration of the Docker Registry module is the following:
 
 ## Docker Registry Logging
 
-You can configure logging for the Docker Registry pods using the `logging` section in the DockerRegistry CR spec.
+You can configure logging for the Docker Registry Pods using the `logging` section in the DockerRegistry CR spec.
 
 ### Configuration Options
 
