@@ -22,7 +22,7 @@ func sFnAccessConfiguration(ctx context.Context, r *reconciler, s *systemState) 
 		)
 	}
 
-	return nextState(sFnStorageConfiguration)
+	return nextState(sFnLoggingConfiguration)
 }
 
 func setAccessConfig(ctx context.Context, r *reconciler, s *systemState) error {

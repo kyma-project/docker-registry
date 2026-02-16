@@ -24,6 +24,7 @@ import (
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
+	"github.com/go-logr/zapr"
 	"github.com/pkg/errors"
 	uberzap "go.uber.org/zap"
 	istionetworking "istio.io/client-go/pkg/apis/networking/v1beta1"
@@ -123,6 +124,9 @@ func main() {
 	}
 
 	zapLog := log.WithContext()
+
+	// Set controller-runtime logger
+	ctrl.SetLogger(zapr.NewLogger(zapLog.Desugar()))
 
 	// Setup signal handler
 	signalCtx := ctrl.SetupSignalHandler()

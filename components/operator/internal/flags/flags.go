@@ -132,6 +132,23 @@ func (fb *Builder) WithManagedByLabel(managedBy string) *Builder {
 	return fb
 }
 
+func (fb *Builder) WithLogging(level, format string, accessLogDisabled bool) *Builder {
+	if level != "" {
+		_ = fb.With("configData.log.level", level)
+		// restart deployment registry to fetch new logging configuration
+		fb = fb.withRollme(fmt.Sprintf("configData.log.level=%s", level))
+	}
+	if format != "" {
+		_ = fb.With("configData.log.formatter", format)
+		// restart deployment registry to fetch new logging configuration
+		fb = fb.withRollme(fmt.Sprintf("configData.log.formatter=%s", format))
+	}
+	// Access logs use Apache Combined Log Format and cannot use json/text formatter
+	_ = fb.With("configData.log.accesslog.disabled", accessLogDisabled)
+	fb = fb.withRollme(fmt.Sprintf("configData.log.accesslog.disabled=%t", accessLogDisabled))
+	return fb
+}
+
 // withRollme allows to set custom values for the `rollme` field in chart
 // it merges values for many command executions in format <value1>,<value2>,...,<valueN>
 func (fb *Builder) withRollme(value string) *Builder {

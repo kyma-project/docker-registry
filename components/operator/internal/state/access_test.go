@@ -50,7 +50,7 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 		next, result, err := sFnAccessConfiguration(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnStorageConfiguration, next)
+		requireEqualFunc(t, sFnLoggingConfiguration, next)
 
 		flags, err := s.flagsBuilder.Build()
 		require.NoError(t, err)
@@ -131,7 +131,7 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 		next, result, err := sFnAccessConfiguration(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnStorageConfiguration, next)
+		requireEqualFunc(t, sFnLoggingConfiguration, next)
 
 		flags, err := s.flagsBuilder.Build()
 		require.NoError(t, err)
@@ -200,7 +200,7 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 		next, result, err := sFnAccessConfiguration(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnStorageConfiguration, next)
+		requireEqualFunc(t, sFnLoggingConfiguration, next)
 
 		flags, err := s.flagsBuilder.Build()
 		require.NoError(t, err)
@@ -248,7 +248,7 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 		next, result, err := sFnAccessConfiguration(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnStorageConfiguration, next)
+		requireEqualFunc(t, sFnLoggingConfiguration, next)
 
 		flags, err := s.flagsBuilder.Build()
 		require.NoError(t, err)
