@@ -51,7 +51,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		azureSecret := &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "azureSecret",
-				Namespace: "kyma-system",
+				Namespace: "docker-registry",
 			},
 			Data: map[string][]byte{
 				"accountName": []byte("accountName"),
@@ -63,7 +63,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
-					Namespace: "kyma-system",
+					Namespace: "docker-registry",
 				},
 				Spec: v1alpha1.DockerRegistrySpec{
 					Storage: &v1alpha1.Storage{
@@ -118,7 +118,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		s3Secret := &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "s3Secret",
-				Namespace: "kyma-system",
+				Namespace: "docker-registry",
 			},
 			Data: map[string][]byte{
 				"accessKey": []byte("accessKey"),
@@ -129,7 +129,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
-					Namespace: "kyma-system",
+					Namespace: "docker-registry",
 				},
 				Spec: v1alpha1.DockerRegistrySpec{
 					Storage: &v1alpha1.Storage{
@@ -194,7 +194,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		gcsSecret := &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "gcsSecret",
-				Namespace: "kyma-system",
+				Namespace: "docker-registry",
 			},
 			Data: map[string][]byte{
 				"accountkey": []byte("accountkey"),
@@ -204,7 +204,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
-					Namespace: "kyma-system",
+					Namespace: "docker-registry",
 				},
 				Spec: v1alpha1.DockerRegistrySpec{
 					Storage: &v1alpha1.Storage{
@@ -265,7 +265,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		gcsSecret := &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "btpSecret",
-				Namespace: "kyma-system",
+				Namespace: "docker-registry",
 			},
 			Data: map[string][]byte{
 				"host":              []byte("host"),
@@ -279,7 +279,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
-					Namespace: "kyma-system",
+					Namespace: "docker-registry",
 				},
 				Spec: v1alpha1.DockerRegistrySpec{
 					Storage: &v1alpha1.Storage{
@@ -339,7 +339,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		gcsSecret := &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "btpSecret",
-				Namespace: "kyma-system",
+				Namespace: "docker-registry",
 			},
 			Data: map[string][]byte{
 				"account_name":   []byte("accountName"),
@@ -351,7 +351,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
-					Namespace: "kyma-system",
+					Namespace: "docker-registry",
 				},
 				Spec: v1alpha1.DockerRegistrySpec{
 					Storage: &v1alpha1.Storage{
@@ -384,7 +384,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		gcsSecret := &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "btpSecret",
-				Namespace: "kyma-system",
+				Namespace: "docker-registry",
 			},
 			Data: map[string][]byte{
 				"base64EncodedPrivateKeyData": []byte("YWNjb3VudGtleQ=="),
@@ -395,7 +395,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
-					Namespace: "kyma-system",
+					Namespace: "docker-registry",
 				},
 				Spec: v1alpha1.DockerRegistrySpec{
 					Storage: &v1alpha1.Storage{
@@ -451,14 +451,14 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		pvc := &corev1.PersistentVolumeClaim{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "pvc",
-				Namespace: "kyma-system",
+				Namespace: "docker-registry",
 			},
 		}
 
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
-					Namespace: "kyma-system",
+					Namespace: "docker-registry",
 				},
 				Spec: v1alpha1.DockerRegistrySpec{
 					Storage: &v1alpha1.Storage{
@@ -510,7 +510,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
-					Namespace: "kyma-system",
+					Namespace: "docker-registry",
 				},
 				Spec: v1alpha1.DockerRegistrySpec{
 					Storage: &v1alpha1.Storage{
@@ -543,7 +543,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
-					Namespace: "kyma-system",
+					Namespace: "docker-registry",
 				},
 				Spec: v1alpha1.DockerRegistrySpec{
 					Storage: &v1alpha1.Storage{

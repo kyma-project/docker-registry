@@ -16,7 +16,7 @@ import (
 var _ = Describe("DockerRegistry controller", func() {
 	Context("When creating fresh instance", func() {
 		const (
-			namespaceName  = "kyma-system"
+			namespaceName  = "docker-registry"
 			crName         = "cr-test"
 			deploymentName = "dockerregistry"
 			registrySecret = registry.InternalAccessSecretName
