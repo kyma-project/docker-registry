@@ -19,13 +19,13 @@ The following Docker Registry custom resource (CR) shows the configuration of th
    metadata:
      annotations:
        kubectl.kubernetes.io/last-applied-configuration: |
-         {"apiVersion":"operator.kyma-project.io/v1alpha1","kind":"DockerRegistry","metadata":{"annotations":{},"name":"default","namespace":"kyma-system"},"spec":{}}
+         {"apiVersion":"operator.kyma-project.io/v1alpha1","kind":"DockerRegistry","metadata":{"annotations":{},"name":"default","namespace":"docker-registry"},"spec":{}}
      creationTimestamp: "2024-05-16T10:18:25Z"
      finalizers:
      - dockerregistry-operator.kyma-project.io/deletion-hook
      generation: 1
      name: default
-     namespace: kyma-system
+     namespace: docker-registry
      resourceVersion: "31542"
      uid: 30dbb8a0-2193-47b6-bdf7-358f78319eb8
    spec: {}
@@ -47,7 +47,7 @@ The following Docker Registry custom resource (CR) shows the configuration of th
      internalAccess:
        enabled: "True"
        pullAddress: localhost:32137
-       pushAddress: dockerregistry.kyma-system.svc.cluster.local:5000
+       pushAddress: dockerregistry.docker-registry.svc.cluster.local:5000
        secretName: dockerregistry-config
      served: "True"
      state: Ready

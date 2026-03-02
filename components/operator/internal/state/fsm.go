@@ -24,7 +24,7 @@ var (
 	defaultResult  = ctrl.Result{}
 	secretCacheKey = types.NamespacedName{
 		Name:      "dockerregistry-manifest-cache",
-		Namespace: "kyma-system",
+		Namespace: "docker-registry",
 	}
 )
 

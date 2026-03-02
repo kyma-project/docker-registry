@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-USERNAME=$(kubectl get secrets -n kyma-system dockerregistry-config-external -o jsonpath={.data.username} --kubeconfig ${KUBECONFIG} | base64 -d)
-PASSWORD=$(kubectl get secrets -n kyma-system dockerregistry-config-external -o jsonpath={.data.password} --kubeconfig ${KUBECONFIG} | base64 -d)
-REGISTRY_URL=$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})
+USERNAME=$(kubectl get secrets -n docker-registry dockerregistry-config-external -o jsonpath={.data.username} --kubeconfig ${KUBECONFIG} | base64 -d)
+PASSWORD=$(kubectl get secrets -n docker-registry dockerregistry-config-external -o jsonpath={.data.password} --kubeconfig ${KUBECONFIG} | base64 -d)
+REGISTRY_URL=$(kubectl get dockerregistries.operator.kyma-project.io -n docker-registry default -ojsonpath={.status.externalAccess.pushAddress} --kubeconfig ${KUBECONFIG})
 
 
 echo Testing Docker Registry availibility at: $REGISTRY_URL
