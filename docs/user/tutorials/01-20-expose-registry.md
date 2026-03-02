@@ -13,12 +13,12 @@ This tutorial shows how you can expose the registry to the outside of the cluste
 1. Expose the registry service by changing the **spec.externalAccess.enabled** flag to `true`:
 
     ```bash
-    kubectl apply -n kyma-system -f - <<EOF
+    kubectl apply -n docker-registry -f - <<EOF
     apiVersion: operator.kyma-project.io/v1alpha1
     kind: DockerRegistry
     metadata:
       name: default
-      namespace: kyma-system
+      namespace: docker-registry
     spec:
       externalAccess:
         enabled: true

@@ -37,9 +37,9 @@ cluster-info: ## Print useful info about the cluster regarding integration run
 
 	@echo "############################################################################################################"
 	@echo "Operator logs"
-	@echo "kubectl logs -n kyma-system -l app.kubernetes.io/component=dockerregistry-operator.kyma-project.io --tail=-1"
+	@echo "kubectl logs -n docker-registry -l app.kubernetes.io/component=dockerregistry-operator.kyma-project.io --tail=-1"
 	@echo "############################################################################################################"
-	@kubectl logs -n kyma-system -l app.kubernetes.io/component=dockerregistry-operator.kyma-project.io --tail=-1 || true
+	@kubectl logs -n docker-registry -l app.kubernetes.io/component=dockerregistry-operator.kyma-project.io --tail=-1 || true
 	@echo ""
 
 	@echo "################################################"

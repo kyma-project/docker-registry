@@ -14,12 +14,12 @@ This tutorial shows how to remove a previously pushed image to the registry usin
 1. Enable the image manifests deletion functionality by changing the **.spec.storage.deleteEnabled** flag to `true`:
 
 ```bash
-kubectl apply -n kyma-system -f - <<EOF
+kubectl apply -n docker-registry -f - <<EOF
 apiVersion: operator.kyma-project.io/v1alpha1
 kind: DockerRegistry
 metadata:
     name: default
-    namespace: kyma-system
+    namespace: docker-registry
 spec:
     storage:
         deleteEnabled: true
@@ -43,14 +43,14 @@ kyma registry image-import <IMAGE_NAME>:<IMAGE_TAG>
 3. Port-forward the registry service to another terminal:
 
 ```bash
-kubectl port-forward -n kyma-system svc/dockerregistry 5000:5000
+kubectl port-forward -n docker-registry svc/dockerregistry 5000:5000
 ```
 
 4. Export registry credentials:
 
 ```bash
-export DR_USERNAME=$(kubectl get secret -n kyma-system dockerregistry-config -o jsonpath="{.data.username}" | base64 -d)
-export DR_PASSWORD=$(kubectl get secret -n kyma-system dockerregistry-config -o jsonpath="{.data.password}" | base64 -d)
+export DR_USERNAME=$(kubectl get secret -n docker-registry dockerregistry-config -o jsonpath="{.data.username}" | base64 -d)
+export DR_PASSWORD=$(kubectl get secret -n docker-registry dockerregistry-config -o jsonpath="{.data.password}" | base64 -d)
 ```
 
 <!-- tabs:start -->
