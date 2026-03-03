@@ -132,7 +132,7 @@ func (fb *Builder) WithManagedByLabel(managedBy string) *Builder {
 	return fb
 }
 
-func (fb *Builder) WithLogging(level, format string, accessLogDisabled bool) *Builder {
+func (fb *Builder) WithLogging(level, format string, accessLogEnabled bool) *Builder {
 	if level != "" {
 		_ = fb.With("configData.log.level", level)
 		// restart deployment registry to fetch new logging configuration
@@ -144,8 +144,8 @@ func (fb *Builder) WithLogging(level, format string, accessLogDisabled bool) *Bu
 		fb = fb.withRollme(fmt.Sprintf("configData.log.formatter=%s", format))
 	}
 	// Access logs use Apache Combined Log Format and cannot use json/text formatter
-	_ = fb.With("configData.log.accesslog.disabled", accessLogDisabled)
-	fb = fb.withRollme(fmt.Sprintf("configData.log.accesslog.disabled=%t", accessLogDisabled))
+	_ = fb.With("configData.log.accesslog.disabled", !accessLogEnabled)
+	fb = fb.withRollme(fmt.Sprintf("configData.log.accesslog.disabled=%t", !accessLogEnabled))
 	return fb
 }
 

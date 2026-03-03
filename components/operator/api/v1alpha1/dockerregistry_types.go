@@ -37,19 +37,16 @@ type Logging struct {
 	// Level defines the log level for the docker-registry.
 	// Valid values are: "error", "warn", "info", "debug".
 	// +kubebuilder:validation:Enum=error;warn;info;debug
-	// +kubebuilder:default=info
-	Level string `json:"level,omitempty"`
+	Level *string `json:"level,omitempty"`
 
 	// Format defines the log format for the docker-registry.
 	// Valid values are: "json", "text", "console" (alias for "text").
 	// +kubebuilder:validation:Enum=json;text;console
-	// +kubebuilder:default=json
-	Format string `json:"format,omitempty"`
+	Format *string `json:"format,omitempty"`
 
-	// AccessLogDisabled disables the HTTP access logs.
+	// AccessLogEnabled enables the HTTP access logs.
 	// Access logs use Apache Combined Log Format and cannot be configured to use json/text formatter.
-	// +kubebuilder:default=false
-	AccessLogDisabled bool `json:"accessLogDisabled,omitempty"`
+	AccessLogEnabled *bool `json:"accessLogEnabled,omitempty"`
 }
 
 type ExternalAccess struct {
