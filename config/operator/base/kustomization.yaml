@@ -4,13 +4,6 @@ kind: Kustomization
 # Adds namespace to all resources.
 namespace: kyma-system
 
-# Value of this field is prepended to the
-# names of all resources, e.g. a deployment named
-# "wordpress" becomes "alices-wordpress".
-# Note that it should also match with the prefix (text before '-') of the namespace
-# field above.
-namePrefix: dockerregistry-
-
 # Labels to add to all resources.
 labels:
 - includeTemplates: true
@@ -22,10 +15,5 @@ labels:
     kyma-project.io/module: docker-registry
 
 resources:
-- ./crd
-- ./deployment
-- ./rbac
-- ./ui-extensions
-- ./cli-extensions
-- ./priority-class
+- ./prefixed
 - ./network-policy
