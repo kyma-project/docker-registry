@@ -108,7 +108,7 @@ func Test_flagsBuilder_WithLogging(t *testing.T) {
 		}
 
 		flags, err := NewBuilder().
-			WithLogging("debug", "json", false).
+			WithLogging("debug", "json", true).
 			Build()
 
 		require.NoError(t, err)
@@ -130,7 +130,7 @@ func Test_flagsBuilder_WithLogging(t *testing.T) {
 		}
 
 		flags, err := NewBuilder().
-			WithLogging("info", "text", true).
+			WithLogging("info", "text", false).
 			Build()
 
 		require.NoError(t, err)
@@ -142,11 +142,11 @@ func Test_flagsBuilder_WithLogging(t *testing.T) {
 			"configData": map[string]interface{}{
 				"log": map[string]interface{}{
 					"accesslog": map[string]interface{}{
-						"disabled": false,
+						"disabled": true,
 					},
 				},
 			},
-			"rollme": "configData.log.accesslog.disabled=false",
+			"rollme": "configData.log.accesslog.disabled=true",
 		}
 
 		flags, err := NewBuilder().
