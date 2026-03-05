@@ -78,14 +78,12 @@ spec:
                 description: Logging defines the logging configuration for docker-registry
                   pods.
                 properties:
-                  accessLogDisabled:
-                    default: false
+                  accessLogEnabled:
                     description: |-
-                      AccessLogDisabled disables the HTTP access logs.
+                      AccessLogEnabled enables the HTTP access logs.
                       Access logs use Apache Combined Log Format and cannot be configured to use json/text formatter.
                     type: boolean
                   format:
-                    default: json
                     description: |-
                       Format defines the log format for the docker-registry.
                       Valid values are: "json", "text", "console" (alias for "text").
@@ -95,7 +93,6 @@ spec:
                     - console
                     type: string
                   level:
-                    default: info
                     description: |-
                       Level defines the log level for the docker-registry.
                       Valid values are: "error", "warn", "info", "debug".
