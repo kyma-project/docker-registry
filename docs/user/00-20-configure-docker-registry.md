@@ -15,7 +15,7 @@ The default configuration of the Docker Registry module is the following:
    kind: DockerRegistry
    metadata:
      name: default
-     namespace: kyma-system
+     namespace: docker-registry
    spec: {}
 
    ```
@@ -43,7 +43,7 @@ apiVersion: operator.kyma-project.io/v1alpha1
 kind: DockerRegistry
 metadata:
   name: default
-  namespace: kyma-system
+  namespace: docker-registry
 spec:
   logging:
     level: debug
@@ -53,10 +53,10 @@ spec:
 
 ## Docker Registry Operator Logging Configuration
 
-To update Operator's logging configuration, you can edit the `dockerregistry-operator-config` ConfigMap in the `kyma-system` namespace.
+To update Operator's logging configuration, you can edit the `dockerregistry-operator-config` ConfigMap in the `docker-registry` namespace.
 
 ### Change log level and format
-kubectl patch configmap dockerregistry-operator-config -n kyma-system --type merge -p '{"data":{"log-config.yaml":"logLevel: debug\nlogFormat: console"}}'
+kubectl patch configmap dockerregistry-operator-config -n docker-registry --type merge -p '{"data":{"log-config.yaml":"logLevel: debug\nlogFormat: console"}}'
 
 > [!NOTE]
 > It is not possible to dynamically change the log format for the Docker Registry Operator. If you want to change it, update the ConfigMap and restart the Pods.
