@@ -5,7 +5,7 @@ This tutorial shows how to remove a previously pushed image to the registry usin
 ## Prerequsities
 
 * [kubectl](https://kubernetes.io/docs/tasks/tools/)
-* [Kyma CLI v3](https://github.com/kyma-project/cli/)
+* [Kyma CLI](https://kyma-project.io/external-content/cli/docs/user/README.html)
 * [skopeo](https://github.com/containers/skopeo/) (for the skopeo scenario)
 * [curl](https://curl.se/) (for the registry API scenario)
 
