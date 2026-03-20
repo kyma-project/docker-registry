@@ -5,7 +5,7 @@ This tutorial shows how you can expose the registry to the outside of the cluste
 ## Prerequsities
 
 * [kubectl](https://kubernetes.io/docs/tasks/tools/)
-* [Kyma CLI](https://github.com/kyma-project/cli)
+* [Kyma CLI](https://kyma-project.io/external-content/cli/docs/user/README.html)
 * [Docker](https://www.docker.com/)
 
 ## Steps

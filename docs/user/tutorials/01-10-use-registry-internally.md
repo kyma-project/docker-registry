@@ -4,7 +4,7 @@ This tutorial shows how you can push an image to the Docker Registry and use it.
 
 ## Prerequsities
 
-* [Kyma CLI v3](https://github.com/kyma-project/cli)
+* [Kyma CLI](https://kyma-project.io/external-content/cli/docs/user/README.html)
 * [kubectl](https://kubernetes.io/docs/tasks/tools/)
 * [Docker](https://www.docker.com/)
 
