@@ -1,3 +1,0 @@
-- op: remove
-  # https://jsonpatch.com/#json-pointer
-  path: /metadata/labels/namespaces.warden.kyma-project.io~1validate
