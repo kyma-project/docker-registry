@@ -1,0 +1,5 @@
+kind: Namespace
+metadata:
+  name: docker-registry
+  labels:
+    namespaces.warden.kyma-project.io/validate: system
