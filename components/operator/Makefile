@@ -16,6 +16,7 @@ SHELL = /usr/bin/env bash -o pipefail
 
 ##@ Development
 CONFIG_OPERATOR = $(PROJECT_ROOT)/config/operator/base
+CONFIG_OPERATOR_PROD = $(PROJECT_ROOT)/config/operator/prod
 CONFIG_OPERATOR_DEV = $(PROJECT_ROOT)/config/operator/dev
 
 .PHONY: manifests
@@ -106,7 +107,11 @@ undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/confi
 
 .PHONY: render-manifest
 render-manifest: kustomize ## Render dockerregistry-operator.yaml manifest.
-	$(KUSTOMIZE) build $(CONFIG_OPERATOR) > $(PROJECT_ROOT)/dockerregistry-operator.yaml
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR_PROD) > $(PROJECT_ROOT)/dockerregistry-operator.yaml
+
+.PHONY: render-manifest-community
+render-manifest-community: kustomize ## Render dockerregistry-operator-community.yaml manifest.
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR) > $(PROJECT_ROOT)/dockerregistry-operator-community.yaml
 
 .PHONY: apply-default-dockerregistry-cr
 apply-default-dockerregistry-cr: ## Apply the k3d dockerregistry CR.
