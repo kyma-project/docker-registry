@@ -3,6 +3,7 @@
 - [Docker Registry Module](/docker-registry/user/README.md)
 - [Docker Registry Module Configuration](/docker-registry/user/00-20-configure-docker-registry.md)
 - [Docker Registry Storage Configuration](/docker-registry/user/00-30-storage-configuration.md)
+- [Docker Registry Network Policies](/docker-registry/user/00-40-network-policies.md)
 - [Tutorials](/docker-registry/user/tutorials/README.md)
   - [Use Docker Registry Internally](/docker-registry/user/tutorials/01-10-use-registry-internally.md)
   - [Expose Docker Registry](/docker-registry/user/tutorials/01-20-expose-registry.md)
