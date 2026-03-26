@@ -16,7 +16,7 @@ When a cluster-wide deny-all network policy is enforced, which blocks all ingres
 **Details:**
 - **Traffic Type:** Ingress
 - **Port:** 5000 (TCP)
-- **Description:** Allows inbound connections to the Docker Registry API port. This is the main interface through which clients push and pull container images. Without this policy, all external requests to the registry would be blocked.
+- **Description:** Enables inbound connections to the Docker Registry API port. This is the main interface through which clients push and pull container images. Without this policy, all external requests to the registry are blocked.
 
 **Use Case:** Essential for basic Docker Registry functionality, allowing Docker clients and Kubernetes operations to communicate with the registry service.
 
@@ -25,7 +25,7 @@ When a cluster-wide deny-all network policy is enforced, which blocks all ingres
 
 **Name:** `kyma-project.io--dockerregistry-allow-metrics-policy`
 
-**Purpose:** Allows the metrics collection agent to scrape metrics from the Docker Registry
+**Purpose:** Enables the metrics collection agent to scrape metrics from Docker Registry
 
 **Details:**
 - **Traffic Type:** Ingress
@@ -35,7 +35,7 @@ When a cluster-wide deny-all network policy is enforced, which blocks all ingres
   - Pods with label `networking.kyma-project.io/metrics-scraping: allowed`
 - **Description:** Restricts access to the metrics endpoint (port 5001) only to authorized metrics collection agents. This ensures monitoring and observability of Docker Registry while maintaining security by preventing unauthorized access to operational metrics.
 
-**Use Case:** Allows the Kyma metrics collection infrastructure to monitor Docker Registry performance and health without requiring network-wide ingress permissions.
+**Use Case:** Enables the Kyma metrics collection infrastructure to monitor Docker Registry performance and health without requiring network-wide ingress permissions.
 
 
 ### Allow DNS Queries
@@ -53,13 +53,12 @@ When a cluster-wide deny-all network policy is enforced, which blocks all ingres
   - Any IP address (0.0.0.0/0) on ports 53 TCP/UDP
   - Pods labeled `k8s-app: kube-dns` in `gardener.cloud/purpose: kube-system` namespace on ports 53 and 8053 (TCP/UDP)
   - Pods labeled `k8s-app: node-local-dns` in `gardener.cloud/purpose: kube-system` namespace on ports 53 and 8053 (TCP/UDP)
-- **Description:** Enables Docker Registry to resolve internal and external domain names through Kubernetes DNS services. This allows the registry to discover storage backend endpoints, API services, and other internal Kubernetes services by hostname.
+- **Description:** Enables Docker Registry to resolve internal and external domain names through Kubernetes DNS services. With that, the registry can discover storage backend endpoints, API services, and other internal Kubernetes services by hostname.
 
 **Use Case:** Critical for service discovery within the cluster. Allows the registry to resolve DNS names for:
 - Kubernetes API server
 - Storage backend endpoints (when using external storage)
 - Other internal services in the cluster
-
 
 ### Allow External Storage Backend Communication
 
