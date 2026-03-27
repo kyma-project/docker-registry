@@ -7,7 +7,7 @@ When a cluster-wide deny-all network policy is enforced, which blocks all ingres
 
 ## Network Policies
 
-To list the network policies belonging to docker-registry module, run the following command:
+To list the network policies belonging to the Docker Registry module, run the following command:
 
 ```bash
 kubectl get networkpolicies -n kyma-system -l kyma-project.io/module=docker-registry
