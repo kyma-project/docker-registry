@@ -25,13 +25,18 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
       - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
-      - name: run test
+      - name: setup
         run: |
           kubectl create namespace kyma-system || true
           kubectl create namespace docker-registry || true
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make -C components/operator deploy
-          make -C tests/operator test
+      - name: run rbac tests
+        uses: kyma-project/manager-toolkit/.github/actions/test-rbac-propagation@main
+        with:
+          config: tests/rbac/config.yaml
+      - name: run  operator tests
+        run: make -C tests/operator test
         env:
           IMG: ${{ inputs.image }}
       - if: ${{ always() }}
