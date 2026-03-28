@@ -15,9 +15,9 @@ install-dockerregistry-custom-operator: ## Install dockerregistry with operator 
 
 .PHONY: install-dockerregistry-latest-release
 install-dockerregistry-latest-release: ## Install dockerregistry from latest release
-	kubectl create namespace kyma-system || true
+	kubectl create namespace docker-registry || true
 	kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest/download/dockerregistry-operator.yaml
-	kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest/download/default-dockerregistry-cr.yaml -n kyma-system
+	kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest/download/default-dockerregistry-cr.yaml -n docker-registry
 	make -C ${OPERATOR_ROOT} check-dockerregistry-installation
 
 .PHONY: remove-dockerregistry

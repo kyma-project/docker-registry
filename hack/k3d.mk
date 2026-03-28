@@ -14,6 +14,7 @@ create-k3d: delete-k3d ## Delete old k3d registry and cluster. Create preconfigu
 	k3d registry create ${REGISTRY_NAME} --port ${REGISTRY_PORT} --no-help
 	k3d cluster create ${CLUSTER_NAME} --registry-use "k3d-${REGISTRY_NAME}:${REGISTRY_PORT}"
 	kubectl create namespace kyma-system
+	kubectl create namespace docker-registry
 
 .PHONY: delete-k3d
 delete-k3d: delete-k3d-cluster delete-k3d-registry ## Delete k3d registry & cluster.

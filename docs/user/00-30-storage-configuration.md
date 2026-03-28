@@ -15,7 +15,7 @@ apiVersion: operator.kyma-project.io/v1alpha1
 kind: DockerRegistry
 metadata:
     name: default
-    namespace: kyma-system
+    namespace: docker-registry
 spec: {}
 ```
 
@@ -36,7 +36,7 @@ apiVersion: operator.kyma-project.io/v1alpha1
 kind: DockerRegistry
 metadata:
     name: default
-    namespace: kyma-system
+    namespace: docker-registry
 spec:
     storage:
         azure:
@@ -50,7 +50,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: azure-storage
-  namespace: kyma-system
+  namespace: docker-registry
 data:
   accountKey: "YWNjb3VudEtleQ=="
   accountName: "YWNjb3VudE5hbWU="
@@ -71,7 +71,7 @@ apiVersion: operator.kyma-project.io/v1alpha1
 kind: DockerRegistry
 metadata:
   name: default
-  namespace: kyma-system
+  namespace: docker-registry
 spec:
   storage:
     s3:
@@ -90,7 +90,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: s3-storage
-  namespace: kyma-system
+  namespace: docker-registry
 data:
   accessKey: "YWNjZXNzS2V5"
   secretKey: "c2VjcmV0S2V5"
@@ -107,7 +107,7 @@ apiVersion: operator.kyma-project.io/v1alpha1
 kind: DockerRegistry
 metadata:
   name: default
-  namespace: kyma-system
+  namespace: docker-registry
 spec:
   storage:
     gcs:
@@ -124,7 +124,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: gcs-secret
-  namespace: kyma-system
+  namespace: docker-registry
 data:
   accountkey: "Z3Njc2VjcmV0"
 ```
@@ -142,7 +142,7 @@ apiVersion: operator.kyma-project.io/v1alpha1
 kind: DockerRegistry
 metadata:
   name: default
-  namespace: kyma-system
+  namespace: docker-registry
 spec:
   storage:
     btpObjectStore:
@@ -160,7 +160,7 @@ apiVersion: operator.kyma-project.io/v1alpha1
 kind: DockerRegistry
 metadata:
   name: default
-  namespace: kyma-system
+  namespace: docker-registry
 spec:
   storage:
     pvc:

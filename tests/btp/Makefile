@@ -3,19 +3,19 @@ docker_push_simple_app:
 	@kyma registry config-external --output config.json
 	# TODO: get multiplatform nginx; now we get nginx for amd64
 	docker pull nginx@sha256:f05d105face814474acc5538160bd3f29309d9398dd895a4e71f676a4fd9a3fc
-	docker tag nginx@sha256:f05d105face814474acc5538160bd3f29309d9398dd895a4e71f676a4fd9a3fc $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress})/simple-app:0.0.1
-	docker --config . push $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress})/simple-app:0.0.1
+	docker tag nginx@sha256:f05d105face814474acc5538160bd3f29309d9398dd895a4e71f676a4fd9a3fc $$(kubectl get dockerregistries.operator.kyma-project.io -n docker-registry default -ojsonpath={.status.externalAccess.pushAddress})/simple-app:0.0.1
+	docker --config . push $$(kubectl get dockerregistries.operator.kyma-project.io -n docker-registry default -ojsonpath={.status.externalAccess.pushAddress})/simple-app:0.0.1
 
 .PHONY: docker_registry_login
 docker_registry_login:
 	@echo "Loging Docker CLI into kyma internal docker registry..."
-	@docker login -u $$(kubectl get secrets -n kyma-system dockerregistry-config-external -o jsonpath={.data.username} | base64 -d) -p $$(kubectl get secrets -n kyma-system dockerregistry-config-external -o jsonpath={.data.password} | base64 -d) $$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.externalAccess.pushAddress})
+	@docker login -u $$(kubectl get secrets -n docker-registry dockerregistry-config-external -o jsonpath={.data.username} | base64 -d) -p $$(kubectl get secrets -n docker-registry dockerregistry-config-external -o jsonpath={.data.password} | base64 -d) $$(kubectl get dockerregistries.operator.kyma-project.io -n docker-registry default -ojsonpath={.status.externalAccess.pushAddress})
 
 .PHONY: deploy_simple_app
 deploy_simple_app:
 	@echo "Deploying simple app service..."
 	@kubectl apply -f k8s-resources/simple-app
-	@kubectl set image deployment simple-app-service simple-app-service=$$(kubectl get dockerregistries.operator.kyma-project.io -n kyma-system default -ojsonpath={.status.internalAccess.pullAddress})/simple-app:0.0.1
+	@kubectl set image deployment simple-app-service simple-app-service=$$(kubectl get dockerregistries.operator.kyma-project.io -n docker-registry default -ojsonpath={.status.internalAccess.pullAddress})/simple-app:0.0.1
 	@echo "Waiting for simple app service..."
 	@kubectl wait --for condition=Available deployment/simple-app-service --timeout=180s
 	@echo "Simple app service available."
@@ -51,9 +51,9 @@ enable_docker_registry:
 	@kubectl apply -f ${OPERATOR_MANIFEST}
 	@while ! kubectl get crd dockerregistries.operator.kyma-project.io; do echo "Waiting for docker-registry CRD..."; sleep 1; done
 	@kubectl wait --for condition=established crd/dockerregistries.operator.kyma-project.io
-	@kubectl apply -f k8s-resources/dependencies/exposed-docker-registry-with-btp-storage.yaml -n kyma-system
+	@kubectl apply -f k8s-resources/dependencies/exposed-docker-registry-with-btp-storage.yaml -n docker-registry
 	@echo "..waiting for docker registry"
-	@kubectl wait --for condition=Installed dockerregistries.operator.kyma-project.io/default -n kyma-system --timeout=300s
+	@kubectl wait --for condition=Installed dockerregistries.operator.kyma-project.io/default -n docker-registry --timeout=300s
 	@echo "Docker registry installed"
 	@while ! kubectl get secret dockerregistry-config-external; do echo "Waiting for dockerregistry-config-external secret..."; sleep 1; done
 	@echo "Waiting for docker registry external address availibility"
@@ -72,7 +72,7 @@ cleanup-kyma:
 .PHONY: cluster-info
 cluster-info: ## Print useful info about the cluster regarding integration run
 	@echo "####################### Operator Logs #######################"
-	@kubectl logs -n kyma-system -l app.kubernetes.io/component=dockerregistry-operator.kyma-project.io --tail=-1 || true
+	@kubectl logs -n docker-registry -l app.kubernetes.io/component=dockerregistry-operator.kyma-project.io --tail=-1 || true
 	@echo ""
 
 	@echo "####################### DockerRegistry CR #######################"

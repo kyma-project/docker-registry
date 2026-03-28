@@ -14,7 +14,7 @@ import (
 
 const nonConflictPort int32 = 32238
 
-const kymaNamespace = "kyma-system"
+const dockerRegistryNamespace = "docker-registry"
 
 func TestNodePortAction(t *testing.T) {
 	testCases := map[string]struct {
@@ -23,22 +23,22 @@ func TestNodePortAction(t *testing.T) {
 		expectedPort  int32
 	}{
 		"Return default port new port when nodePort installed on default port": {
-			givenService: fixtureServiceNodePort(dockerRegistryService, kymaNamespace, dockerRegistryNodePort),
+			givenService: fixtureServiceNodePort(dockerRegistryService, dockerRegistryNamespace, dockerRegistryNodePort),
 			expectedPort: dockerRegistryNodePort,
 		},
 		"Generate new port when nodePort service installed on different port": {
-			givenService: fixtureServiceNodePort(dockerRegistryService, kymaNamespace, nonConflictPort),
+			givenService: fixtureServiceNodePort(dockerRegistryService, dockerRegistryNamespace, nonConflictPort),
 			expectedPort: nonConflictPort,
 		},
 		"Return default port new port when nodePort not installed, without port conflict": {
 			expectedPort: dockerRegistryNodePort,
 		},
 		"Generate new port when nodePort not installed, with port conflict": {
-			givenService: fixtureServiceNodePort("conflicting-svc", kymaNamespace, dockerRegistryNodePort),
+			givenService: fixtureServiceNodePort("conflicting-svc", dockerRegistryNamespace, dockerRegistryNodePort),
 			expectedPort: nonConflictPort,
 		},
 		"Return default port new port when service is ClusterIP before upgrade without port conflict": {
-			givenService: fixtureServiceClusterIP(dockerRegistryService, kymaNamespace),
+			givenService: fixtureServiceClusterIP(dockerRegistryService, dockerRegistryNamespace),
 			expectedPort: dockerRegistryNodePort,
 		},
 		"Generate new port when cluster has NodePort service in different namespace with port conflict": {
@@ -70,7 +70,7 @@ func TestNodePortAction(t *testing.T) {
 			}
 
 			//WHEN
-			port, err := resolver.GetNodePort(ctx, k8sClient, kymaNamespace)
+			port, err := resolver.GetNodePort(ctx, k8sClient, dockerRegistryNamespace)
 
 			//THEN
 			require.NoError(t, err)
@@ -112,8 +112,8 @@ func fixtureServiceClusterIP(name, namespace string) *corev1.Service {
 
 func fixtureServices() []runtime.Object {
 	l := []runtime.Object{
-		fixtureServiceNodePort("other-node-port", kymaNamespace, dockerRegistryNodePort-1),
-		fixtureServiceNodePort("many-ports", kymaNamespace, dockerRegistryNodePort+2),
+		fixtureServiceNodePort("other-node-port", dockerRegistryNamespace, dockerRegistryNodePort-1),
+		fixtureServiceNodePort("many-ports", dockerRegistryNamespace, dockerRegistryNodePort+2),
 	}
 	return l
 }

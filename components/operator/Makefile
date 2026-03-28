@@ -16,6 +16,7 @@ SHELL = /usr/bin/env bash -o pipefail
 
 ##@ Development
 CONFIG_OPERATOR = $(PROJECT_ROOT)/config/operator/base
+CONFIG_OPERATOR_PROD = $(PROJECT_ROOT)/config/operator/prod
 CONFIG_OPERATOR_DEV = $(PROJECT_ROOT)/config/operator/dev
 
 .PHONY: manifests
@@ -70,7 +71,7 @@ install-operator-k3d: build-image-operator ## Build and install dockerregistry o
 	docker tag $(OPERATOR_NAME) $(OPERATOR_NAME):$(HASH_TAG)
 
 	k3d image import $(OPERATOR_NAME):$(HASH_TAG) -c kyma
-	kubectl set image deployment dockerregistry-operator -n kyma-system manager=$(OPERATOR_NAME):$(HASH_TAG)
+	kubectl set image deployment dockerregistry-operator -n docker-registry manager=$(OPERATOR_NAME):$(HASH_TAG)
 
 .PHONY: install
 install: manifests kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
@@ -82,7 +83,7 @@ uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified 
 
 .PHONY: deploy-main
 deploy-main: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
-	kubectl create namespace kyma-system || true
+	kubectl create namespace docker-registry || true
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR) | kubectl apply -f -
 
 .PHONY: generate-kustomization-dev
@@ -91,12 +92,12 @@ generate-kustomization-dev:
 
 .PHONY: deploy-release
 deploy-release: ## Deploy operator to the k8s cluster specified in ~/.kube/config with image from latest release.
-	kubectl create namespace kyma-system || true
+	kubectl create namespace docker-registry || true
 	kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest/download/dockerregistry-operator.yaml
 
 .PHONY: deploy
 deploy: manifests kustomize generate-kustomization-dev ## Deploy controller to the K8s cluster specified in ~/.kube/config with image from IMG env.
-	kubectl create namespace kyma-system || true
+	kubectl create namespace docker-registry || true
 	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit set image europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator=${IMG}
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR_DEV) | kubectl apply -f -
 
@@ -106,7 +107,11 @@ undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/confi
 
 .PHONY: render-manifest
 render-manifest: kustomize ## Render dockerregistry-operator.yaml manifest.
-	$(KUSTOMIZE) build $(CONFIG_OPERATOR) > $(PROJECT_ROOT)/dockerregistry-operator.yaml
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR_PROD) > $(PROJECT_ROOT)/dockerregistry-operator.yaml
+
+.PHONY: render-manifest-community
+render-manifest-community: kustomize ## Render dockerregistry-operator-community.yaml manifest.
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR) > $(PROJECT_ROOT)/dockerregistry-operator-community.yaml
 
 .PHONY: apply-default-dockerregistry-cr
 apply-default-dockerregistry-cr: ## Apply the k3d dockerregistry CR.
@@ -115,7 +120,7 @@ apply-default-dockerregistry-cr: ## Apply the k3d dockerregistry CR.
 
 .PHONY: remove-dockerregistry
 remove-dockerregistry: ## Remove Dockerregistry CR
-	kubectl delete dockerregistry -n kyma-system default --timeout 2m || (kubectl get dockerregistry -n kyma-system -oyaml && false)
+	kubectl delete dockerregistry -n docker-registry default --timeout 2m || (kubectl get dockerregistry -n docker-registry -oyaml && false)
 
 .PHONY: check-dockerregistry-installation
 check-dockerregistry-installation: ## Wait for Dockerregistry CR to be in Ready state.
@@ -125,14 +130,14 @@ check-dockerregistry-installation: ## Wait for Dockerregistry CR to be in Ready 
 	./hack/verify_dockerregistry_status.sh || \
 		(make print-dockerregistry-details && false)
 
-	kubectl wait --for condition=Available -n kyma-system deployment dockerregistry-operator --timeout=60s || \
+	kubectl wait --for condition=Available -n docker-registry deployment dockerregistry-operator --timeout=60s || \
 		(make print-dockerregistry-details && false)
 
 .PHONY: print-dockerregistry-details
-print-dockerregistry-details: ## Print all pods, deploys and dockerregistry CRs in the kyma-system namespace.
-	kubectl get dockerregistry -n kyma-system -oyaml
-	kubectl get deploy -n kyma-system -oyaml
-	kubectl get pods -n kyma-system -oyaml
+print-dockerregistry-details: ## Print all pods, deploys and dockerregistry CRs in the docker-registry namespace.
+	kubectl get dockerregistry -n docker-registry -oyaml
+	kubectl get deploy -n docker-registry -oyaml
+	kubectl get pods -n docker-registry -oyaml
 
 ##@ Module
 .PHONY: module-image
