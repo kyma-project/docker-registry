@@ -70,7 +70,6 @@ jobs:
         run: |
           KUBECONFIG=$KUBECONFIG kubectl create namespace kyma-system || true
           KUBECONFIG=$KUBECONFIG kubectl create namespace docker-registry || true
-          KUBECONFIG=$KUBECONFIG kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           echo '${{ secrets.BTP_REMOTE_SERVICE_MANAGER_BINDING }}' > tests/btp/sm.env
           KUBECONFIG=$KUBECONFIG make -C tests/btp ensure-btp-object-store-backend
           make -C components/operator render-manifest
