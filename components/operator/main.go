@@ -177,10 +177,10 @@ func main() {
 	)
 
 	configKubernetes := k8s.Config{
-		BaseNamespace:                 "kyma-system",
+		BaseNamespace:                 "docker-registry",
 		BaseInternalSecretName:        registry.InternalAccessSecretName,
 		BaseExternalSecretName:        registry.ExternalAccessSecretName,
-		ExcludedNamespaces:            []string{"kyma-system"},
+		ExcludedNamespaces:            []string{"docker-registry"},
 		ConfigMapRequeueDuration:      time.Minute,
 		SecretRequeueDuration:         time.Minute,
 		ServiceAccountRequeueDuration: time.Minute,

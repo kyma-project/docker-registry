@@ -30,13 +30,17 @@ uploadFile() {
   fi
 }
 
-make -C components/operator/ render-manifest
+make -C components/operator/ render-manifest render-manifest-community
 
 echo "Generated dockerregistry-operator.yaml:"
 cat dockerregistry-operator.yaml
+
+echo "Generated dockerregistry-operator-community.yaml:"
+cat dockerregistry-operator-community.yaml
 
 echo "Updating github release with assets"
 UPLOAD_URL="https://uploads.github.com/repos/kyma-project/docker-registry/releases/${RELEASE_ID}/assets"
 
 uploadFile "dockerregistry-operator.yaml" "${UPLOAD_URL}?name=dockerregistry-operator.yaml"
+uploadFile "dockerregistry-operator-community.yaml" "${UPLOAD_URL}?name=dockerregistry-operator-community.yaml"
 uploadFile "config/samples/default-dockerregistry-cr.yaml" "${UPLOAD_URL}?name=default-dockerregistry-cr.yaml"

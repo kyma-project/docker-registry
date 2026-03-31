@@ -16,10 +16,10 @@ The Docker Registry module comes with a dedicated Kubernetes operator for effort
 
 ## Install
 
-1. Create the `kyma-system` namespace:
+1. Create the `docker-registry` namespace:
 
 ```bash
-kubectl create namespace kyma-system
+kubectl create namespace docker-registry
 ```
 
 2. Apply the following script to install Docker Registry Operator:

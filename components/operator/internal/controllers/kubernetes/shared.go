@@ -14,10 +14,10 @@ const (
 )
 
 type Config struct {
-	BaseNamespace                 string        `envconfig:"default=kyma-system"`
+	BaseNamespace                 string        `envconfig:"default=docker-registry"`
 	BaseInternalSecretName        string        `envconfig:"default=dockerregistry-config"`
 	BaseExternalSecretName        string        `envconfig:"default=dockerregistry-config-external"`
-	ExcludedNamespaces            []string      `envconfig:"default=kyma-system"`
+	ExcludedNamespaces            []string      `envconfig:"default=docker-registry"`
 	ConfigMapRequeueDuration      time.Duration `envconfig:"default=1m"`
 	SecretRequeueDuration         time.Duration `envconfig:"default=1m"`
 	ServiceAccountRequeueDuration time.Duration `envconfig:"default=1m"`
