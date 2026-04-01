@@ -1,4 +1,4 @@
-# Docker Registry Network Policies
+# Network Policies
 
 Learn about the network policies for the Docker Registry module.
 
