@@ -12,5 +12,5 @@ jobs:
       - uses: actions/checkout@v4
       - uses: golangci/golangci-lint-action@v8
         with:
-          version: v2.11
+          version: latest
           working-directory: "components/operator"

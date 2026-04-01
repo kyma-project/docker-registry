@@ -1,6 +1,6 @@
 module github.com/kyma-project/docker-registry
 
-go 1.25.5
+go 1.26.0
 
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
