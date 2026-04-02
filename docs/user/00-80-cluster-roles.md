@@ -1,10 +1,12 @@
-# Cluster Roles
+# ClusterRoles
 
-The Docker Registry module includes several ClusterRoles that are used to manage permissions for the Docker Registry operator and to aggregate permissions for end users. This document describes all ClusterRoles bundled with the Docker Registry module.
+Learn about ClusterRoles in the Docker Registry module. 
+
+The Docker Registry module includes several ClusterRoles that are used to manage permissions for the Docker Registry Operator and to aggregate permissions for end users.
 
 ## Docker Registry Edit ClusterRole
 
-The `kyma-docker-registry-edit` ClusterRole allows users to edit Docker Registry resources.
+With the `kyma-docker-registry-edit` ClusterRole, you can edit the Docker Registry resources. For the available options, see the following table:
 
 | API Group | Resources | Verbs |
 |---|---|---|
@@ -13,7 +15,7 @@ The `kyma-docker-registry-edit` ClusterRole allows users to edit Docker Registry
 
 ## Docker Registry View ClusterRole
 
-The `kyma-docker-registry-view` ClusterRole allows users to view Docker Registry resources.
+With the `kyma-docker-registry-view` ClusterRole, you can view the Docker Registry resources. For the available options, see the following table:
 
 | API Group | Resources | Verbs |
 |---|---|---|
@@ -22,9 +24,9 @@ The `kyma-docker-registry-view` ClusterRole allows users to view Docker Registry
 
 ## Role Aggregation
 
-The Docker Registry module uses Kubernetes [role aggregation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles) to automatically extend the default `edit` and `view` ClusterRoles with Docker Registry-specific permissions.
+The Docker Registry module uses the Kubernetes [role aggregation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles) to automatically extend the default `edit` and `view` ClusterRoles with Docker Registry-specific permissions.
 
 - **kyma-docker-registry-edit**: Aggregated to `edit` ClusterRole
 - **kyma-docker-registry-view**: Aggregated to `view` ClusterRole
 
-This means that users who are granted the default Kubernetes `edit` or `view` ClusterRoles automatically receive the corresponding Docker Registry permissions without requiring additional role bindings.
+This means that if you have the default Kubernetes `edit` or `view` ClusterRoles, you automatically receive the corresponding Docker Registry permissions without requiring additional role bindings.
