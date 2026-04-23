@@ -25,7 +25,7 @@ deploy_simple_app:
 ensure-btp-object-store-backend:
 # create reference instance (and binding) to an existing btp object store service instance that is shared via credentials to remote service manager from different subaccount.
 	@kubectl create secret generic remote-service-manager-credentials \
-		--namespace docker-registry --from-env-file sm.env
+		--namespace kyma-system --from-env-file sm.env
 	@echo "Waiting for CRD btp operator"
 	@while ! kubectl get crd btpoperators.operator.kyma-project.io; \
 		do echo "Waiting for CRD btp operator..."; sleep 1; done
@@ -35,13 +35,20 @@ ensure-btp-object-store-backend:
 	@kubectl wait --for condition=Ready btpoperators.operator.kyma-project.io/btpoperator -n kyma-system --timeout=180s
 	@kyma alpha reference-instance \
 		--btp-secret-name remote-service-manager-credentials \
-		--namespace docker-registry \
+		--namespace kyma-system \
 		--offering-name objectstore \
 		--plan-selector standard \
 		--reference-name object-store-reference
-	@kubectl apply -n docker-registry -f k8s-resources/dependencies/object-store-binding.yaml
-	@while ! kubectl get secret object-store-reference-binding --namespace docker-registry; \
-		do echo "Waiting for object-store-reference-binding secret..."; sleep 5; done
+	@kubectl apply -n kyma-system -f k8s-resources/dependencies/object-store-binding.yaml
+	@for i in $$(seq 1 60); do \
+		kubectl get secret object-store-reference-binding --namespace kyma-system 2>/dev/null && break; \
+		echo "Waiting for object-store-reference-binding secret (attempt $$i/60)..."; \
+		sleep 5; \
+	done
+	@kubectl get secret object-store-reference-binding --namespace kyma-system
+	@kubectl get secret object-store-reference-binding -n kyma-system -o json \
+		| jq '{apiVersion:.apiVersion,kind:.kind,metadata:{name:.metadata.name},type:.type,data:.data}' \
+		| kubectl apply -n docker-registry -f -
 
 .PHONY: enable_docker_registry
 enable_docker_registry:
@@ -66,8 +73,8 @@ test: docker_push_simple_app deploy_simple_app cleanup-kyma
 cleanup-kyma:
 	@echo "Deleting resources from kyma..."
 	@kubectl delete -f k8s-resources/simple-app
-	@kubectl delete -n docker-registry servicebindings.services.cloud.sap.com --all
-	@kubectl delete -n docker-registry serviceinstances.services.cloud.sap.com --all
+	@kubectl delete -n kyma-system servicebindings.services.cloud.sap.com --all
+	@kubectl delete -n kyma-system serviceinstances.services.cloud.sap.com --all
 
 .PHONY: cluster-info
 cluster-info: ## Print useful info about the cluster regarding integration run
