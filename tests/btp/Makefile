@@ -39,7 +39,7 @@ ensure-btp-object-store-backend:
 		--offering-name objectstore \
 		--plan-selector standard \
 		--reference-name object-store-reference
-	@kubectl apply -n kyma-system -f k8s-resources/dependencies/object-store-binding.yaml
+	@kubectl apply -n docker-registry -f k8s-resources/dependencies/object-store-binding.yaml
 	@for i in $$(seq 1 60); do \
 		kubectl get secret object-store-reference-binding --namespace kyma-system 2>/dev/null && break; \
 		echo "Waiting for object-store-reference-binding secret (attempt $$i/60)..."; \
