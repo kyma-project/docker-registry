@@ -73,8 +73,8 @@ test: docker_push_simple_app deploy_simple_app cleanup-kyma
 cleanup-kyma:
 	@echo "Deleting resources from kyma..."
 	@kubectl delete -f k8s-resources/simple-app
-	@kubectl delete -n kyma-system servicebindings.services.cloud.sap.com --all
-	@kubectl delete -n kyma-system serviceinstances.services.cloud.sap.com --all
+	@kubectl delete -n docker-registry servicebindings.services.cloud.sap.com --all
+	@kubectl delete -n docker-registry serviceinstances.services.cloud.sap.com --all
 
 .PHONY: cluster-info
 cluster-info: ## Print useful info about the cluster regarding integration run
