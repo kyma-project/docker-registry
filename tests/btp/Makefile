@@ -40,8 +40,11 @@ ensure-btp-object-store-backend:
 		--plan-selector standard \
 		--reference-name object-store-reference
 	@kubectl apply -n docker-registry -f k8s-resources/dependencies/object-store-binding.yaml
-	@while ! kubectl get secret object-store-reference-binding --namespace docker-registry; \
-		do echo "Waiting for object-store-reference-binding secret..."; sleep 5; done
+	@for i in $$(seq 1 60); do \
+		kubectl get secret object-store-reference-binding --namespace docker-registry 2>/dev/null && break; \
+		echo "Waiting for object-store-reference-binding secret (attempt $$i/60)..."; \
+		sleep 5; \
+	done
 
 .PHONY: enable_docker_registry
 enable_docker_registry:
