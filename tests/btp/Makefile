@@ -35,7 +35,7 @@ ensure-btp-object-store-backend:
 	@kubectl wait --for condition=Ready btpoperators.operator.kyma-project.io/btpoperator -n kyma-system --timeout=180s
 	@kyma alpha reference-instance \
 		--btp-secret-name remote-service-manager-credentials \
-		--namespace kyma-system \
+		--namespace docker-registry \
 		--offering-name objectstore \
 		--plan-selector standard \
 		--reference-name object-store-reference
