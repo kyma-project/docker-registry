@@ -45,10 +45,6 @@ ensure-btp-object-store-backend:
 		echo "Waiting for object-store-reference-binding secret (attempt $$i/60)..."; \
 		sleep 5; \
 	done
-	@kubectl get secret object-store-reference-binding --namespace kyma-system
-	@kubectl get secret object-store-reference-binding -n kyma-system -o json \
-		| jq '{apiVersion:.apiVersion,kind:.kind,metadata:{name:.metadata.name},type:.type,data:.data}' \
-		| kubectl apply -n docker-registry -f -
 
 .PHONY: enable_docker_registry
 enable_docker_registry:
