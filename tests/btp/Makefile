@@ -25,7 +25,7 @@ deploy_simple_app:
 ensure-btp-object-store-backend:
 # create reference instance (and binding) to an existing btp object store service instance that is shared via credentials to remote service manager from different subaccount.
 	@kubectl create secret generic remote-service-manager-credentials \
-		--namespace docker-registry --from-env-file sm.env
+		--namespace kyma-system --from-env-file sm.env
 	@echo "Waiting for CRD btp operator"
 	@while ! kubectl get crd btpoperators.operator.kyma-project.io; \
 		do echo "Waiting for CRD btp operator..."; sleep 1; done
