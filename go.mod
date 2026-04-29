@@ -14,7 +14,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.11.1
 	github.com/vrischmann/envconfig v1.4.1
-	go.uber.org/zap v1.27.1
+	go.uber.org/zap v1.28.0
 	golang.org/x/text v0.36.0
 	istio.io/api v1.29.2
 	istio.io/client-go v1.29.2
