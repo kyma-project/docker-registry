@@ -5,7 +5,6 @@ on:
     types: [ opened, edited, synchronize, reopened, ready_for_review ]
 
 permissions:
-  id-token: write # This is required for requesting the JWT token
   contents: read # This is required for actions/checkout
 
 jobs:
@@ -17,11 +16,13 @@ jobs:
     uses: ./.github/workflows/_images-verify.yaml
 
   builds:
+    permissions:
+      id-token: write # This is required for requesting the JWT token
+      contents: read # This is required for actions/checkout
     uses: ./.github/workflows/_build.yaml
 
   integrations:
     needs: builds
-    secrets: inherit
     uses: ./.github/workflows/_integration-tests.yaml
     with:
       image: europe-docker.pkg.dev/kyma-project/dev/dockerregistry-operator:PR-${{ github.event.number }}
