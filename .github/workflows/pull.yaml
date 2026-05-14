@@ -8,6 +8,13 @@ permissions:
   contents: read # This is required for actions/checkout
 
 jobs:
+  select-environment:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.pull_request.author_association != 'COLLABORATOR' && github.event.pull_request.author_association != 'OWNER' && 'restricted' || 'internal' }}
+    steps:
+      - name: Approved
+        run: echo "Build approved, environment selected"
+
   unit-tests:
     uses: ./.github/workflows/_unit-tests.yaml
 
@@ -16,6 +23,7 @@ jobs:
     uses: ./.github/workflows/_images-verify.yaml
 
   builds:
+    needs: select-environment
     permissions:
       id-token: write # This is required for requesting the JWT token
       contents: read # This is required for actions/checkout
