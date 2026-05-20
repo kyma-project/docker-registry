@@ -15,7 +15,7 @@ require (
 	github.com/stretchr/testify v1.11.1
 	github.com/vrischmann/envconfig v1.4.1
 	go.uber.org/zap v1.28.0
-	golang.org/x/text v0.36.0
+	golang.org/x/text v0.37.0
 	istio.io/api v1.29.2
 	istio.io/client-go v1.29.2
 	k8s.io/api v0.35.4
