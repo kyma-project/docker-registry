@@ -15,8 +15,8 @@ env:
   GH_ENTERPRISE_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
   BOT_USERNAME: kyma-otter-serviceuser
   BOT_EMAIL: dl_545734d8fd84a02c39000002@global.corp.sap
-  GH_TOOLS_REPO_URL: ${{ secrets.GH_TOOLS_REPO_URL }}
-  DOCKER_REGISTRY_REPO_URL: ${{ secrets.DOCKER_REGISTRY_REPO_URL }}
+  GH_TOOLS_REPO_URL: ${{ vars.GH_TOOLS_DOMAIN }}
+  DOCKER_REGISTRY_REPO_URL: ${{ vars.DOCKER_REGISTRY_REPO_URL }}
 
 jobs:
 
