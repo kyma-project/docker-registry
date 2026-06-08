@@ -32,8 +32,8 @@ jobs:
           IMG: "europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:${{ github.event.inputs.name }}"
           MODULE_VERSION: ${{ github.event.inputs.name }}
 
-      - name: Bump sec-scanners-config.yaml based on values.yaml
-        run: ./.github/scripts/upgrade-sec-scanners-config.sh
+      - name: Bump component-config.yaml based on values.yaml
+        run: ./.github/scripts/upgrade-component-config.sh
         env:
           IMG_VERSION: ${{ github.event.inputs.name }}
       
