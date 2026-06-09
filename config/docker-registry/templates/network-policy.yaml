@@ -43,7 +43,10 @@ spec:
           podSelector:
             matchLabels:
               app.kubernetes.io/instance: rma
-        - podSelector:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kyma-system
+          podSelector:
             matchLabels:
               networking.kyma-project.io/metrics-scraping: allowed
       ports:
