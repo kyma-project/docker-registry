@@ -16,8 +16,8 @@ require (
 	github.com/vrischmann/envconfig v1.4.1
 	go.uber.org/zap v1.28.0
 	golang.org/x/text v0.38.0
-	istio.io/api v1.30.0
-	istio.io/client-go v1.30.0
+	istio.io/api v1.30.1
+	istio.io/client-go v1.30.1
 	k8s.io/api v0.35.5
 	k8s.io/apiextensions-apiserver v0.35.5
 	k8s.io/apimachinery v0.35.5
