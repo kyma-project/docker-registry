@@ -45,6 +45,7 @@ jobs:
   btp-integration-tests:
     if: ${{ inputs.trigger_btp }}
     runs-on: ubuntu-latest
+    environment: secrets
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-kyma
