@@ -1,3 +1,3 @@
 images:
-  - source: "registry@sha256:1fc7de654f2ac1247f0b67e8a459e273b0993be7d2beda1f3f56fbf1001ed3e7"
-    tag: "3.0.0"
+  - source: "registry@sha256:85347ed2ecde64161c7a4788a4d7d3dcc9d6f86f7be95834022e3c6a423a945a"
+    tag: "3.1.1"
