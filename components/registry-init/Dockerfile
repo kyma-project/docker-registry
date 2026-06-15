@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.23.4
+FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.24.0
 
 RUN set -ex \
     && apk upgrade --no-cache \
