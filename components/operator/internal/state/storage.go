@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"time"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
@@ -12,6 +13,10 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
+
+// storageRetryInterval is how often the storage configuration is retried when it fails, for example
+// because the referenced storage Secret does not exist yet
+const storageRetryInterval = time.Minute
 
 func sFnStorageConfiguration(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	err := prepareStorage(ctx, r, s)
@@ -22,6 +27,7 @@ func sFnStorageConfiguration(ctx context.Context, r *reconciler, s *systemState)
 			v1alpha1.ConditionReasonConfigurationErr,
 			err,
 		)
+		s.retryAfter = storageRetryInterval
 	}
 
 	return nextState(sFnUpdateConfigurationStatus)

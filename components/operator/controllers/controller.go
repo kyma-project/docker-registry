@@ -66,7 +66,37 @@ func (sr *dockerRegistryReconciler) SetupWithManager(mgr ctrl.Manager) error {
 			DeleteFunc: sr.retriggerAllDockerRegistryCRs,
 		}).
 		Watches(&corev1.Service{}, tracing.ServiceCollectorWatcher()).
+		Watches(&corev1.Secret{}, handler.EnqueueRequestsFromMapFunc(sr.mapStorageSecretToDockerRegistryCRs)).
 		Complete(sr)
+}
+
+// mapStorageSecretToDockerRegistryCRs enqueues every DockerRegistry CR that references the given
+// Secret as its external storage credentials, so that creating or rotating the Secret is picked up.
+func (sr *dockerRegistryReconciler) mapStorageSecretToDockerRegistryCRs(ctx context.Context, secret client.Object) []ctrl.Request {
+	log := sr.log.With("storage_secret_watcher")
+
+	list := &v1alpha1.DockerRegistryList{}
+	err := sr.client.List(ctx, list, client.InNamespace(secret.GetNamespace()))
+	if err != nil {
+		log.Errorf("error listing dockerregistry objects: %s", err.Error())
+		return nil
+	}
+
+	requests := []ctrl.Request{}
+	for _, dockerRegistry := range list.Items {
+		if dockerRegistry.StorageSecretName() != secret.GetName() {
+			continue
+		}
+
+		log.Debugf("retriggering reconciliation for DockerRegistry %s/%s referencing storage secret %s",
+			dockerRegistry.GetNamespace(), dockerRegistry.GetName(), secret.GetName())
+		requests = append(requests, ctrl.Request{NamespacedName: client.ObjectKey{
+			Namespace: dockerRegistry.GetNamespace(),
+			Name:      dockerRegistry.GetName(),
+		}})
+	}
+
+	return requests
 }
 
 func (sr *dockerRegistryReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
