@@ -6,7 +6,46 @@ import (
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/event"
 )
+
+func Test_storageSecretChanged(t *testing.T) {
+	secretWithResourceVersion := func(resourceVersion string) *metav1.PartialObjectMetadata {
+		return &metav1.PartialObjectMetadata{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:            "storage-secret",
+				Namespace:       "docker-registry",
+				ResourceVersion: resourceVersion,
+			},
+		}
+	}
+
+	t.Run("skips an informer resync", func(t *testing.T) {
+		resync := event.TypedUpdateEvent[*metav1.PartialObjectMetadata]{
+			ObjectOld: secretWithResourceVersion("42"),
+			ObjectNew: secretWithResourceVersion("42"),
+		}
+
+		require.False(t, storageSecretChanged.Update(resync))
+	})
+
+	t.Run("passes a rotation", func(t *testing.T) {
+		rotation := event.TypedUpdateEvent[*metav1.PartialObjectMetadata]{
+			ObjectOld: secretWithResourceVersion("42"),
+			ObjectNew: secretWithResourceVersion("43"),
+		}
+
+		require.True(t, storageSecretChanged.Update(rotation))
+	})
+
+	t.Run("passes a secret showing up late", func(t *testing.T) {
+		creation := event.TypedCreateEvent[*metav1.PartialObjectMetadata]{
+			Object: secretWithResourceVersion("42"),
+		}
+
+		require.True(t, storageSecretChanged.Create(creation))
+	})
+}
 
 func Test_keepIdentityOnly(t *testing.T) {
 	t.Run("keeps only what the storage secret watch reads", func(t *testing.T) {

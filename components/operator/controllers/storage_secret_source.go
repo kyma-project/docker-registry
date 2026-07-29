@@ -10,6 +10,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
@@ -41,8 +42,13 @@ func storageSecretSource(mgr manager.Manager, mapFunc func(context.Context, clie
 			return mapFunc(ctx, secret)
 		})
 
-	return source.Kind(secretCache, secretMetadata, eventHandler), nil
+	// informers resync on their own, which repeats an update event for every Secret in the cluster
+	// even though nothing changed; only a new resource version means new credentials
+	return source.Kind(secretCache, secretMetadata, eventHandler, storageSecretChanged), nil
 }
+
+// storageSecretChanged passes the events that can carry new credentials, and drops informer resyncs.
+var storageSecretChanged = predicate.TypedResourceVersionChangedPredicate[*metav1.PartialObjectMetadata]{}
 
 // keepIdentityOnly drops everything the storage secret watch does not look at, so that the cache costs
 // as little as possible per Secret in the cluster.

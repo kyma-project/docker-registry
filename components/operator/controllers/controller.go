@@ -78,7 +78,7 @@ func (sr *dockerRegistryReconciler) SetupWithManager(mgr ctrl.Manager) error {
 // mapStorageSecretToDockerRegistryCRs enqueues every DockerRegistry CR that references the given
 // Secret as its external storage credentials, so that creating or rotating the Secret is picked up.
 func (sr *dockerRegistryReconciler) mapStorageSecretToDockerRegistryCRs(ctx context.Context, secret client.Object) []ctrl.Request {
-	log := sr.log.With("storage_secret_watcher")
+	log := sr.log.With("watcher", "storage_secret")
 
 	list := &v1alpha1.DockerRegistryList{}
 	err := sr.client.List(ctx, list, client.InNamespace(secret.GetNamespace()))
@@ -123,7 +123,7 @@ func (sr *dockerRegistryReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 }
 
 func (sr *dockerRegistryReconciler) retriggerAllDockerRegistryCRs(ctx context.Context, e event.DeleteEvent, q workqueue.TypedRateLimitingInterface[ctrl.Request]) {
-	log := sr.log.With("deletion_watcher")
+	log := sr.log.With("watcher", "deletion")
 
 	list := &v1alpha1.DockerRegistryList{}
 	err := sr.client.List(ctx, list, &client.ListOptions{})
