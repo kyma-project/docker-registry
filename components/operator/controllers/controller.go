@@ -58,6 +58,11 @@ func NewDockerRegistryReconciler(client client.Client, config *rest.Config, reco
 
 // SetupWithManager sets up the controller with the Manager.
 func (sr *dockerRegistryReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	storageSecrets, err := storageSecretSource(mgr, sr.mapStorageSecretToDockerRegistryCRs)
+	if err != nil {
+		return errors.Wrap(err, "while setting up the storage secret watch")
+	}
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.DockerRegistry{}, builder.WithPredicates(predicate.NoStatusChangePredicate{})).
 		Watches(&v1alpha1.DockerRegistry{}, &handler.Funcs{
@@ -66,7 +71,7 @@ func (sr *dockerRegistryReconciler) SetupWithManager(mgr ctrl.Manager) error {
 			DeleteFunc: sr.retriggerAllDockerRegistryCRs,
 		}).
 		Watches(&corev1.Service{}, tracing.ServiceCollectorWatcher()).
-		Watches(&corev1.Secret{}, handler.EnqueueRequestsFromMapFunc(sr.mapStorageSecretToDockerRegistryCRs)).
+		WatchesRawSource(storageSecrets).
 		Complete(sr)
 }
 

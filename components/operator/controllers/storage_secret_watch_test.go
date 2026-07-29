@@ -98,4 +98,24 @@ func Test_mapStorageSecretToDockerRegistryCRs(t *testing.T) {
 			require.ElementsMatch(t, testCase.expected, requests)
 		})
 	}
+
+	// the storage secrets are watched metadata-only, so the mapper never sees a corev1.Secret at runtime
+	t.Run("works with the metadata delivered by the watch", func(t *testing.T) {
+		reconciler := &dockerRegistryReconciler{
+			client: fake.NewClientBuilder().WithScheme(scheme).WithObjects(
+				dockerRegistry("default", "docker-registry", &v1alpha1.Storage{
+					S3: &v1alpha1.StorageS3{SecretName: "storage-secret"},
+				})).Build(),
+			log: zap.NewNop().Sugar(),
+		}
+		secretMetadata := &metav1.PartialObjectMetadata{
+			ObjectMeta: metav1.ObjectMeta{Name: "storage-secret", Namespace: "docker-registry"},
+		}
+
+		requests := reconciler.mapStorageSecretToDockerRegistryCRs(context.Background(), secretMetadata)
+
+		require.Equal(t, []ctrl.Request{
+			{NamespacedName: client.ObjectKey{Namespace: "docker-registry", Name: "default"}},
+		}, requests)
+	})
 }
