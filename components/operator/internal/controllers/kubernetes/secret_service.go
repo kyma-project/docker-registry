@@ -12,12 +12,13 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
+	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"github.com/kyma-project/docker-registry/components/operator/internal/resource"
 )
 
 const (
 	FunctionManagedByLabel         = "dockerregistry.kyma-project.io/managed-by"
-	cfgSecretFinalizerName         = "dockerregistry.kyma-project.io/finalizer-registry-config"
+	cfgSecretFinalizerName         = registry.ConfigSecretFinalizer
 	FunctionResourceLabelUserValue = "user"
 )
 
