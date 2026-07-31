@@ -6,6 +6,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
 const (
@@ -15,7 +16,39 @@ const (
 	LabelConfigVal           = "credentials"
 	DeploymentName           = "dockerregistry"
 	HttpEnvKey               = "REGISTRY_HTTP_SECRET"
+	ConfigSecretFinalizer    = "dockerregistry.kyma-project.io/finalizer-registry-config"
 )
+
+// ReleaseConfigSecretFinalizers removes ConfigSecretFinalizer from every terminating config
+// Secret in the given namespace. The Secret controller that normally owns this finalizer is
+// deployed into that same namespace, so it can be torn down before the Secrets it guards are
+// finalized. Nothing would then be left to release them and the namespace could never finish
+// terminating, which also blocks any later reinstallation of the module.
+func ReleaseConfigSecretFinalizers(ctx context.Context, c client.Client, namespace string) error {
+	var secrets corev1.SecretList
+	err := c.List(ctx, &secrets,
+		client.InNamespace(namespace),
+		client.MatchingLabels{LabelConfigKey: LabelConfigVal},
+	)
+	if err != nil {
+		return err
+	}
+
+	for i := range secrets.Items {
+		secret := &secrets.Items[i]
+		if secret.GetDeletionTimestamp().IsZero() {
+			continue
+		}
+		if !controllerutil.RemoveFinalizer(secret, ConfigSecretFinalizer) {
+			continue
+		}
+		if err := c.Update(ctx, secret); client.IgnoreNotFound(err) != nil {
+			return err
+		}
+	}
+
+	return nil
+}
 
 func GetDockerRegistryInternalRegistrySecret(ctx context.Context, c client.Client, namespace string) (*corev1.Secret, error) {
 	secret := corev1.Secret{}
