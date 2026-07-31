@@ -12,16 +12,9 @@ import (
 	gomegatypes "github.com/onsi/gomega/types"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-)
-
-const (
-	pvcProtectionFinalizer = "kubernetes.io/pvc-protection"
-	registryPVCName        = "dockerregistry"
 )
 
 type conditionMatcher struct {
@@ -130,52 +123,6 @@ func (h *testHelper) getKubernetesObjectFunc(objectName string, obj client.Objec
 	return func() (bool, error) {
 		return h.getKubernetesObject(objectName, obj)
 	}
-}
-
-func (h *testHelper) kubernetesObjectIsGoneFunc(objectName string, obj client.Object) func() (bool, error) {
-	return func() (bool, error) {
-		found, err := h.getKubernetesObject(objectName, obj)
-		if apierrors.IsNotFound(err) {
-			return true, nil
-		}
-		if err != nil {
-			return false, err
-		}
-		return !found, nil
-	}
-}
-
-// releasePVCProtectionFinalizer stands in for the kube-controller-manager, which envtest does
-// not run. The API server adds kubernetes.io/pvc-protection on creation and nothing here would
-// ever release it, so the chart uninstall could never finish.
-func (h *testHelper) releasePVCProtectionFinalizer(pvcName string) {
-	By(fmt.Sprintf("Releasing pvc-protection finalizer: %s", pvcName))
-	var pvc corev1.PersistentVolumeClaim
-	Eventually(func() (bool, error) {
-		found, err := h.getKubernetesObject(pvcName, &pvc)
-		if err != nil {
-			return false, err
-		}
-		return found && !pvc.GetDeletionTimestamp().IsZero(), nil
-	}).
-		WithPolling(time.Second).
-		WithTimeout(time.Second * 30).
-		Should(BeTrue())
-
-	Expect(controllerutil.RemoveFinalizer(&pvc, pvcProtectionFinalizer)).To(BeTrue())
-	Expect(k8sClient.Update(h.ctx, &pvc)).To(Succeed())
-}
-
-func (h *testHelper) addFinalizerToSecret(secretName, finalizer string) {
-	By(fmt.Sprintf("Adding finalizer %s to secret: %s", finalizer, secretName))
-	var secret corev1.Secret
-	Eventually(h.getKubernetesObjectFunc(secretName, &secret)).
-		WithPolling(time.Second * 2).
-		WithTimeout(time.Second * 10).
-		Should(BeTrue())
-
-	controllerutil.AddFinalizer(&secret, finalizer)
-	Expect(k8sClient.Update(h.ctx, &secret)).To(Succeed())
 }
 
 func (h *testHelper) getKubernetesObject(objectName string, obj client.Object) (bool, error) {

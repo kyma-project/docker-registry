@@ -62,9 +62,6 @@ func deleteResourcesWithFilter(ctx context.Context, r *reconciler, s *systemStat
 		return uninstallResourcesError(r, s, err)
 	}
 	if !done {
-		if err := registry.ReleaseConfigSecretFinalizers(ctx, r.client, s.instance.GetNamespace()); err != nil {
-			return uninstallResourcesError(r, s, err)
-		}
 		return awaitingSecretsRemoval(s)
 	}
 
@@ -99,6 +96,6 @@ func awaitingSecretsRemoval(s *systemState) (stateFn, *ctrl.Result, error) {
 		"Deleting module resources",
 	)
 
-	// wait one sec until the API server drops the resources whose deletion was just requested
+	// wait one sec until ctrl-mngr remove finalizers from secrets
 	return requeueAfter(time.Second)
 }
