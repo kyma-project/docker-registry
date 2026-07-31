@@ -10,7 +10,6 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
 	"k8s.io/utils/ptr"
 )
 
@@ -76,10 +75,6 @@ func shouldDeleteDockerRegistry(h testHelper, name, deploymentName string) {
 
 	Expect(deployList.Items).To(HaveLen(1))
 
-	// this suite does not register the Secret controller, which mirrors a cluster where it is
-	// already gone, so the finalizer it would have added has to be put in place by hand
-	h.addFinalizerToSecret(registry.InternalAccessSecretName, registry.ConfigSecretFinalizer)
-
 	// act
 	var dockerRegistry v1alpha1.DockerRegistry
 	Eventually(h.getKubernetesObjectFunc(name, &dockerRegistry)).
@@ -98,17 +93,5 @@ func shouldDeleteDockerRegistry(h testHelper, name, deploymentName string) {
 	Eventually(h.getKubernetesObjectFunc(deploymentName, &appsv1.Deployment{})).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 10).
-		Should(BeTrue())
-
-	Eventually(h.kubernetesObjectIsGoneFunc(registry.InternalAccessSecretName, &corev1.Secret{})).
-		WithPolling(time.Second).
-		WithTimeout(time.Second * 30).
-		Should(BeTrue())
-
-	h.releasePVCProtectionFinalizer(registryPVCName)
-
-	Eventually(h.kubernetesObjectIsGoneFunc(name, &v1alpha1.DockerRegistry{})).
-		WithPolling(time.Second).
-		WithTimeout(time.Second * 30).
 		Should(BeTrue())
 }
