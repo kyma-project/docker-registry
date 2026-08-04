@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/flags"
@@ -44,6 +45,9 @@ type systemState struct {
 	flagsBuilder        *flags.Builder
 	nodePortResolver    *registry.NodePortResolver
 	gatewayHostResolver registry.ExternalAccessResolver
+	// retryAfter makes the final state requeue the reconciliation instead of stopping,
+	// so that a configuration that depends on missing cluster resources is retried
+	retryAfter time.Duration
 }
 
 func (s *systemState) saveStatusSnapshot() {

@@ -154,6 +154,13 @@ func main() {
 		HealthProbeBindAddress: probeAddr,
 		Cache: ctrlcache.Options{
 			SyncPeriod: &syncPeriod,
+			ByObject: map[ctrlclient.Object]ctrlcache.ByObject{
+				// the operator only reacts to the credentials Secrets it propagates itself, so caching
+				// every Secret in the cluster would make its memory follow the cluster size
+				&corev1.Secret{}: {
+					Label: k8s.CredentialsSecretSelector(),
+				},
+			},
 		},
 		Client: ctrlclient.Options{
 			Cache: &ctrlclient.CacheOptions{

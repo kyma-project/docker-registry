@@ -17,5 +17,11 @@ type TestUtils struct {
 	Name                     string
 	DockerregistryDeployName string
 	RegistryName             string
+	CreateSpec               v1alpha1.DockerRegistrySpec
 	UpdateSpec               v1alpha1.DockerRegistrySpec
+
+	// StorageSecretName is the Secret with the external storage credentials referenced by CreateSpec.
+	StorageSecretName string
+	// StorageSecretData holds the credentials the storage Secret is created and rotated with.
+	StorageSecretData map[string]string
 }

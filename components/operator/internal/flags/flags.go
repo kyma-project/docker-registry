@@ -1,6 +1,8 @@
 package flags
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"strings"
 
@@ -67,7 +69,8 @@ func (fb *Builder) WithAzure(secret *v1alpha1.StorageAzureSecrets) *Builder {
 	_ = fb.With("secrets.azure.accountName", secret.AccountName)
 	_ = fb.With("secrets.azure.accountKey", secret.AccountKey)
 	_ = fb.With("secrets.azure.container", secret.Container)
-	return fb
+	// restart the registry deployment to pick up rotated credentials
+	return fb.withCredentialsRollme("secrets.azure", secret.AccountName, secret.AccountKey, secret.Container)
 }
 
 func (fb *Builder) WithS3(config *v1alpha1.StorageS3, secret *v1alpha1.StorageS3Secrets) *Builder {
@@ -84,6 +87,8 @@ func (fb *Builder) WithS3(config *v1alpha1.StorageS3, secret *v1alpha1.StorageS3
 	if secret != nil {
 		_ = fb.With("secrets.s3.accessKey", secret.AccessKey)
 		_ = fb.With("secrets.s3.secretKey", secret.SecretKey)
+		// restart the registry deployment to pick up rotated credentials
+		fb = fb.withCredentialsRollme("secrets.s3", secret.AccessKey, secret.SecretKey)
 	}
 
 	return fb
@@ -122,6 +127,8 @@ func (fb *Builder) WithGCS(config *v1alpha1.StorageGCS, secret *v1alpha1.Storage
 
 	if secret != nil {
 		_ = fb.With("secrets.gcs.accountkey", secret.AccountKey)
+		// restart the registry deployment to pick up rotated credentials
+		fb = fb.withCredentialsRollme("secrets.gcs", secret.AccountKey)
 	}
 
 	return fb
@@ -147,6 +154,14 @@ func (fb *Builder) WithLogging(level, format string, accessLogEnabled bool) *Bui
 	_ = fb.With("configData.log.accesslog.disabled", !accessLogEnabled)
 	fb = fb.withRollme(fmt.Sprintf("configData.log.accesslog.disabled=%t", !accessLogEnabled))
 	return fb
+}
+
+// withCredentialsRollme adds a rollme entry derived from storage credentials so that rotating them
+// restarts the registry deployment. Only a digest is used, because the rollme value ends up in a
+// pod annotation that is readable by anyone who can read pods.
+func (fb *Builder) withCredentialsRollme(name string, credentials ...string) *Builder {
+	digest := sha256.Sum256([]byte(strings.Join(credentials, "\x00")))
+	return fb.withRollme(fmt.Sprintf("%s=%s", name, hex.EncodeToString(digest[:])[:16]))
 }
 
 // withRollme allows to set custom values for the `rollme` field in chart

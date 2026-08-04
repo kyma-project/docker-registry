@@ -5,6 +5,7 @@ import (
 	"time"
 
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -12,6 +13,13 @@ const (
 	ConfigLabel           = "dockerregistry.kyma-project.io/config"
 	CredentialsLabelValue = "credentials"
 )
+
+// CredentialsSecretSelector matches the registry credentials Secrets this operator propagates across
+// namespaces. It restricts the informer cache to them, so that the operator memory does not grow with
+// the number of Secrets in the cluster.
+func CredentialsSecretSelector() labels.Selector {
+	return labels.SelectorFromSet(labels.Set{ConfigLabel: CredentialsLabelValue})
+}
 
 type Config struct {
 	BaseNamespace                 string        `envconfig:"default=docker-registry"`

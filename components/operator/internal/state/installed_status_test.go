@@ -214,6 +214,39 @@ func Test_sFnConfigurationStatus(t *testing.T) {
 			"DockerRegistry installed",
 		)
 	})
+
+	t.Run("requeue when the storage configuration has to be retried", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.DockerRegistry{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "test-namespace",
+				},
+				Spec: v1alpha1.DockerRegistrySpec{
+					Storage: &v1alpha1.Storage{
+						S3: &v1alpha1.StorageS3{SecretName: "missing-secret"},
+					},
+				},
+			},
+			flagsBuilder:        flags.NewBuilder(),
+			nodePortResolver:    registry.NewNodePortResolver(registry.RandomNodePort),
+			gatewayHostResolver: &testExternalAddressResolver{expectedError: errors.New("test-error")},
+			warningBuilder:      warning.NewBuilder(),
+			retryAfter:          storageRetryInterval,
+		}
+		s.warningBuilder.With("failed to set storage configuration")
+
+		r := &reconciler{
+			log: zap.NewNop().Sugar(),
+			k8s: k8s{client: fake.NewClientBuilder().Build(), EventRecorder: record.NewFakeRecorder(11)},
+		}
+
+		next, result, err := sFnUpdateFinalStatus(context.TODO(), r, s)
+		require.NoError(t, err)
+		require.Nil(t, next)
+		require.NotNil(t, result)
+		require.Equal(t, storageRetryInterval, result.RequeueAfter)
+		require.Equal(t, v1alpha1.StateWarning, s.instance.Status.State)
+	})
 }
 
 type testExternalAddressResolver struct {

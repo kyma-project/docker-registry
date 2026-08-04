@@ -18,6 +18,6 @@ func fixDockerRegistry(testUtils *utils.TestUtils) *v1alpha1.DockerRegistry {
 			Name:      testUtils.Name,
 			Namespace: testUtils.Namespace,
 		},
-		Spec: v1alpha1.DockerRegistrySpec{},
+		Spec: testUtils.CreateSpec,
 	}
 }
