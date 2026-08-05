@@ -84,7 +84,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{
-			"rollme": "configData.storage.delete.enabled=true",
+			"rollme": "configData.storage.delete.enabled=true,secrets.azure=e6c00036b8c46818",
 			"configData": map[string]interface{}{
 				"storage": map[string]interface{}{
 					"delete": map[string]interface{}{
@@ -154,7 +154,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{
-			"rollme": "configData.storage.delete.enabled=false",
+			"rollme": "configData.storage.delete.enabled=false,secrets.s3=911be0030de8f63e",
 			"configData": map[string]interface{}{
 				"storage": map[string]interface{}{
 					"delete": map[string]interface{}{
@@ -227,7 +227,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{
-			"rollme": "configData.storage.delete.enabled=false",
+			"rollme": "configData.storage.delete.enabled=false,secrets.gcs=444580958f2541b1",
 			"configData": map[string]interface{}{
 				"storage": map[string]interface{}{
 					"delete": map[string]interface{}{
@@ -299,7 +299,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{
-			"rollme": "configData.storage.delete.enabled=false",
+			"rollme": "configData.storage.delete.enabled=false,secrets.s3=911be0030de8f63e",
 			"configData": map[string]interface{}{
 				"storage": map[string]interface{}{
 					"delete": map[string]interface{}{
@@ -415,7 +415,7 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{
-			"rollme": "configData.storage.delete.enabled=false",
+			"rollme": "configData.storage.delete.enabled=false,secrets.gcs=444580958f2541b1",
 			"configData": map[string]interface{}{
 				"storage": map[string]interface{}{
 					"delete": map[string]interface{}{
@@ -571,4 +571,59 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		require.Contains(t, warnings, "only one storage option can be used")
 	})
 
+	t.Run("retry when the storage secret does not exist", func(t *testing.T) {
+		testCases := map[string]*v1alpha1.Storage{
+			"azure": {Azure: &v1alpha1.StorageAzure{SecretName: "missing-secret"}},
+			"s3":    {S3: &v1alpha1.StorageS3{Bucket: "bucket", Region: "region", SecretName: "missing-secret"}},
+			"gcs":   {GCS: &v1alpha1.StorageGCS{Bucket: "bucket", SecretName: "missing-secret"}},
+			"btp":   {BTPObjectStore: &v1alpha1.StorageBTPObjectStore{SecretName: "missing-secret"}},
+		}
+
+		for name, storage := range testCases {
+			t.Run(name, func(t *testing.T) {
+				s := &systemState{
+					instance: v1alpha1.DockerRegistry{
+						ObjectMeta: metav1.ObjectMeta{
+							Namespace: "docker-registry",
+						},
+						Spec: v1alpha1.DockerRegistrySpec{
+							Storage: storage,
+						},
+					},
+					statusSnapshot: v1alpha1.DockerRegistryStatus{},
+					flagsBuilder:   flags.NewBuilder(),
+					warningBuilder: warning.NewBuilder(),
+				}
+				r := &reconciler{
+					k8s: k8s{client: fake.NewClientBuilder().Build()},
+					log: zap.NewNop().Sugar(),
+				}
+
+				next, result, err := sFnStorageConfiguration(context.Background(), r, s)
+				require.NoError(t, err)
+				require.Nil(t, result)
+				requireEqualFunc(t, sFnUpdateConfigurationStatus, next)
+
+				require.Contains(t, s.warningBuilder.Build(), `secrets "missing-secret" not found`)
+				require.Equal(t, storageRetryInterval, s.retryAfter)
+			})
+		}
+	})
+
+	t.Run("no retry when the storage configuration succeeds", func(t *testing.T) {
+		s := &systemState{
+			instance:       v1alpha1.DockerRegistry{},
+			statusSnapshot: v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:   flags.NewBuilder(),
+			warningBuilder: warning.NewBuilder(),
+		}
+		r := &reconciler{
+			k8s: k8s{client: fake.NewClientBuilder().Build()},
+			log: zap.NewNop().Sugar(),
+		}
+
+		_, _, err := sFnStorageConfiguration(context.Background(), r, s)
+		require.NoError(t, err)
+		require.Zero(t, s.retryAfter)
+	})
 }

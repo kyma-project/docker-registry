@@ -58,6 +58,11 @@ func NewDockerRegistryReconciler(client client.Client, config *rest.Config, reco
 
 // SetupWithManager sets up the controller with the Manager.
 func (sr *dockerRegistryReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	storageSecrets, err := storageSecretSource(mgr, sr.mapStorageSecretToDockerRegistryCRs)
+	if err != nil {
+		return errors.Wrap(err, "while setting up the storage secret watch")
+	}
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.DockerRegistry{}, builder.WithPredicates(predicate.NoStatusChangePredicate{})).
 		Watches(&v1alpha1.DockerRegistry{}, &handler.Funcs{
@@ -66,7 +71,37 @@ func (sr *dockerRegistryReconciler) SetupWithManager(mgr ctrl.Manager) error {
 			DeleteFunc: sr.retriggerAllDockerRegistryCRs,
 		}).
 		Watches(&corev1.Service{}, tracing.ServiceCollectorWatcher()).
+		WatchesRawSource(storageSecrets).
 		Complete(sr)
+}
+
+// mapStorageSecretToDockerRegistryCRs enqueues every DockerRegistry CR that references the given
+// Secret as its external storage credentials, so that creating or rotating the Secret is picked up.
+func (sr *dockerRegistryReconciler) mapStorageSecretToDockerRegistryCRs(ctx context.Context, secret client.Object) []ctrl.Request {
+	log := sr.log.With("watcher", "storage_secret")
+
+	list := &v1alpha1.DockerRegistryList{}
+	err := sr.client.List(ctx, list, client.InNamespace(secret.GetNamespace()))
+	if err != nil {
+		log.Errorf("error listing dockerregistry objects: %s", err.Error())
+		return nil
+	}
+
+	requests := []ctrl.Request{}
+	for _, dockerRegistry := range list.Items {
+		if dockerRegistry.StorageSecretName() != secret.GetName() {
+			continue
+		}
+
+		log.Debugf("retriggering reconciliation for DockerRegistry %s/%s referencing storage secret %s",
+			dockerRegistry.GetNamespace(), dockerRegistry.GetName(), secret.GetName())
+		requests = append(requests, ctrl.Request{NamespacedName: client.ObjectKey{
+			Namespace: dockerRegistry.GetNamespace(),
+			Name:      dockerRegistry.GetName(),
+		}})
+	}
+
+	return requests
 }
 
 func (sr *dockerRegistryReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -88,7 +123,7 @@ func (sr *dockerRegistryReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 }
 
 func (sr *dockerRegistryReconciler) retriggerAllDockerRegistryCRs(ctx context.Context, e event.DeleteEvent, q workqueue.TypedRateLimitingInterface[ctrl.Request]) {
-	log := sr.log.With("deletion_watcher")
+	log := sr.log.With("watcher", "deletion")
 
 	list := &v1alpha1.DockerRegistryList{}
 	err := sr.client.List(ctx, list, &client.ListOptions{})

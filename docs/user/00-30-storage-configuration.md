@@ -2,6 +2,8 @@
 
 The DockerRegistry CR allows you to store images in five ways: filesystem, Azure, s3, GCP, and BTP Object Store. This document describes how to configure DockerRegistry CR to cooperate with all these storage types.
 
+The Secret with the storage credentials does not have to exist when you create the DockerRegistry CR. Until it appears, the CR reports the `Warning` state and the configuration is retried. When you rotate the credentials in an existing Secret, Docker Registry is restarted with the new credentials.
+
 ## Filesystem
 
 The filesystem storage is a built-in storage type based on the PersistentVolumeClaim CR, which is part of the Kubernetes functionality. This is a default DockerRegistry CR configuration, and no additional configuration is needed.

@@ -48,6 +48,10 @@ func sFnUpdateFinalStatus(ctx context.Context, r *reconciler, s *systemState) (s
 		)
 	}
 
+	if s.retryAfter > 0 {
+		return requeueAfter(s.retryAfter)
+	}
+
 	return stop()
 }
 
