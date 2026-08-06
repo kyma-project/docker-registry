@@ -45,16 +45,57 @@ func TestSecretReconcilerPropagatesToRemainingNamespacesWhenOneIsDenied(t *testi
 	_, err := reconciler.Reconcile(context.TODO(), fixBaseSecretRequest())
 
 	//THEN
-	require.Error(t, err, "a denied namespace must still surface as an error")
-	require.ErrorContains(t, err, deniedIstio)
-	require.ErrorContains(t, err, deniedKyma,
-		"every failing namespace must be reported, not just the first one")
+	require.NoError(t, err)
 
 	var propagated corev1.Secret
 	require.NoError(t,
 		c.Get(context.TODO(), client.ObjectKey{Namespace: testTargetNamespace, Name: testBaseSecretName}, &propagated),
 		"a denial in an unrelated namespace must not stop propagation to %s", testTargetNamespace)
 	require.Equal(t, []byte("secret-password"), propagated.Data["password"])
+}
+
+func TestSecretReconcilerKeepsRefreshingWhenANamespaceIsPermanentlyDenied(t *testing.T) {
+	//GIVEN
+	c := fixClientDenyingSecretWrites(t, deniedIstio, deniedKyma)
+	reconciler := fixSecretReconciler(c)
+
+	//WHEN
+	result, err := reconciler.Reconcile(context.TODO(), fixBaseSecretRequest())
+
+	//THEN
+	// Returning the denial would make controller-runtime discard RequeueAfter and back off
+	// instead, so the refresh that covers namespaces created before the base Secret would
+	// stop running. The denial is permanent, so there is nothing to retry.
+	require.NoError(t, err, "a permanently denied namespace must not poison the reconcile result")
+	require.Equal(t, time.Minute, result.RequeueAfter, "the periodic refresh must survive a denial")
+
+	for _, namespace := range []string{deniedIstio, deniedKyma} {
+		var denied corev1.Secret
+		getErr := c.Get(context.TODO(),
+			client.ObjectKey{Namespace: namespace, Name: testBaseSecretName}, &denied)
+		require.True(t, apierrors.IsNotFound(getErr),
+			"the denied write must not have landed in %s, got %v", namespace, getErr)
+	}
+}
+
+func TestSecretReconcilerReturnsRetryableFailures(t *testing.T) {
+	//GIVEN
+	c := fixClientFailingSecretWrites(t, func(name string) error {
+		return apierrors.NewInternalError(fmt.Errorf("etcd is unavailable"))
+	}, deniedIstio)
+	reconciler := fixSecretReconciler(c)
+
+	//WHEN
+	_, err := reconciler.Reconcile(context.TODO(), fixBaseSecretRequest())
+
+	//THEN
+	require.Error(t, err, "a failure that may succeed on retry must be returned")
+	require.ErrorContains(t, err, deniedIstio)
+
+	var propagated corev1.Secret
+	require.NoError(t,
+		c.Get(context.TODO(), client.ObjectKey{Namespace: testTargetNamespace, Name: testBaseSecretName}, &propagated),
+		"the other namespaces must still be served")
 }
 
 func TestSecretReconcilerPropagatesToEveryNamespaceWhenNothingIsDenied(t *testing.T) {
@@ -168,9 +209,14 @@ func fixSecretReconciler(c client.Client) *SecretReconciler {
 
 func fixClientDenyingSecretWrites(t *testing.T, deniedNamespaces ...string) client.WithWatch {
 	t.Helper()
+	return fixClientFailingSecretWrites(t, fixLabelProtectionDenial, deniedNamespaces...)
+}
+
+func fixClientFailingSecretWrites(t *testing.T, failure func(name string) error, failingNamespaces ...string) client.WithWatch {
+	t.Helper()
 
 	denied := map[string]struct{}{}
-	for _, namespace := range deniedNamespaces {
+	for _, namespace := range failingNamespaces {
 		denied[namespace] = struct{}{}
 	}
 
@@ -193,13 +239,13 @@ func fixClientDenyingSecretWrites(t *testing.T, deniedNamespaces ...string) clie
 		WithInterceptorFuncs(interceptor.Funcs{
 			Create: func(ctx context.Context, cl client.WithWatch, obj client.Object, opts ...client.CreateOption) error {
 				if isDenied(obj) {
-					return fixLabelProtectionDenial(obj.GetName())
+					return failure(obj.GetName())
 				}
 				return cl.Create(ctx, obj, opts...)
 			},
 			Update: func(ctx context.Context, cl client.WithWatch, obj client.Object, opts ...client.UpdateOption) error {
 				if isDenied(obj) {
-					return fixLabelProtectionDenial(obj.GetName())
+					return failure(obj.GetName())
 				}
 				return cl.Update(ctx, obj, opts...)
 			},
