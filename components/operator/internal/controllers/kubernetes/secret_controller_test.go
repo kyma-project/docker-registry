@@ -30,8 +30,8 @@ const (
 // deniedBefore and deniedAfter sort on either side of testTargetNamespace so the
 // test holds no matter which order the namespace list comes back in.
 const (
-	deniedBefore = "aaa-protected"
-	deniedAfter  = "zzz-protected"
+	deniedBefore = "aaa-rejecting"
+	deniedAfter  = "zzz-rejecting"
 )
 
 func TestSecretReconcilerPropagatesToRemainingNamespacesWhenOneIsDenied(t *testing.T) {
@@ -110,7 +110,7 @@ func TestSecretServiceHandleFinalizerDeletesFromRemainingNamespacesWhenOneIsDeni
 		WithInterceptorFuncs(interceptor.Funcs{
 			Delete: func(ctx context.Context, cl client.WithWatch, obj client.Object, opts ...client.DeleteOption) error {
 				if namespace := obj.GetNamespace(); namespace == deniedBefore || namespace == deniedAfter {
-					return fixVAPDenial(obj.GetName())
+					return fixRejectedWrite(obj.GetName())
 				}
 				return cl.Delete(ctx, obj, opts...)
 			},
@@ -191,13 +191,13 @@ func fixClientDenyingSecretWrites(t *testing.T, deniedNamespaces ...string) clie
 		WithInterceptorFuncs(interceptor.Funcs{
 			Create: func(ctx context.Context, cl client.WithWatch, obj client.Object, opts ...client.CreateOption) error {
 				if isDenied(obj) {
-					return fixVAPDenial(obj.GetName())
+					return fixRejectedWrite(obj.GetName())
 				}
 				return cl.Create(ctx, obj, opts...)
 			},
 			Update: func(ctx context.Context, cl client.WithWatch, obj client.Object, opts ...client.UpdateOption) error {
 				if isDenied(obj) {
-					return fixVAPDenial(obj.GetName())
+					return fixRejectedWrite(obj.GetName())
 				}
 				return cl.Update(ctx, obj, opts...)
 			},
@@ -205,12 +205,12 @@ func fixClientDenyingSecretWrites(t *testing.T, deniedNamespaces ...string) clie
 		Build()
 }
 
-// fixVAPDenial mimics the kyma-module-label-protection ValidatingAdmissionPolicy
-// rejecting a write that carries a kyma-project.io/ label.
-func fixVAPDenial(name string) error {
+// fixRejectedWrite mimics the API server refusing a write in one namespace while
+// accepting it in others, as an admission policy or a ResourceQuota would.
+func fixRejectedWrite(name string) error {
 	return apierrors.NewForbidden(
 		schema.GroupResource{Resource: "secrets"}, name,
-		fmt.Errorf("ValidatingAdmissionPolicy 'kyma-module-label-protection' denied request"),
+		fmt.Errorf("write to this namespace is not allowed"),
 	)
 }
 
