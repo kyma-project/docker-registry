@@ -27,16 +27,18 @@ const (
 	testTargetNamespace = "deployer"
 )
 
-// deniedBefore and deniedAfter sort on either side of testTargetNamespace so the
-// test holds no matter which order the namespace list comes back in.
+// The kyma-module-label-protection ValidatingAdmissionPolicy rejects the copy in these
+// namespaces on managed runtimes, on every pass, indefinitely. Asserting that both of
+// them are reported is what makes these tests independent of the namespace order, which
+// the cached client does not guarantee.
 const (
-	deniedBefore = "aaa-rejecting"
-	deniedAfter  = "zzz-rejecting"
+	deniedIstio = "istio-system"
+	deniedKyma  = "kyma-system"
 )
 
 func TestSecretReconcilerPropagatesToRemainingNamespacesWhenOneIsDenied(t *testing.T) {
 	//GIVEN
-	c := fixClientDenyingSecretWrites(t, deniedBefore, deniedAfter)
+	c := fixClientDenyingSecretWrites(t, deniedIstio, deniedKyma)
 	reconciler := fixSecretReconciler(c)
 
 	//WHEN
@@ -44,8 +46,8 @@ func TestSecretReconcilerPropagatesToRemainingNamespacesWhenOneIsDenied(t *testi
 
 	//THEN
 	require.Error(t, err, "a denied namespace must still surface as an error")
-	require.ErrorContains(t, err, deniedBefore)
-	require.ErrorContains(t, err, deniedAfter,
+	require.ErrorContains(t, err, deniedIstio)
+	require.ErrorContains(t, err, deniedKyma,
 		"every failing namespace must be reported, not just the first one")
 
 	var propagated corev1.Secret
@@ -67,7 +69,7 @@ func TestSecretReconcilerPropagatesToEveryNamespaceWhenNothingIsDenied(t *testin
 	require.NoError(t, err)
 	require.Equal(t, time.Minute, result.RequeueAfter)
 
-	for _, namespace := range []string{deniedBefore, testTargetNamespace, deniedAfter} {
+	for _, namespace := range []string{deniedIstio, testTargetNamespace, deniedKyma} {
 		var propagated corev1.Secret
 		require.NoError(t,
 			c.Get(context.TODO(), client.ObjectKey{Namespace: namespace, Name: testBaseSecretName}, &propagated),
@@ -100,7 +102,7 @@ func TestSecretServiceHandleFinalizerDeletesFromRemainingNamespacesWhenOneIsDeni
 	base.Finalizers = []string{cfgSecretFinalizerName}
 
 	objects := []client.Object{fixNamespace(testBaseNamespace), base}
-	for _, namespace := range []string{deniedBefore, testTargetNamespace, deniedAfter} {
+	for _, namespace := range []string{deniedIstio, testTargetNamespace, deniedKyma} {
 		objects = append(objects, fixNamespace(namespace), fixPropagatedSecret(namespace))
 	}
 
@@ -109,8 +111,8 @@ func TestSecretServiceHandleFinalizerDeletesFromRemainingNamespacesWhenOneIsDeni
 		WithObjects(objects...).
 		WithInterceptorFuncs(interceptor.Funcs{
 			Delete: func(ctx context.Context, cl client.WithWatch, obj client.Object, opts ...client.DeleteOption) error {
-				if namespace := obj.GetNamespace(); namespace == deniedBefore || namespace == deniedAfter {
-					return fixRejectedWrite(obj.GetName())
+				if namespace := obj.GetNamespace(); namespace == deniedIstio || namespace == deniedKyma {
+					return fixLabelProtectionDenial(obj.GetName())
 				}
 				return cl.Delete(ctx, obj, opts...)
 			},
@@ -121,12 +123,12 @@ func TestSecretServiceHandleFinalizerDeletesFromRemainingNamespacesWhenOneIsDeni
 
 	//WHEN
 	err := svc.HandleFinalizer(context.TODO(), zap.NewNop().Sugar(), base,
-		[]string{deniedBefore, testTargetNamespace, deniedAfter})
+		[]string{deniedIstio, testTargetNamespace, deniedKyma})
 
 	//THEN
 	require.Error(t, err)
-	require.ErrorContains(t, err, deniedBefore)
-	require.ErrorContains(t, err, deniedAfter,
+	require.ErrorContains(t, err, deniedIstio)
+	require.ErrorContains(t, err, deniedKyma,
 		"every failing namespace must be reported, not just the first one")
 
 	var target corev1.Secret
@@ -173,7 +175,7 @@ func fixClientDenyingSecretWrites(t *testing.T, deniedNamespaces ...string) clie
 	}
 
 	objects := []client.Object{fixNamespace(testBaseNamespace), fixBaseSecret()}
-	for _, namespace := range []string{deniedBefore, testTargetNamespace, deniedAfter} {
+	for _, namespace := range []string{deniedIstio, testTargetNamespace, deniedKyma} {
 		objects = append(objects, fixNamespace(namespace))
 	}
 
@@ -191,13 +193,13 @@ func fixClientDenyingSecretWrites(t *testing.T, deniedNamespaces ...string) clie
 		WithInterceptorFuncs(interceptor.Funcs{
 			Create: func(ctx context.Context, cl client.WithWatch, obj client.Object, opts ...client.CreateOption) error {
 				if isDenied(obj) {
-					return fixRejectedWrite(obj.GetName())
+					return fixLabelProtectionDenial(obj.GetName())
 				}
 				return cl.Create(ctx, obj, opts...)
 			},
 			Update: func(ctx context.Context, cl client.WithWatch, obj client.Object, opts ...client.UpdateOption) error {
 				if isDenied(obj) {
-					return fixRejectedWrite(obj.GetName())
+					return fixLabelProtectionDenial(obj.GetName())
 				}
 				return cl.Update(ctx, obj, opts...)
 			},
@@ -205,12 +207,14 @@ func fixClientDenyingSecretWrites(t *testing.T, deniedNamespaces ...string) clie
 		Build()
 }
 
-// fixRejectedWrite mimics the API server refusing a write in one namespace while
-// accepting it in others, as an admission policy or a ResourceQuota would.
-func fixRejectedWrite(name string) error {
+// fixLabelProtectionDenial reproduces the denial the operator gets when it copies the
+// base Secret, whose labels carry the kyma-project.io/ prefix, into a protected namespace.
+func fixLabelProtectionDenial(name string) error {
 	return apierrors.NewForbidden(
 		schema.GroupResource{Resource: "secrets"}, name,
-		fmt.Errorf("write to this namespace is not allowed"),
+		fmt.Errorf("ValidatingAdmissionPolicy 'kyma-module-label-protection' denied request: "+
+			"Setting labels with the 'kyma-project.io/' prefix on resources in protected "+
+			"namespaces is not allowed"),
 	)
 }
 
