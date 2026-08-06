@@ -2,6 +2,8 @@ package kubernetes
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	"go.uber.org/zap"
 
@@ -93,10 +95,14 @@ func (r *SecretReconciler) Reconcile(ctx context.Context, request ctrl.Request) 
 		return ctrl.Result{}, nil
 	}
 
+	var errs []error
 	for _, namespace := range namespaces {
 		if err = r.svc.UpdateNamespace(ctx, logger, namespace, instance); err != nil {
-			return ctrl.Result{}, err
+			errs = append(errs, fmt.Errorf("namespace %s: %w", namespace, err))
 		}
+	}
+	if err := errors.Join(errs...); err != nil {
+		return ctrl.Result{}, err
 	}
 
 	return ctrl.Result{RequeueAfter: r.config.SecretRequeueDuration}, nil

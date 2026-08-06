@@ -99,11 +99,17 @@ func (r *secretService) HandleFinalizer(ctx context.Context, logger *zap.Sugared
 		if !containsString(instance.ObjectMeta.Finalizers, cfgSecretFinalizerName) {
 			return nil
 		}
+		var errs []error
 		for _, namespace := range namespaces {
 			logger.Debug(fmt.Sprintf("Deleting Secret '%s/%s'", namespace, instance.Name))
 			if err := r.deleteSecret(ctx, logger, namespace, instance.Name); err != nil {
-				return err
+				errs = append(errs, fmt.Errorf("namespace %s: %w", namespace, err))
 			}
+		}
+		// The finalizer stays until every copy is gone. Module deletion releases it
+		// via registry.ReleaseConfigSecretFinalizers if that never converges.
+		if err := goerrors.Join(errs...); err != nil {
+			return err
 		}
 		instance.ObjectMeta.Finalizers = removeString(instance.ObjectMeta.Finalizers, cfgSecretFinalizerName)
 		if err := r.client.Update(context.Background(), instance); err != nil {
