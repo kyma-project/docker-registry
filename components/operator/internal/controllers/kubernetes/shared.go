@@ -21,11 +21,19 @@ func CredentialsSecretSelector() labels.Selector {
 	return labels.SelectorFromSet(labels.Set{ConfigLabel: CredentialsLabelValue})
 }
 
+// DefaultExcludedNamespaces lists the namespaces the credentials Secret is not propagated
+// into. istio-system and kyma-system are platform-managed: an admission policy rejects
+// resources carrying kyma-project.io/ labels there, which the copies inherit from the base
+// Secret, and nothing running in them pulls from the in-cluster registry.
+func DefaultExcludedNamespaces() []string {
+	return []string{"docker-registry", "istio-system", "kyma-system"}
+}
+
 type Config struct {
 	BaseNamespace                 string        `envconfig:"default=docker-registry"`
 	BaseInternalSecretName        string        `envconfig:"default=dockerregistry-config"`
 	BaseExternalSecretName        string        `envconfig:"default=dockerregistry-config-external"`
-	ExcludedNamespaces            []string      `envconfig:"default=docker-registry"`
+	ExcludedNamespaces            []string      `envconfig:"default=docker-registry;istio-system;kyma-system"`
 	ConfigMapRequeueDuration      time.Duration `envconfig:"default=1m"`
 	SecretRequeueDuration         time.Duration `envconfig:"default=1m"`
 	ServiceAccountRequeueDuration time.Duration `envconfig:"default=1m"`
