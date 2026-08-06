@@ -52,8 +52,8 @@ This tutorial shows how you can push an image to the Docker Registry and use it.
    kubectl run simple-pod --image="${REGISTRY_INTERNAL_PULL_ADDRESS}/simple-image:latest" --overrides='{ "spec": { "imagePullSecrets": [ { "name": "dockerregistry-config" } ] } }'
    ```
 
-   > [!NOTE] 
-   > An image pull secret with the name `dockerregistry-config` is created in every namespace of the cluster.
+   > [!NOTE]
+   > An image pull secret with the name `dockerregistry-config` is created in every namespace of the cluster, except for the `istio-system` and `kyma-system` namespaces, which are reserved for platform components.
 
 5. Check if the Pod is running:
 

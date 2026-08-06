@@ -78,6 +78,63 @@ func TestSecretReconcilerKeepsRefreshingWhenANamespaceIsPermanentlyDenied(t *tes
 	}
 }
 
+func TestSecretReconcilerNeverWritesIntoProtectedNamespaces(t *testing.T) {
+	//GIVEN
+	objects := []client.Object{fixNamespace(testBaseNamespace), fixBaseSecret()}
+	for _, namespace := range []string{deniedIstio, testTargetNamespace, deniedKyma} {
+		objects = append(objects, fixNamespace(namespace))
+	}
+
+	// The platform rejects these writes anyway. Attempting them logs an error on every pass
+	// and nothing running there pulls from the in-cluster registry, so the write must not be
+	// attempted at all rather than tolerated.
+	refuseAttempt := func(obj client.Object) error {
+		if _, ok := obj.(*corev1.Secret); !ok {
+			return nil
+		}
+		switch obj.GetNamespace() {
+		case deniedIstio, deniedKyma:
+			return fmt.Errorf("write attempted in protected namespace %s", obj.GetNamespace())
+		}
+		return nil
+	}
+
+	c := fake.NewClientBuilder().
+		WithScheme(fixScheme(t)).
+		WithObjects(objects...).
+		WithInterceptorFuncs(interceptor.Funcs{
+			Create: func(ctx context.Context, cl client.WithWatch, obj client.Object, opts ...client.CreateOption) error {
+				if err := refuseAttempt(obj); err != nil {
+					return err
+				}
+				return cl.Create(ctx, obj, opts...)
+			},
+			Update: func(ctx context.Context, cl client.WithWatch, obj client.Object, opts ...client.UpdateOption) error {
+				if err := refuseAttempt(obj); err != nil {
+					return err
+				}
+				return cl.Update(ctx, obj, opts...)
+			},
+		}).
+		Build()
+
+	config := fixConfig()
+	config.ExcludedNamespaces = DefaultExcludedNamespaces()
+	reconciler := NewSecret(c, zap.NewNop().Sugar(), config,
+		NewSecretService(resource.New(c, c.Scheme()), config))
+
+	//WHEN
+	_, err := reconciler.Reconcile(context.TODO(), fixBaseSecretRequest())
+
+	//THEN
+	require.NoError(t, err)
+
+	var propagated corev1.Secret
+	require.NoError(t,
+		c.Get(context.TODO(), client.ObjectKey{Namespace: testTargetNamespace, Name: testBaseSecretName}, &propagated),
+		"consumer namespaces must still be served")
+}
+
 func TestSecretReconcilerReturnsRetryableFailures(t *testing.T) {
 	//GIVEN
 	c := fixClientFailingSecretWrites(t, func(name string) error {

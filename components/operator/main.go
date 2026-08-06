@@ -187,7 +187,7 @@ func main() {
 		BaseNamespace:                 "docker-registry",
 		BaseInternalSecretName:        registry.InternalAccessSecretName,
 		BaseExternalSecretName:        registry.ExternalAccessSecretName,
-		ExcludedNamespaces:            []string{"docker-registry"},
+		ExcludedNamespaces:            k8s.DefaultExcludedNamespaces(),
 		ConfigMapRequeueDuration:      time.Minute,
 		SecretRequeueDuration:         time.Minute,
 		ServiceAccountRequeueDuration: time.Minute,
