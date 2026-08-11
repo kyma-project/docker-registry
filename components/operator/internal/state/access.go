@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/docker-registry/components/operator/internal/flags"
 	"github.com/kyma-project/docker-registry/components/operator/internal/registry"
 	"github.com/pkg/errors"
@@ -15,11 +14,6 @@ func sFnAccessConfiguration(ctx context.Context, r *reconciler, s *systemState) 
 	err := setAccessConfig(ctx, r, s)
 	if err != nil {
 		s.warningBuilder.With("failed to set access configuration: " + err.Error())
-		s.instance.UpdateConditionFalse(
-			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonConfigurationErr,
-			err,
-		)
 	}
 
 	return nextState(sFnLoggingConfiguration)
