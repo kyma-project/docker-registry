@@ -257,4 +257,81 @@ func Test_sFnAccessConfiguration(t *testing.T) {
 
 		require.Equal(t, "Warning: .spec.externalAccess.enabled is true but got error: while getting Gateway kyma-gateway in namespace kyma-system: gatewaies.networking.istio.io \"kyma-gateway\" not found", s.warningBuilder.Build())
 	})
+
+	t.Run("report the failure of the access configuration", func(t *testing.T) {
+		// an empty scheme makes reading the internal registry Secret fail for a reason other than
+		// NotFound, which is what the access configuration reports as a failure
+		s := &systemState{
+			instance:         v1alpha1.DockerRegistry{},
+			statusSnapshot:   v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:     flags.NewBuilder(),
+			nodePortResolver: registry.NewNodePortResolver(registry.RandomNodePort),
+			warningBuilder:   warning.NewBuilder(),
+		}
+		r := &reconciler{
+			k8s: k8s{client: fake.NewClientBuilder().WithScheme(runtime.NewScheme()).Build()},
+			log: zap.NewNop().Sugar(),
+		}
+
+		next, result, err := sFnAccessConfiguration(context.Background(), r, s)
+		require.NoError(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnLoggingConfiguration, next)
+
+		require.Contains(t, s.warningBuilder.Build(), "while fetching existing internal docker registry secret")
+
+		// the failure has to survive the state that reports the configuration status, which is reached
+		// through sFnLoggingConfiguration and sFnStorageConfiguration
+		_, _, err = sFnUpdateConfigurationStatus(context.Background(), r, s)
+		require.NoError(t, err)
+
+		requireContainsCondition(t, s.instance.Status,
+			v1alpha1.ConditionTypeConfigured,
+			metav1.ConditionFalse,
+			v1alpha1.ConditionReasonConfigurationErr,
+			s.warningBuilder.Build(),
+		)
+	})
+
+	t.Run("report an unresolved optional external access as not configured", func(t *testing.T) {
+		testScheme := runtime.NewScheme()
+		require.NoError(t, istiov1beta1.AddToScheme(testScheme))
+		require.NoError(t, clientgoscheme.AddToScheme(testScheme))
+
+		s := &systemState{
+			instance: v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{
+					ExternalAccess: &v1alpha1.ExternalAccess{
+						Enabled: ptr.To(true),
+					},
+				},
+			},
+			statusSnapshot:      v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:        flags.NewBuilder(),
+			nodePortResolver:    registry.NewNodePortResolver(registry.RandomNodePort),
+			gatewayHostResolver: registry.NewExternalAccessResolver(""),
+			warningBuilder:      warning.NewBuilder(),
+		}
+		r := &reconciler{
+			k8s: k8s{client: fake.NewClientBuilder().WithScheme(testScheme).Build()},
+			log: zap.NewNop().Sugar(),
+		}
+
+		// external access is optional, so the access configuration itself succeeds and only records a
+		// warning, yet the registry is not configured the way the CR asks for
+		next, result, err := sFnAccessConfiguration(context.Background(), r, s)
+		require.NoError(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnLoggingConfiguration, next)
+
+		_, _, err = sFnUpdateConfigurationStatus(context.Background(), r, s)
+		require.NoError(t, err)
+
+		requireContainsCondition(t, s.instance.Status,
+			v1alpha1.ConditionTypeConfigured,
+			metav1.ConditionFalse,
+			v1alpha1.ConditionReasonConfigurationErr,
+			`Warning: .spec.externalAccess.enabled is true but got error: while getting Gateway kyma-gateway in namespace kyma-system: gatewaies.networking.istio.io "kyma-gateway" not found`,
+		)
+	})
 }

@@ -109,7 +109,7 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 | **externalAccess.pushAddress**                       | string     | Address that can be used to push images from outside the cluster.                                                                                                                                                                                                                                                                                              |
 | **externalAccess.pullAddress**                       | string     | Address that can be used by Kubernetes to make a communication with the registry.                                                                                                                                                                                                                                                                              |
 | **served** (required)                                | string     | Signifies if the current Docker Registry is managed. Value can be `True` or `False`.                                                                                                                                                                                                                                                                        |
-| **state**                                            | string     | Signifies the current state of Docker Registry. Value can be one of `Ready`, `Processing`, `Error`, or `Deleting`.                                                                                                                                                                                                                                                  |
+| **state**                                            | string     | Signifies the current state of Docker Registry. Value can be one of `Ready`, `Processing`, `Error`, `Deleting`, or `Warning`.                                                                                                                                                                                                                                  |
 
 <!-- TABLE-END -->
 
@@ -125,12 +125,13 @@ This section describes the possible states of the Docker Registry CR. Three cond
 |-----|-------------------|-------------------|------------------|--------------------------|----------------------------------------------------|
 | 1   | Processing        | Configured        | true             | Configured               | Docker Registry configuration verified             |
 | 2   | Processing        | Configured        | unknown          | Configuration            | Docker Registry configuration verification ongoing |
-| 3   | Error             | Configured        | false            | ConfigurationErr         | Docker Registry configuration verification error   |
-| 4   | Error             | Configured        | false            | Duplicated               | Only one Docker Registry CR is allowed             |
-| 5   | Ready             | Installed         | true             | Installed                | Docker Registry workloads deployed                 |
-| 6   | Processing        | Installed         | unknown          | Installation             | Deploying Docker Registry workloads                |
-| 7   | Error             | Installed         | false            | InstallationErr          | Deployment error                                   |
-| 8   | Error             | DeploymentFailure | true             | DeploymentReplicaFailure | Deployment has the ReplicaFailure condition        |
-| 8   | Deleting          | Deleted           | unknown          | Deletion                 | Deletion in progress                               |
-| 9   | Deleting          | Deleted           | true             | Deleted                  | Docker Registry module deleted                     |
-| 10  | Error             | Deleted           | false            | DeletionErr              | Deletion failed                                    |
+| 3   | Warning           | Configured        | false            | ConfigurationErr         | Part of the configuration was not applied          |
+| 4   | Error             | Configured        | false            | ConfigurationErr         | Docker Registry configuration verification error   |
+| 5   | Error             | Configured        | false            | Duplicated               | Only one Docker Registry CR is allowed             |
+| 6   | Ready             | Installed         | true             | Installed                | Docker Registry workloads deployed                 |
+| 7   | Processing        | Installed         | unknown          | Installation             | Deploying Docker Registry workloads                |
+| 8   | Error             | Installed         | false            | InstallationErr          | Deployment error                                   |
+| 9   | Error             | DeploymentFailure | true             | DeploymentReplicaFailure | Deployment has the ReplicaFailure condition        |
+| 10  | Deleting          | Deleted           | unknown          | Deletion                 | Deletion in progress                               |
+| 11  | Deleting          | Deleted           | true             | Deleted                  | Docker Registry module deleted                     |
+| 12  | Error             | Deleted           | false            | DeletionErr              | Deletion failed                                    |

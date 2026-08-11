@@ -610,6 +610,51 @@ func Test_sFnStorageConfiguration(t *testing.T) {
 		}
 	})
 
+	t.Run("reports Configured false when the s3 storage secret is missing", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.DockerRegistry{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "docker-registry",
+				},
+				Spec: v1alpha1.DockerRegistrySpec{
+					Storage: &v1alpha1.Storage{
+						S3: &v1alpha1.StorageS3{
+							Bucket:     "bucket",
+							Region:     "region",
+							SecretName: "missing-secret",
+						},
+					},
+				},
+			},
+			statusSnapshot: v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:   flags.NewBuilder(),
+			warningBuilder: warning.NewBuilder(),
+		}
+		r := &reconciler{
+			k8s: k8s{client: fake.NewClientBuilder().Build()},
+			log: zap.NewNop().Sugar(),
+		}
+
+		next, result, err := sFnStorageConfiguration(context.Background(), r, s)
+		require.NoError(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnUpdateConfigurationStatus, next)
+
+		// the reported condition is what the CR ends up showing, so the failure has to survive the
+		// state that reports the configuration status
+		next, result, err = next(context.Background(), r, s)
+		require.NoError(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnApplyResources, next)
+
+		requireContainsCondition(t, s.instance.Status,
+			v1alpha1.ConditionTypeConfigured,
+			metav1.ConditionFalse,
+			v1alpha1.ConditionReasonConfigurationErr,
+			`Warning: failed to set storage configuration: while fetching s3 storage secret from docker-registry: secrets "missing-secret" not found`,
+		)
+	})
+
 	t.Run("no retry when the storage configuration succeeds", func(t *testing.T) {
 		s := &systemState{
 			instance:       v1alpha1.DockerRegistry{},
