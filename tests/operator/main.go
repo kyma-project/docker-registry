@@ -65,6 +65,18 @@ func main() {
 		os.Exit(1)
 	}
 
+	// The storage secret scenario asserts that the operator recovers on its own once a
+	// missing storage Secret shows up. That self-recovery relies on the storage retry
+	// requeue (introduced in #580) and the Warning configuration flow (#587). The upgrade
+	// test runs this same binary twice: first against the latest released operator, then
+	// against the freshly built one. The released operator predates both changes and can
+	// never recover, so the scenario would hang until the test times out. Gate it behind
+	// an env var that the workflow sets only for the run against the new operator.
+	if os.Getenv("RUN_STORAGE_SECRET_SCENARIO") != "true" {
+		log.Info("Skipping storage secret scenario (RUN_STORAGE_SECRET_SCENARIO != true)")
+		return
+	}
+
 	log.Info("Start storage secret scenario")
 	err = runStorageSecretScenario(&utils.TestUtils{
 		Namespace: fmt.Sprintf("dockerregistry-test-%s", uuid.New().String()),
