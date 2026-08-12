@@ -15,7 +15,7 @@ jobs:
           make -C components/operator deploy-release
           make -C tests/operator test
           make -C components/operator deploy
-          make -C tests/operator test
+          RUN_STORAGE_SECRET_SCENARIO=true make -C tests/operator test
         env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:${{ github.sha }}
       - if: ${{ always() }}

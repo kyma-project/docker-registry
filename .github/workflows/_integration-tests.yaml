@@ -39,6 +39,7 @@ jobs:
         run: make -C tests/operator test
         env:
           IMG: ${{ inputs.image }}
+          RUN_STORAGE_SECRET_SCENARIO: "true"
       - if: ${{ always() }}
         uses: ./.github/actions/collect-cluster-info
 
