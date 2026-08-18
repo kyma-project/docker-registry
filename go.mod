@@ -12,7 +12,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.32.0
 	github.com/onsi/gomega v1.42.1
 	github.com/pkg/errors v0.9.1
-	github.com/stretchr/testify v1.11.1
+	github.com/stretchr/testify v1.12.0
 	github.com/vrischmann/envconfig v1.4.1
 	go.uber.org/zap v1.28.0
 	golang.org/x/text v0.40.0
