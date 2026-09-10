@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -31,6 +32,18 @@ type DockerRegistrySpec struct {
 
 	// Logging defines the logging configuration for docker-registry pods.
 	Logging *Logging `json:"logging,omitempty"`
+
+	// Resources defines the compute resource requirements (CPU and memory limits/requests)
+	// for the docker-registry container. When not set, the chart defaults are used
+	// (limits: 400m CPU / 800Mi memory, requests: 10m CPU / 300Mi memory).
+	// Increase limits on clusters with high concurrent image push load.
+	Resources *corev1.ResourceRequirements `json:"resources,omitempty"`
+
+	// Replicas defines the number of docker-registry pod replicas.
+	// When not set, defaults to 1. Increase for high-concurrency environments
+	// where multiple clients push images simultaneously.
+	// +kubebuilder:validation:Minimum=1
+	Replicas *int32 `json:"replicas,omitempty"`
 }
 
 type Logging struct {
