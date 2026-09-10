@@ -17,5 +17,5 @@ func sFnInitialize(_ context.Context, _ *reconciler, s *systemState) (stateFn, *
 		return nextState(sFnDeleteResources)
 	}
 
-	return nextState(sFnAccessConfiguration)
+	return nextState(sFnResourcesConfiguration)
 }
