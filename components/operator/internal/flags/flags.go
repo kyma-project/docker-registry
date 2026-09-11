@@ -160,7 +160,12 @@ func (fb *Builder) WithLogging(level, format string, accessLogEnabled bool) *Bui
 // WithResources sets the compute resource requirements for the docker-registry container.
 // When not called, the chart defaults apply (limits: 400m CPU / 800Mi memory).
 func (fb *Builder) WithResources(res corev1.ResourceRequirements) *Builder {
-	_ = fb.With("resources", res)
+	for name, qty := range res.Limits {
+		_ = fb.With(fmt.Sprintf("resources.limits.%s", name), qty.String())
+	}
+	for name, qty := range res.Requests {
+		_ = fb.With(fmt.Sprintf("resources.requests.%s", name), qty.String())
+	}
 	return fb
 }
 
