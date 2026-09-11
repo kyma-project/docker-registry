@@ -34,7 +34,7 @@ func Test_sFnInitialize(t *testing.T) {
 		next, result, err := sFnInitialize(context.Background(), r, s)
 		require.Nil(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnAccessConfiguration, next)
+		requireEqualFunc(t, sFnResourcesConfiguration, next)
 
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})

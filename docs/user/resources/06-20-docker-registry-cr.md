@@ -28,7 +28,15 @@ The following Docker Registry custom resource (CR) shows the configuration of th
      namespace: docker-registry
      resourceVersion: "31542"
      uid: 30dbb8a0-2193-47b6-bdf7-358f78319eb8
-   spec: {}
+   spec:
+     replicas: 1
+     resources:
+       limits:
+         cpu: 400m
+         memory: 800Mi
+       requests:
+         cpu: 10m
+         memory: 300Mi
    status:
      conditions:
      - lastTransitionTime: "2024-05-16T10:18:25Z"
@@ -61,29 +69,41 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 
 **Spec:**
 
-| Parameter                               | Type   | Description                                                                                                                |
-|-----------------------------------------|--------|----------------------------------------------------------------------------------------------------------------------------|
-| **externalAccess**                      | object | Contains configuration of the registry external access through the Istio Gateway.                                          |
-| **externalAccess.enabled**              | string | Specifies if the registry is exposed.                                                                                      |
-| **externalAccess.gateway**              | string | Specifies the name of the Istio Gateway CR in the `NAMESPACE/NAME` format. Defaults to the `kyma-system/kyma-gateway`.     |
-| **externalAccess.host**                 | string | Specifies the host on which the registry will be exposed. It must fit into at least one server defined in the Gateway.     |
-| **storage**                             | object | Contains configuration of the registry images storage.                                                                     |
-| **storage.deleteEnabled**               | string | Specifies if registry supports deletion of image blobs and manifests by digest.                                            |
-| **storage.azure**                       | object | Contains configuration of the Azure Storage.                                                                               |
-| **storage.azure.secretName** (required) | string | Specifies the name of the Secret that contains data needed to connect to the Azure Storage.                                |
-| **storage.s3**                          | object | Contains configuration of the s3 storage.                                                                                  |
-| **storage.s3.bucket** (required)        | string | Specifies the name of the s3 bucket.                                                                                       |
-| **storage.s3.region** (required)        | string | Specifies the region of the s3 bucket.                                                                                     |
-| **storage.s3.regionEndpoint**           | string | Specifies the endpoint of the s3 region.                                                                                   |
-| **storage.s3.encrypt**                  | string | Specifies if data in the bucket is encrypted.                                                                              |
-| **storage.s3.secure**                   | string | Specifies if registry uses the TLS communication with the s3.                                                              |
-| **storage.s3.secretName**               | string | Specifies the name of the Secret that contains data needed to connect to the s3 storage.                                   |
-| **storage.gcs.bucket** (required)       | string | Specifies the name of the GCS bucket.                                                                                      |
-| **storage.gcs.secretName**              | string | A private service account key file in JSON format used for Service Account Authentication.                                 |
-| **storage.gcs.rootdirectory**           | string | The root directory tree in which all registry files are stored. Defaults to the empty string (bucket root).                |
-| **storage.gcs.chunksize**               | string | This is the chunk size used for uploading large blobs, must be a multiple of 256*1024. Defaults to 5242880.                |
-| **storage.btpObjectStore.secretName**   | string | Specifies the name of the Secret that contains data needed to connect to BTP Object Store.                                 |
-| **storage.pvc.name** (required)         | string | Specifies the name of the PersistentVolumeClaim.                                                                           |
+| Parameter                               | Type    | Description                                                                                                                |
+|-----------------------------------------|---------|----------------------------------------------------------------------------------------------------------------------------|
+| **externalAccess**                      | object  | Contains configuration of the registry external access through the Istio Gateway.                                          |
+| **externalAccess.enabled**              | string  | Specifies if the registry is exposed.                                                                                      |
+| **externalAccess.gateway**              | string  | Specifies the name of the Istio Gateway CR in the `NAMESPACE/NAME` format. Defaults to `kyma-system/kyma-gateway`.         |
+| **externalAccess.host**                 | string  | Specifies the host on which the registry is exposed. It must fit into at least one server defined in the Gateway.          |
+| **logging**                             | object  | Contains the logging configuration for Docker Registry Pods.                                                               |
+| **logging.level**                       | string  | Specifies the log level. Valid values: `error`, `warn`, `info`, `debug`.                                                   |
+| **logging.format**                      | string  | Specifies the log format. Valid values: `json`, `text`, `console`.                                                         |
+| **logging.accessLogEnabled**            | boolean | Enables HTTP access logs in Apache Combined Log Format.                                                                    |
+| **replicas**                            | integer | Specifies the number of Docker Registry Pod replicas. Minimum value: `1`. Defaults to `1`. Increase this value in high-concurrency environments where multiple clients push images simultaneously. |
+| **resources**                           | object  | Specifies the compute resource requirements for the Docker Registry container. When not set, the operator uses the chart defaults: limits of 400m CPU and 800Mi memory, requests of 10m CPU and 300Mi memory. |
+| **resources.limits**                    | object  | Specifies the maximum amount of compute resources allowed.                                                                 |
+| **resources.limits.cpu**                | string  | Specifies the CPU limit, for example `500m`.                                                                               |
+| **resources.limits.memory**             | string  | Specifies the memory limit, for example `1Gi`.                                                                             |
+| **resources.requests**                  | object  | Specifies the minimum amount of compute resources required.                                                                |
+| **resources.requests.cpu**              | string  | Specifies the CPU request, for example `100m`.                                                                             |
+| **resources.requests.memory**           | string  | Specifies the memory request, for example `256Mi`.                                                                         |
+| **storage**                             | object  | Contains configuration of the registry image storage.                                                                     |
+| **storage.deleteEnabled**               | string  | Specifies if the registry supports deletion of image blobs and manifests by digest.                                        |
+| **storage.azure**                       | object  | Contains configuration of the Azure Storage.                                                                               |
+| **storage.azure.secretName** (required) | string  | Specifies the name of the Secret that contains data needed to connect to the Azure Storage.                                |
+| **storage.s3**                          | object  | Contains configuration of the S3 storage.                                                                                  |
+| **storage.s3.bucket** (required)        | string  | Specifies the name of the S3 bucket.                                                                                       |
+| **storage.s3.region** (required)        | string  | Specifies the region of the S3 bucket.                                                                                     |
+| **storage.s3.regionEndpoint**           | string  | Specifies the endpoint of the S3 region.                                                                                   |
+| **storage.s3.encrypt**                  | string  | Specifies if data in the bucket is encrypted.                                                                              |
+| **storage.s3.secure**                   | string  | Specifies if the registry uses TLS communication with S3.                                                                  |
+| **storage.s3.secretName**               | string  | Specifies the name of the Secret that contains data needed to connect to the S3 storage.                                   |
+| **storage.gcs.bucket** (required)       | string  | Specifies the name of the GCS bucket.                                                                                      |
+| **storage.gcs.secretName**              | string  | Specifies a private service account key file in JSON format used for Service Account authentication.                       |
+| **storage.gcs.rootdirectory**           | string  | Specifies the root directory tree in which all registry files are stored. Defaults to the bucket root.                     |
+| **storage.gcs.chunksize**               | string  | Specifies the chunk size used for uploading large blobs. Must be a multiple of 256*1024. Defaults to `5242880`.            |
+| **storage.btpObjectStore.secretName**   | string  | Specifies the name of the Secret that contains data needed to connect to BTP Object Store.                                 |
+| **storage.pvc.name** (required)         | string  | Specifies the name of the PersistentVolumeClaim.                                                                           |
 
 **Status:**
 

@@ -8,6 +8,7 @@ import (
 
 	"github.com/kyma-project/docker-registry/components/operator/api/v1alpha1"
 	"github.com/kyma-project/manager-toolkit/installation/chart"
+	corev1 "k8s.io/api/core/v1"
 )
 
 const (
@@ -153,6 +154,25 @@ func (fb *Builder) WithLogging(level, format string, accessLogEnabled bool) *Bui
 	// Access logs use Apache Combined Log Format and cannot use json/text formatter
 	_ = fb.With("configData.log.accesslog.disabled", !accessLogEnabled)
 	fb = fb.withRollme(fmt.Sprintf("configData.log.accesslog.disabled=%t", !accessLogEnabled))
+	return fb
+}
+
+// WithResources sets the compute resource requirements for the docker-registry container.
+// When not called, the chart defaults apply (limits: 400m CPU / 800Mi memory).
+func (fb *Builder) WithResources(res corev1.ResourceRequirements) *Builder {
+	for name, qty := range res.Limits {
+		_ = fb.With(fmt.Sprintf("resources.limits.%s", name), qty.String())
+	}
+	for name, qty := range res.Requests {
+		_ = fb.With(fmt.Sprintf("resources.requests.%s", name), qty.String())
+	}
+	return fb
+}
+
+// WithReplicas sets the number of docker-registry pod replicas.
+// When not called, the chart default of 1 replica applies.
+func (fb *Builder) WithReplicas(replicas int32) *Builder {
+	_ = fb.With("replicaCount", replicas)
 	return fb
 }
 
