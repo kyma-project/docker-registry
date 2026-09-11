@@ -179,7 +179,8 @@ func (fb *Builder) WithReplicas(replicas int32) *Builder {
 // withCredentialsRollme adds a rollme entry derived from storage credentials so that rotating them
 // restarts the registry deployment. Only a digest is used, because the rollme value ends up in a
 // pod annotation that is readable by anyone who can read pods.
-func (fb *Builder) withCredentialsRollme(name string, credentials ...string) *Builder {	digest := sha256.Sum256([]byte(strings.Join(credentials, "\x00")))
+func (fb *Builder) withCredentialsRollme(name string, credentials ...string) *Builder {
+	digest := sha256.Sum256([]byte(strings.Join(credentials, "\x00")))
 	return fb.withRollme(fmt.Sprintf("%s=%s", name, hex.EncodeToString(digest[:])[:16]))
 }
 
