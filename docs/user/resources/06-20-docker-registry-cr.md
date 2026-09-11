@@ -75,12 +75,12 @@ For details, see the [Docker Registry specification file](https://github.com/kym
 | **externalAccess.enabled**              | string  | Specifies if the registry is exposed.                                                                                      |
 | **externalAccess.gateway**              | string  | Specifies the name of the Istio Gateway CR in the `NAMESPACE/NAME` format. Defaults to `kyma-system/kyma-gateway`.         |
 | **externalAccess.host**                 | string  | Specifies the host on which the registry is exposed. It must fit into at least one server defined in the Gateway.          |
-| **logging**                             | object  | Contains the logging configuration for docker-registry pods.                                                               |
+| **logging**                             | object  | Contains the logging configuration for Docker Registry Pods.                                                               |
 | **logging.level**                       | string  | Specifies the log level. Valid values: `error`, `warn`, `info`, `debug`.                                                   |
 | **logging.format**                      | string  | Specifies the log format. Valid values: `json`, `text`, `console`.                                                         |
 | **logging.accessLogEnabled**            | boolean | Enables HTTP access logs in Apache Combined Log Format.                                                                    |
-| **replicas**                            | integer | Specifies the number of docker-registry pod replicas. Minimum value: `1`. Defaults to `1`. Increase this value in high-concurrency environments where multiple clients push images simultaneously. |
-| **resources**                           | object  | Specifies the compute resource requirements for the docker-registry container. When not set, the operator uses the chart defaults: limits of 400m CPU and 800Mi memory, requests of 10m CPU and 300Mi memory. |
+| **replicas**                            | integer | Specifies the number of Docker Registry Pod replicas. Minimum value: `1`. Defaults to `1`. Increase this value in high-concurrency environments where multiple clients push images simultaneously. |
+| **resources**                           | object  | Specifies the compute resource requirements for the Docker Registry container. When not set, the operator uses the chart defaults: limits of 400m CPU and 800Mi memory, requests of 10m CPU and 300Mi memory. |
 | **resources.limits**                    | object  | Specifies the maximum amount of compute resources allowed.                                                                 |
 | **resources.limits.cpu**                | string  | Specifies the CPU limit, for example `500m`.                                                                               |
 | **resources.limits.memory**             | string  | Specifies the memory limit, for example `1Gi`.                                                                             |

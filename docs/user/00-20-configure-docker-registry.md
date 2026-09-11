@@ -21,7 +21,7 @@ spec: {}
 
 ## Configure Resources
 
-You can set CPU and memory limits and requests for the docker-registry container using the `resources` field. When not set, the operator uses the chart defaults.
+You can set CPU and memory limits and requests for the Docker Registry container using the `resources` field. If you don't provide any configuration, the operator uses the default values.
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
@@ -50,7 +50,7 @@ spec:
 
 ## Configure Replicas
 
-You can increase the number of docker-registry pod replicas using the `replicas` field. The minimum value is `1`. Defaults to `1`. Increase this value in high-concurrency environments where multiple clients push images simultaneously.
+You can increase the number of Docker Registry Pod replicas using the `replicas` field. The minimum and default value is `1`. Increase this value in high-concurrency environments where multiple clients push images simultaneously.
 
 ### Example
 
@@ -66,7 +66,7 @@ spec:
 
 ## Configure Logging
 
-You can configure logging for the docker-registry pods using the `logging` field.
+You can configure logging for the Docker Registry Pods using the `logging` field.
 
 | Parameter | Description | Valid values | Default |
 |-----------|-------------|--------------|---------|
@@ -104,4 +104,4 @@ kubectl patch configmap dockerregistry-operator-config -n docker-registry --type
 ```
 
 > [!NOTE]
-> It is not possible to dynamically change the log format for the Docker Registry Operator. To change it, update the ConfigMap and restart the pods.
+> It is not possible to dynamically change the log format for the Docker Registry Operator. To change it, update the ConfigMap and restart the Pods.
