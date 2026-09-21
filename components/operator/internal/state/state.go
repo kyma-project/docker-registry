@@ -9,7 +9,7 @@ import (
 )
 
 var requeueResult = &ctrl.Result{
-	Requeue: true,
+	RequeueAfter: time.Second,
 }
 
 func nextState(next stateFn) (stateFn, *ctrl.Result, error) {
