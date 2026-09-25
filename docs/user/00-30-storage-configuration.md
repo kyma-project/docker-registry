@@ -37,12 +37,12 @@ The images can be stored centrally and shared between clusters so that different
 apiVersion: operator.kyma-project.io/v1alpha1
 kind: DockerRegistry
 metadata:
-    name: default
-    namespace: docker-registry
+  name: default
+  namespace: docker-registry
 spec:
-    storage:
-        azure:
-            secretName: azure-storage
+  storage:
+    azure:
+      secretName: azure-storage
 ```
 
 ### Sample Secret

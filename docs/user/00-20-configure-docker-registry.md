@@ -2,7 +2,7 @@
 
 The Docker Registry module has its own operator (Docker Registry Operator). It watches the DockerRegistry custom resource (CR) and reconciles the Docker Registry workloads.
 
-The DockerRegistry CR allows you to store images using the following storage types: filesystem, Azure, S3, GCS, BTP Object Store, and PVC, each requiring specific configurations. See [Registry Storage Configuration](00-30-storage-configuration.md) to learn more.
+The DockerRegistry CR also supports different storage backends. See [Registry Storage Configuration](00-30-storage-configuration.md) to learn more.
 
 The default configuration of the Docker Registry module is the following:
 
