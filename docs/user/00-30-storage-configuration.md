@@ -1,6 +1,6 @@
 # Docker Registry Storage Configuration
 
-The DockerRegistry CR allows you to store images in six ways: filesystem, Azure, S3, GCS, BTP Object Store, and PVC. Configure the DockerRegistry CR to use any of the following storage types.
+The DockerRegistry CR supports the following storage types: filesystem, Azure, S3, GCS, BTP Object Store, and PVC.
 
 The Secret with the storage credentials does not have to exist when you create the DockerRegistry CR. Until it appears, the CR reports the `Warning` state and the configuration is retried. When you rotate the credentials in an existing Secret, Docker Registry is restarted with the new credentials.
 
