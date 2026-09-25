@@ -1,6 +1,6 @@
 # Docker Registry Storage Configuration
 
-The DockerRegistry CR allows you to store images in five ways: filesystem, Azure, s3, GCP, and BTP Object Store. This document describes how to configure DockerRegistry CR to cooperate with all these storage types.
+The DockerRegistry CR allows you to store images in six ways: filesystem, Azure, S3, GCS, BTP Object Store, and PVC. Configure the DockerRegistry CR to use any of the following storage types.
 
 The Secret with the storage credentials does not have to exist when you create the DockerRegistry CR. Until it appears, the CR reports the `Warning` state and the configuration is retried. When you rotate the credentials in an existing Secret, Docker Registry is restarted with the new credentials.
 
@@ -8,7 +8,7 @@ The Secret with the storage credentials does not have to exist when you create t
 
 The filesystem storage is a built-in storage type based on the PersistentVolumeClaim CR, which is part of the Kubernetes functionality. This is a default DockerRegistry CR configuration, and no additional configuration is needed.
 
-All images pushed to this storage are removed when the Docker Registry is uninstalled/reconfigured, or the cluster is removed. Stored images can't be shared between clusters.
+All images pushed to this storage are removed when the Docker Registry is uninstalled or reconfigured, or the cluster is removed. Stored images cannot be shared between clusters.
 
 ### Sample CR
 
@@ -16,14 +16,14 @@ All images pushed to this storage are removed when the Docker Registry is uninst
 apiVersion: operator.kyma-project.io/v1alpha1
 kind: DockerRegistry
 metadata:
-    name: default
-    namespace: docker-registry
+  name: default
+  namespace: docker-registry
 spec: {}
 ```
 
 ## Azure
 
-The Azure Storage can be configured in the DockerRegistry **spec.storage.azure** field. The only thing that is required is the **secretName** field, which must contain the name of the Secret with Azure configuration located in the same namespace. The Secret must have the following values:
+Configure Azure Storage in the DockerRegistry **spec.storage.azure** field. The only required field is **secretName**, which contains the name of the Secret with Azure configuration in the same namespace. The Secret must have the following values:
 
 * **accountKey** - contains the key used to authenticate to the Azure Storage
 * **accountName** - contains the name used to authenticate to the Azure Storage
@@ -63,8 +63,8 @@ data:
 
 Similarly to Azure, the s3 storage can be configured in the DockerRegistry **spec.storage.s3** field. The only required fields are **bucket**, which contains the s3 bucket name, and **region**, which specifies the bucket location. This storage type allows you to provide additional optional configuration, described in [DockerRegistry CR](resources/06-20-docker-registry-cr.md). One of the optional configurations is the **secretName** that contains the authentication method to the s3 storage in the following format:
 
-* **accountKey** - contains the key used to authenticate to the s3 storage
-* **secretKey** - contains the name used to authenticate to the s3 storage
+* **accessKey** - contains the AWS access key ID used to authenticate to the S3 storage
+* **secretKey** - contains the AWS access secret used to authenticate to the S3 storage
 
 ### Sample CR
 
@@ -102,7 +102,7 @@ data:
 
 Google Cloud Storage (GCS) can be configured using the **spec.storage.gcs** field. The only required field is the **bucket**, which contains the GCS bucket name. This storage type allows you to provide additional optional configuration described in [DockerRegistry CR](resources/06-20-docker-registry-cr.md). One of the optional configurations is the **secretName**, which contains the authentication method to the GCS, which is a private service account key in the JSON format.
 
-### Sample Custom Resource
+### Sample CR
 
 ```yaml
 apiVersion: operator.kyma-project.io/v1alpha1
@@ -137,7 +137,7 @@ BTP Object Store can be configured using the **spec.storage.btpObjectStore** fie
 The Secret is provided to an instance of BTP Object Store by a service binding. The underlying object store depends on the hyperscaler used for the BTP subaccount, AWS or GCP.
 Azure hyperscaler is not supported.
 
-### Sample Custom Resource
+### Sample CR
 
 ```yaml
 apiVersion: operator.kyma-project.io/v1alpha1
@@ -155,7 +155,7 @@ spec:
 
 PVC storage can be configured using the **spec.storage.pvc** field. The only required field is the **name**, which contains the PersistentVolumeClaim name.
 
-### Sample Custom Resource
+### Sample CR
 
 ```yaml
 apiVersion: operator.kyma-project.io/v1alpha1

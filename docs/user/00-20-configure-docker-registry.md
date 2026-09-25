@@ -1,12 +1,8 @@
 # Docker Registry Module Configuration
 
-## Overview
+The Docker Registry module has its own operator (Docker Registry Operator). It watches the DockerRegistry CR and reconciles the Docker Registry workloads.
 
-The Docker Registry module has its own operator (Docker Registry Operator). It watches the Docker Registry custom resource (CR) and reconfigures (reconciles) the Docker Registry workloads.
-
-The DockerRegistry CR allows you to store images in five ways: filesystem, Azure, S3, GCS, and BTP Object Store, each requiring specific configurations. See [Registry Storage Configuration](00-30-storage-configuration.md) to learn more.
-
-The DockerRegistry CR is the API to configure the Docker Registry module.
+The DockerRegistry CR allows you to store images in six ways: filesystem, Azure, S3, GCS, BTP Object Store, and PVC, each requiring specific configurations. See [Registry Storage Configuration](00-30-storage-configuration.md) to learn more.
 
 The default configuration of the Docker Registry module is the following:
 
@@ -50,7 +46,7 @@ spec:
 
 ## Configure Replicas
 
-You can increase the number of Docker Registry Pod replicas using the `replicas` field. The minimum and default value is `1`. Increase this value in high-concurrency environments where multiple clients push images simultaneously.
+You can increase the number of Docker Registry Pod replicas using the `replicas` field. The minimum and default value is `1`. In high-concurrency environments where multiple clients push images simultaneously, consider increasing this value.
 
 ### Example
 
