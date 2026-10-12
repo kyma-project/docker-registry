@@ -24,7 +24,7 @@ on:
       - "external-images.yaml"
       - "renovate.json"
   schedule:
-    - cron: '20 9 * * 2'
+    - cron: '20 9 * * 1'
 
 jobs:
   analyze:
