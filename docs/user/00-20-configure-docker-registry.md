@@ -1,3 +1,4 @@
+<!-- loio: 287ec26672884311ac14b060171633b2 -->
 # Docker Registry Module Configuration
 
 The Docker Registry module has its own operator (Docker Registry Operator). It watches the DockerRegistry custom resource (CR) and reconciles the Docker Registry workloads.
