@@ -1,3 +1,4 @@
+<!-- loio: 3b0f97c299d646f9ac11d2352cada938 -->
 # Docker Registry Storage Configuration
 
 The DockerRegistry custom resource (CR) supports the following storage types: filesystem, Azure, S3, GCS, BTP Object Store, and PVC.
